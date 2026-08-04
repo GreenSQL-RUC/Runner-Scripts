@@ -1,0 +1,15 @@
+                              QUERY PLAN                               
+-----------------------------------------------------------------------
+ Gather (actual rows=5515653 loops=1)
+   Workers Planned: 2
+   Workers Launched: 2
+   ->  Parallel Seq Scan on lineitem l (actual rows=1838551 loops=3)
+         Filter: (SubPlan 1)
+         Rows Removed by Filter: 161854
+         SubPlan 1
+           ->  Materialize (actual rows=15554 loops=6001215)
+                 ->  Seq Scan on part (actual rows=15544 loops=452008)
+                       Filter: (p_size < 5)
+                       Rows Removed by Filter: 176186
+(11 rows)
+

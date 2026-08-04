@@ -1,0 +1,11 @@
+                                         QUERY PLAN                                         
+--------------------------------------------------------------------------------------------
+ Hash Semi Join (actual rows=6001215 loops=1)
+   Hash Cond: (l.l_orderkey = o.o_orderkey)
+   ->  Index Only Scan using idx_lineitem_order on lineitem l (actual rows=6001215 loops=1)
+         Heap Fetches: 0
+   ->  Hash (actual rows=1500000 loops=1)
+         Buckets: 262144  Batches: 16  Memory Usage: 5358kB
+         ->  Seq Scan on orders o (actual rows=1500000 loops=1)
+(7 rows)
+

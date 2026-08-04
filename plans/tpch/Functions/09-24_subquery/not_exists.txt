@@ -1,0 +1,14 @@
+                                                QUERY PLAN                                                 
+-----------------------------------------------------------------------------------------------------------
+ Gather (actual rows=0 loops=1)
+   Workers Planned: 2
+   Workers Launched: 2
+   ->  Parallel Hash Anti Join (actual rows=0 loops=3)
+         Hash Cond: (l.l_orderkey = o.o_orderkey)
+         ->  Parallel Index Only Scan using idx_lineitem_order on lineitem l (actual rows=2000405 loops=3)
+               Heap Fetches: 0
+         ->  Parallel Hash (actual rows=500000 loops=3)
+               Buckets: 262144  Batches: 16  Memory Usage: 5760kB
+               ->  Parallel Seq Scan on orders o (actual rows=500000 loops=3)
+(10 rows)
+

@@ -1,0 +1,20 @@
+                                     QUERY PLAN                                      
+-------------------------------------------------------------------------------------
+ Finalize GroupAggregate (actual rows=3 loops=1)
+   Group Key: l_returnflag
+   ->  Gather Merge (actual rows=9 loops=1)
+         Workers Planned: 2
+         Workers Launched: 2
+         ->  Sort (actual rows=3 loops=3)
+               Sort Key: l_returnflag
+               Sort Method: quicksort  Memory: 25kB
+               Worker 0:  Sort Method: quicksort  Memory: 25kB
+               Worker 1:  Sort Method: quicksort  Memory: 25kB
+               ->  Partial HashAggregate (actual rows=3 loops=3)
+                     Group Key: l_returnflag
+                     Batches: 1  Memory Usage: 24kB
+                     Worker 0:  Batches: 1  Memory Usage: 24kB
+                     Worker 1:  Batches: 1  Memory Usage: 24kB
+                     ->  Parallel Seq Scan on lineitem (actual rows=2000405 loops=3)
+(16 rows)
+

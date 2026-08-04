@@ -1,0 +1,9 @@
+                               QUERY PLAN                                
+-------------------------------------------------------------------------
+ Gather (actual rows=18007100 loops=1)
+   Workers Planned: 2
+   Workers Launched: 2
+   ->  ProjectSet (actual rows=6002367 loops=3)
+         ->  Parallel Seq Scan on lineitem (actual rows=2000405 loops=3)
+(5 rows)
+

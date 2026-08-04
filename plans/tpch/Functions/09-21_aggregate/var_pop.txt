@@ -1,0 +1,10 @@
+                                  QUERY PLAN                                   
+-------------------------------------------------------------------------------
+ Finalize Aggregate (actual rows=1 loops=1)
+   ->  Gather (actual rows=3 loops=1)
+         Workers Planned: 2
+         Workers Launched: 2
+         ->  Partial Aggregate (actual rows=1 loops=3)
+               ->  Parallel Seq Scan on lineitem (actual rows=2000405 loops=3)
+(6 rows)
+

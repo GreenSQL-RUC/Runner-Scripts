@@ -1,0 +1,1001 @@
+to_tsvector
+'carefully':2 'e':1
+'dolphins':2 'final':1 'slyly':3
+'even':2 'the':1,3
+'cajol':3 'regular':1 'requests':2
+'final':2 'platelets':3 'quic':5 'sleep':4 'y':1
+'asymptote':5 'bold':4 'deposits':2 'en':1 'furiously':3
+'arefully':1 'despite':2 'inst':4 'the':3
+'carefully':2 'ns':1 'speci':3
+'again':2 'packages':1
+'are':5 'braids':4 'even':3 'ly':1 'pending':2
+'acco':5 'ajole':1 'blithely':3 'packages':2 'pending':4
+'bold':2 'cour':3 'furiously':1
+'fluffily':2 'foxes':4 'hag':5 'ounts':1 'unusual':3
+'deposits':1 'p':3 'sleep':2
+'d':6 'daring':5 'fluffily':2 'instructions':4 'silent':3 'y':1
+'along':4 'maintain':2 's':1 'slyly':3
+'eodolites':1 'furiously':4 're':5 'sleep':2 'slyly':3
+'furious':4 'ideas':3 'refully':1 'regular':2
+'furiousl':2 's':1
+'accoun':5 'even':4 'furiously':3 'haggle':2 's':1
+'detect':2 'furi':3 'sits':1
+'cial':1 'even':2 'furiously':4 'pac':6 'packages':3 'unusual':5
+'accoun':3 'equests':1 'ironic':2
+'around':2 'furiously':4 'i':5 'ly':1 'the':3
+'even':3 'ing':1 'instructions':2 'requests':4 'wake':5
+'always':4 'asymptotes':2 'even':5 'foxes':6 'nts':1 'sleep':3
+'dependencies':1 'wake':2
+'even':2 'integrate':5 'ironic':3 'ites':1 'requests':4 'thinl':6
+'e':1 'regular':3 'slyly':2 'theodolites':4
+'cajo':4 'even':1 'final':2 'packages':3
+'b':6 'bold':4 'fluffily':3 'nal':1 'pinto':5 'requests':2
+'above':2 'ackages':1 'the':3
+'accounts':3 'e':1 'furiously':2 'haggle':4
+'across':3 'carefully':2 'te':1 'the':4
+'among':4 'are':2 'equests':1 'final':6 'slyly':3 'the':5 'unus':7
+'furiously':2 'slyly':3 'use':1
+'dugouts':3 'ers':1 'even':2 'excus':5 'sleep':4
+'blithely':1 'carefully':2 'daring':3 'instructi':4
+'beans':2 'pearls':3 'pinto':1
+'even':5 'ges':1 'packages':6 'sleep':2 'slowly':4 'slyly':3
+'across':3 'final':5 'ideas':1 'pend':6 'the':4 'unwind':2
+'cajol':5 'deposits':1 'packages':4 'pending':3 'slyly':2
+'accounts':3 'fluffily':1 'special':2
+'accounts':2 'against':4 'daringly':6 'ronic':1 'sleep':3 'the':5
+'carefully':2 'final':3 'pack':4 's':1
+'ndencies':1 'promise':2
+'de':5 'foxes':4 'furiously':2 'ironic':3 'usly':1
+'blithely':2 'excuse':4 'riously':1 'special':3
+'express':5 'nod':2 'notornis':6 'quickly':3 'slyly':4 'uests':1
+'among':2 'bl':4 'ithely':1 'the':3
+'bold':3 'excuses':5 'final':4 'foxes':2 'regular':1 's':6
+'against':1 'notor':4 'regular':3 'the':2
+'dep':5 'furiously':1 'grouches':3 'regular':2,4
+'about':2 'quickly':1 'the':3
+'beans':4 'bold':2 'carefully':1 'f':5 'pinto':3
+'intain':1 'quickl':2
+'are':4 'final':2 'instructions':3 'ly':1 'quick':5
+'a':3 'ackages':1 'theodolites':2
+'iron':2 'thely':1
+'egular':1 'unusu':2
+'even':2 'its':1 'nod':4 'requests':3 'sly':5
+'bout':1 'fluffily':3 'sile':4 'the':2
+'blithely':4 'cajole':3 'deposits':2 'final':1 'iron':5
+'at':1 'ironic':3 'packages':4 'the':2 'unus':5
+'fur':6 'ole':1 'packages':4 'quickly':2 'regular':3 'use':5
+'ial':1 'ironic':2
+'al':1 'deposits':2 's':3
+'depos':2 'theodolites':1
+'ar':1 'sentime':2
+'about':1 'final':4 'furiously':3 'req':5 'the':2
+'careful':4 'dependencies':3 'lithely':1 'regular':2
+'accounts':1 'blithely':3 'ex':6 'final':5 'furiously':4 'mold':2
+'carefully':3 'dolphins':2 'even':1 'ironic':4
+'bold':5 'dolphins':3 'final':2 'furiously':4 'ickly':1 'reques':6
+'pac':2 'xpress':1
+'are':2 'asymptotes':5 'furiously':3 'ironic':4 'regula':6 'ts':1
+'counts':1 'fina':2
+'carefully':2 'd':4 'he':1 'pending':3
+'accounts':3 'blithely':4 'fi':5 'iously':1 'pending':2
+'blithely':2 'foxes':1 'haggle':5 'ideas':4 'silent':3
+'e':1 'regular':3,4 'slyly':2 'theodolit':5
+'caj':7 'deposits':6 'even':5 'nod':2 'silently':4 'slyly':3 'ts':1
+'carefully':3 'haggle':2 'slyly':4 'sts':1 'unus':5
+'carefully':4 'ding':1 'the':3 'to':2 'unusual':5
+'enticingly':4 'itaphs':1 'r':5 'serve':2 'slyly':3
+'ackages':1 'along':4 'boost':2 'ironic':6 'reg':7 'slyly':3 'the':5
+'against':3 'carefully':2 'etect':1
+'carefully':2 'even':3 'fin':6 'fully':1 'furiously':5 'ideas':4
+'above':2 'es':1 'th':3
+'are':2 'atop':3 'fina':5 'ges':1 'the':4
+'c':4 'efully':1 'ironic':2 'requests':3
+'nusual':1 'the':2
+'around':2 'deposits':4 'ntegrate':1 'the':3
+'dependencies':3 'even':2 'fin':4 'the':1
+'depths':3 'final':2 'furiously':1 'near':4 'slyl':6 'the':5
+'final':1 'hockey':2
+'across':3 'final':5,6 'osits':1 'the':4 'wake':2
+'accounts':5 'even':4 'quickly':3 'the':2 'thrash':6 'ut':1
+'boost':3 'caref':4 'onic':1 'packages':2
+'about':2 'eposits':1 'even':4 'fo':6 'ironic':5 'the':3
+'accou':5 'blithely':3 'e':1 'regular':4 'the':2
+'ourts':1 'regu':4 'silently':3 'sleep':2
+'plate':3 'regular':2 'ymptotes':1
+'ev':5 'finally':4 'quickly':3 's':1 'sleep':2
+'accounts':2 'even':1 'fina':7 'of':5 'sleep':3 'slyly':4 'the':6
+'accounts':4 'agai':5 'deposits':1 'final':3 'quickly':2
+'ac':6 'carefully':4 'ctions':1 'even':5 'fluffily':3 'sleep':2
+'close':2 'furiou':5 'ideas':3 'sleep':4 'yly':1
+'ake':1 'am':3 'furiously':2
+'are':4 'arefully':1 'blithely':5 'caref':6 'final':2 'requests':3
+'asymptote':3 'quickly':2 'solve':1
+'aff':4 'deposits':3 'owly':1 'unusual':2
+'deposits':3 'furiou':4 'pending':2 'riously':1
+'are':1 'carefully':2,3 'r':4
+'requests':3 'sleep':4 'sp':5 'thely':1 'unusual':2
+'against':2 'beans':6 'carefully':7 'pinto':5 'silent':4 'the':3 'y':1
+'bold':2 'fina':6 'quickly':5 'realms':3 'use':4 'yly':1
+'eve':5 'ickly':1 'ironic':2 'quickly':4 'requests':3
+'packa':3 'silent':2 'uctions':1
+'asymptotes':2 'even':4 'inal':1 'packages':5 'slyly':3
+'cajole':4 'entic':7 'otes':1 'ought':2 'slowly':5 'slyly':6 'to':3
+'express':3 'ins':4 'regular':2 'unts':1
+'across':3 'haggle':2 'ites':1 't':4
+'attainments':3 'haggle':4 'ironic':1 'regular':2 'sly':5
+'ar':1 'cajole':3 'dolphins':2 'fluffily':4 's':5
+'deposits':2 'egular':1 'h':3
+'furious':2 'sleep':1
+'bold':2 'foxes':3 'kly':1
+'asymptotes':3 'osits':1 'wake':2
+'dogg':6 'even':4 'foxes':5 'furiously':3 'out':1 'the':2
+'packages':2 'regular':1
+'ffily':1 'final':2 'theod':3
+'acco':6 'ickly':1 'ironic':4 'packages':3 'pending':5 'slow':2
+'abou':4 'accounts':2 'c':1 'cajole':3
+'deposits':3 'er':1 'ironic':2 'pend':5 'permanently':4
+'boost':4 'could':3 'f':5 'ideas':2 'l':1
+'ev':3 'furiously':2 'ounts':1
+'quickly':2 'ses':1
+'a':4 'bold':2 'foxes':3 'ly':1
+'asymptot':2 'nusual':1
+'al':1 'beans':3 'pinto':2
+'furiously':3,4 'nag':2 'posits':1 'spe':5
+'l':1 'packages':2
+'e':1 'ironic':4 'p':6 'packages':5 'quietly':2 'slyly':3
+'al':1 'deposits':2
+'alon':2 'ounts':1
+'accoun':3 'blithely':1 'regular':2
+'quickly':2 'slyly':1
+'ounts':1 'special':2
+'are':2 'blithely':3 's':1
+'furiously':2 'ironical':3 'sleep':1
+'according':3 'instructions':6 'pl':7 's':1 'sleep':2 'the':5 'to':4
+'blithely':1 'even':2
+'instructio':1
+'are':2 'dog':4 'fluffily':3 'ts':1
+'furiously':1 'regular':2
+'beans':6 'bold':4 'deposits':3 'pinto':5 'refully':1 'regular':2
+'express':2 'uriously':1
+'carefully':3 'deposits':2 'fi':4 't':1
+'c':4 'ests':1 'furiously':3 'haggle':2
+'beans':2 'dependencies':5 'ha':6 'ironic':3,4 'to':1
+'acc':3 'daring':2 's':1
+'along':2 'e':1 'regular':4 'the':3
+'asymptotes':5 'e':1 'fluffily':2 'fur':6 'regular':4 'slyly':3
+'depo':3 'dogged':2 'uffily':1
+'careful':4 'deposits':2 'e':1 'foxes':5 'slyly':3
+'bold':4 'carefully':3 'fin':7 'oss':1 'packages':5 'slyly':6 'the':2
+'blithel':5 'courts':3 'ly':1 'sleep':4 'unusual':2
+'a':5 'es':1 'final':4 'quickly':3 'was':2
+'above':4 'furiously':3 'requests':1 'the':5 'wake':2
+'carefully':2 'deposits':1 'reques':4 'special':3
+'carefully':3 'f':1 'ironic':4 'pinto':5 'the':2
+'bold':1 'furiousl':4 'mold':3 'platelets':2
+'special':1 'theodo':2
+'blithely':1 'car':4 'final':2 'foxes':3
+'cajole':2 'sts':1
+'after':2 'even':4 'in':6 'instructions':5 'ons':1 'the':3
+'ackages':1 'carefully':2 'ironi':3
+'about':5 'deposits':4 'even':3 'osits':1 'slyly':2 'th':6
+'det':4 'lessly':1 'regular':2 'requests':3
+'accounts':4 'ash':1 'carefully':5 'express':2 'special':3
+'d':3 'kly':1 'regular':2
+'furious':4 'regular':2 'requests':3 'slyly':1
+'noto':2 'quests':1
+'accounts':2 'affix':3 'lent':1
+'bove':1 'slyly':3 'the':2 'unusu':4
+'accounts':4 'bl':6 'blithely':5 'furiously':2 'special':3 'use':1
+'furiously':1 'pen':2
+'ar':1 'bli':5 'even':2 'excuses':3 'haggle':4
+'slyl':2 'wake':1
+'asymptotes':2 'furiously':3 'ironic':4 'nic':1 'theodo':5
+'accounts':3 'ar':1 'exp':4 'unusual':2
+'accounts':5 'ca':6 'furiously':3 'ironic':4 'the':2 'to':1
+'acco':5 'according':1 'regular':4 'the':3 'to':2
+'accounts':2 'after':3 'dolphins':6 'old':1 'regular':5 'the':4
+'instructions':2 'pending':3 'r':4 'ular':1
+'above':6 'affix':4 'boldly':5 'ideas':3 'ithely':1 'th':7 'unusual':2
+'al':1 'deposits':2 'haggle':3 'iron':4
+'eve':2 'silent':1
+'furi':3 'ins':1 'nag':2
+'dep':3 'fluffily':1 'pending':2
+'against':2 'ca':7 'leep':1 'packages':5 'requests':4 'the':3 'wake':6
+'be':3 'pinto':2 'silent':1
+'above':3 'carefully':5 'ep':1 's':6 'slyly':2 'the':4
+'final':3 'no':5 'odolites':1 'packages':4 'slyly':2
+'ggedly':1 'requ':2
+'ests':1 'sleep':2
+'accounts':2 'carefully':3 'regular':1
+'according':1 'b':5 'blithely':4 'the':3 'to':2
+'blithely':2 'express':3 'foxes':1 'i':5 'ideas':4
+'refully':1 'regular':2
+'deposits':3 'haggl':4 'quickly':1 'regular':2
+'arls':1 'carefully':3 'engage':2 'even':4 'regul':6 'requests':5
+'ex':3 'instructions':2 'regular':1
+'final':2,4 'orbits':3 'sly':1
+'ake':1 'even':3 'fluffily':2 'packa':5 'unusual':4
+'bl':3 'packages':2 'the':1
+'final':2 'furiously':4 'packages':3 'uffily':1
+'bold':4 'instructions':2 'quickly':3 'r':1 'reque':5
+'carefully':3 'depos':5 'express':4 'ic':1 'ideas':2
+'care':3 'sits':1 'solve':2
+'furiously':3 'ideas':2 'r':4 'xpress':1
+'al':3 'doze':2 'ts':1
+'regula':2 'ts':1
+'courts':4 'final':3 's':1 'sleep':2
+'c':1 'theodolites':2
+'instructio':3 'ross':1 'the':2
+'detect':2 'ideas':1
+'even':2 'ideas':6 'n':7 'regular':5 'requests':3 'sleep':4 'ys':1
+'after':2 'blithely':4 'f':5 'ls':1 'the':3
+'haggle':2 'ites':1 'permanentl':3
+'gular':1 'theodolite':2
+'carefu':2 'the':1
+'across':3 'fluffily':5 'haggle':2 'ideas':1 'pendi':6 'the':4
+'ca':4 'deposits':2 'pending':1 'somas':3
+'along':2 'iro':4 'slyly':1 'the':3
+'accounts':3 'ackages':1 'are':4 'fluffily':5 'regular':2
+'according':3 'e':6 'equests':1 'run':2 'the':5 'to':4
+'asymptotes':2 'foxes':1 'furio':4 'wake':3
+'across':1 'i':4 'slyly':3 'the':2
+'carefully':5 'final':2 'ide':7 'ideas':3 's':1 'sleep':4 'sly':6
+'across':3 'fluffi':5 'foxes':1 'haggle':2 'the':4
+'attainments':4 'final':3 'ha':5 'slyly':2 'thely':1
+'are':3 'asymptotes':5 'close':4 'foxes':2 'qu':7 'special':1 'use':6
+'accounts':1 'even':4 'fluffily':3 'theodolites':5 'wake':2
+'instructio':4 'pending':3 'ruthlessly':2 'y':1
+'are':1 'blithely':2 'unusu':3
+'e':6 'fluffily':5 'foxes':1 'nag':3 'quickly':4 'would':2
+'after':4 'blithely':3 'c':6 'impress':2 'the':5 'ts':1
+'ag':1 'fin':3 'slyly':2
+'asymptotes':3 'deas':1 'idle':2 'na':4
+'above':5 'blithely':4 'foxes':2 'ironic':1 'slowly':7 'the':6 'use':3
+'carefully':3 'egular':1 'even':4 'platelets':2
+'cajole':3 'ideas':6 'old':1 'regular':5 'requests':2 'slyly':4
+'final':3 'furiously':2 'p':4 'the':1
+'at':4 'boost':2 'furiously':3 'nstructions':1 'the':5
+'are':2 'frets':1 'packages':5 'regular':4 'thinly':3
+'asymptotes':4 'exp':5 'regular':2 'special':3 'y':1
+'platelets':1
+'above':3 'foxes':2 'furi':5 'the':4 'ual':1
+'accounts':3 'st':1 'the':2
+'are':1 'blithe':3 'furiously':2 'packages':4 'sp':5
+'against':2 'even':4 'in':5 's':1 'the':3
+'are':4 'deposits':6 'final':2 'ideas':3 'ironic':5 's':1
+'ironic':1 'platelet':2
+'never':2 'slyly':1
+'blithely':3 'es':1 'nag':2
+'about':5 'beans':4 'ckly':1 'pending':2 'pinto':3 'sl':7 'the':6
+'blithely':4 'deposits':3 'out':1 'pe':5 'the':2
+'ideas':3 'ounts':1 'regular':2
+'careful':2 'oost':1
+'need':3 'nic':1 'packages':2 'sleep':5 'to':4
+'ding':1 'requests':2 'sh':3
+'affix':4 'bold':2 'escapades':3 'he':1 'pendin':5
+'accounts':2 'deposits':5 'even':4 'n':6 'slyly':3 'usual':1
+'f':6 'fluffily':1 'requests':3 'silent':2 'slyly':5 'wake':4
+'accounts':2 'are':3 'ress':1
+'across':5 'furiously':4 'haggle':3 'ng':1 'requests':2 't':6
+'about':2 'c':6 'carefully':1 'dependencies':5 'quick':4 'the':3
+'ar':1 'blithely':4 'f':6 'packages':2 'slyly':5 'use':3
+'after':4 'ironic':7 'its':1 'p':8 'quickly':3 'slyly':6 'the':5 'wake':2
+'ending':1 'pending':2 'requests':3
+'are':2 'deposits':1 'furiou':3
+'accounts':3 'blithel':4 'cajole':1 'carefully':2
+'eposits':1 'regular':2
+'bold':2 'furiously':1 'theodolites':3
+'excuses':3 'ins':4 'ironic':2 'usly':1
+'above':3 'frets':2 'g':1
+'blithely':4 'cajole':3 'foxe':6 'ic':1 'regular':5 'requests':2
+'careful':3 'platelets':2 'special':1
+'blithely':6 'bold':3 'pending':4 'requests':5 'the':2 'ut':1
+'final':5 'gside':1 'of':2 'quickly':4 'sheave':6 'the':3
+'blithely':2 'p':3 'requests':1
+'along':2 'car':4 'fily':1 'the':3
+'among':2 'closely':4 'even':5 'g':1 'the':3
+'al':1 'along':3 'blithely':5 'instructions':2 'the':4
+'according':2 'furiously':1
+'instructio':2 'the':1
+'accounts':2 'bea':5 'express':3 'pinto':4 'usual':1
+'after':3 'cajole':2 'e':5 's':1 'the':4
+'affix':4 'blith':5 'final':2 'regular':1 'theodolites':3
+'egular':1 'request':2
+'bold':3 'deposits':4 'hagg':5 'instructions':2 'ven':1
+'asymptotes':3 'express':2 're':5 'sleep':4 'yly':1
+'cuses':1 'ha':5 'pearls':4 'pending':3 'slyly':2
+'ar':1 'excuses':2 'furiously':3 'iron':4
+'boost':1 'f':4 'furiously':2 'ideas':3
+'accounts':1 'cajole':2 'dolphi':4 'even':3
+'final':4 'ideas':3 'nding':1 'pending':2 'theodolite':5
+'c':3 'mong':1 'the':2
+'are':1 'around':2 'th':3
+'even':2 'platelets':3 'slyly':1
+'ar':7 'express':5 'in':1 'nag':3 'packages':2 'requests':6 'slyly':4
+'ac':6 'haggle':3 'ites':1 'quickly':4 'regular':5 'requests':2
+'ackages':1 'are':2 'ironic':3 'sly':5 'theodolites':4
+'along':6 'deposits':5 'furious':4 'packages':3 'unusual':2 'y':1
+'ly':1 'special':2
+'daringly':3 'oxes':1 'promise':2 'sly':4
+'above':4 'enticing':2 'quickly':1 'requests':3 'th':5
+'along':3 'blithely':5 'detect':2 'the':4 'totes':1 'unusual':6
+'arefully':1 'packages':3 'platelet':5 'ruthless':4 'thin':2
+'about':2 'even':5 'foxes':6 'furiously':4 'never':1 'the':3
+'dolites':1 'furio':5 'platelets':3 'regular':2 'sleep':4
+'accounts':3 'ironic':2 'nic':1 's':4
+'ckages':1 'dependen':4 'final':3 'sometimes':2
+'across':5 'ely':1 'express':2 'foxes':3 'maintain':4 'th':6
+'pac':2 'sleep':1
+'even':2 'integrate':4 'packages':3 'thely':1
+'along':3 'eep':1 'slowly':2
+'r':2 'regular':1
+'decoys':3 'furiously':4 'id':6 'ironic':5 'of':1 'the':2
+'across':2 'ges':1 'the':3
+'a':5 'are':3 'dependencies':2 'furiously':4 'pecial':1
+'along':4 'carefully':3 'deposits':1 'detect':2 'the':5
+'final':2 'pack':4 'permanent':3 't':1
+'deposits':3 'even':2 'fluffil':4 'furiously':1
+'ironic':3 'package':5 'pains':2 'regular':4 't':1
+'cajole':4 'deposits':5 'foxes':3 'ironic':2 'riously':1 'sl':6
+'accounts':5 'c':7 'enticingly':3 'haggle':6 'quiet':4 't':1 'the':2
+'deposits':2 'nal':1
+'cajole':2 'caref':3 'ts':1
+'co':3 'fluffily':2 'press':1
+'ide':1 'of':2 'pendi':5 'quietly':4 'the':3
+'along':2 'es':1 'final':4 'the':3,5
+'ally':1 'blithely':4 'bold':2 'final':5 'requests':3
+'car':3 'decoys':2 'final':1
+'accounts':1 'bli':3 'sleep':2
+'accounts':5 'even':4 'furiously':3 'quic':6 'ross':1 'the':2
+'final':3 'fluffily':2 'platelet':4 'ts':1
+'beans':5 'bli':7 'e':1 'express':2 'ironic':3 'pinto':4 'wake':6
+'across':2 'instructi':4 'slyly':1 'the':3
+'enticing':3 'furiously':2 'ites':1
+'permanently':1 'regul':2
+'deposi':4 'even':3 'furiously':2 'ly':1
+'dol':4 'regular':3 'slyly':2 'y':1
+'above':3 'asymp':7 'boost':2 'es':1 'even':5 'ironic':6 'the':4
+'ca':3 'ideas':2 'packages':1
+'a':6 'deposits':4 'furiously':2 'pending':3 'ts':1 'wake':5
+'accounts':3 'fully':1 'regular':2
+'pending':2 'requests':3 'sleep':4 'y':1
+'final':5 'fluffily':3 'ounts':1 'slyly':4 'wake':2
+'accounts':2 'pecial':1 'un':3
+'affix':4 'again':6 'ly':1 'pending':2 'slowly':5 'theodolites':3
+'expre':2 'ptotes':1
+'gular':1 'packages':2
+'accounts':3 'are':4 'blithely':5 'final':2 'kly':1 's':6
+'cording':1 'furiously':5 'reg':6 'requests':4 'the':3 'to':2
+'bean':3 'pinto':2 'regular':1
+'attainments':2 'haggle':3 'i':6 'ress':1 'silently':4 'special':5
+'blithely':2 'es':4 'final':3 'ts':1
+'dependenc':2 'unusual':1
+'asymptotes':2 'final':4 'ld':1 'sleep':3
+'gainst':1 'the':2
+'about':3 'requests':2 'the':4 'un':5 'y':1
+'ar':5 'have':3 'to':4 'uests':1 'will':2
+'accounts':5 'cl':6 'fluffily':3 'ke':1 'quickly':2 'regular':4
+'about':1 'blithely':3 'deposits':5 'ha':6 'regular':4 'the':2
+'depos':5 'ironic':4 'slyly':3 'the':2 've':1
+'i':4 'pending':3 'the':2 'ut':1
+'e':1 'foxes':5 'furiously':3 'ideas':2 'sleep':6 'stealthy':4
+'beans':1 'fin':4 'furiously':3 'haggle':2
+'bold':4 'dependencie':5 'lyly':1 'regular':2 'theodolites':3
+'a':4 'foxes':3 'slyly':1 'stealthy':2
+'blithe':3 'haggle':2 'ts':1
+'about':2 'e':1 'regular':4 'the':3 'theodolit':5
+'deposits':2 'ironic':4 'packages':5 'slyly':3 'unusual':1
+'acc':3 'even':1 'theodolites':2
+'fluffily':2 'odolites':1 'r':3
+'blithely':2 'bold':3 'carefully':1
+'boos':5 'courts':4 'es':1 'haggle':2 'regular':3
+'are':2 'express':6 'furiously':3 'i':7 'regular':4 'requests':5 's':1
+'furiously':1 'packages':3 'regular':2
+'cording':1 'deposits':5 'even':4 'ironic':7 'slyly':6 'the':3 'to':2
+'al':1 'cajole':3 'quickly':4 'regular':5 'sentiments':2
+'final':2 'fluffily':5 'haggle':4 'ironi':6 's':1 'sheaves':3
+'about':5 'furiously':4 'ironic':1 'packages':2 'wake':3
+'accounts':2 'express':1 'foxes':4 'pending':3
+'fluffily':3 'instruct':5 'ironic':1 'packages':2 'pending':4
+'blithely':2 'pend':3 'the':1
+'counts':1 'doze':2 're':3
+'asymptotes':1
+'among':2 'f':5 'fluffily':4 'ithely':1 'the':3
+'instru':2 'unusual':1
+'accounts':4 'furiously':1 'ironic':2 'pending':3
+'beans':3 'furious':5 'ns':1 'pinto':2 'sleep':4
+'furiously':1 'packages':3 'special':2
+'along':2 'carefully':1
+'accounts':1 'ex':2
+'furiously':2 'ironi':3 'ts':1
+'after':2 'even':5 'ironic':4 'ses':1 'the':3 'theodolites':6
+'after':2 'b':7 'carefully':4 'eposits':1 'express':5 'ideas':6 'the':3
+'eposits':1 'nag':2 'pack':6 'slyly':4 'sometimes':3 'unusual':5
+'al':1 'beans':5 'cajole':3 'packages':2 'perma':6 'pinto':4
+'carefully':1 'fin':3 'quickly':2
+'accounts':1 'c':3 'engage':2
+'bravely':2 'ironic':3 'packag':4 'the':1
+'courts':3 'furiously':4 'oost':1 'regular':2,5
+'haggle':1 'sly':2
+'blithely':4 'dependencies':2 'nag':3 'regular':1
+'boo':4 'close':2 'theodolites':3 'y':1
+'depos':3 'even':2 'furiously':1
+'about':6 'beans':4 'fin':8 'ironic':2 'ly':1 'pinto':3 'sleep':5 'the':7
+'accounts':1 'are':2 'blithely':3 'cajo':5 'ideas':4
+'accou':3 'final':2 's':1
+'bold':2 'impress':4 'l':1 'q':5 'requests':3
+'furiously':3 'instructions':2 'regu':4 'ular':1
+'depos':4 'refully':1 'thinly':2 'unusual':3
+'a':5 'braids':3 'idle':2 'ously':1 'sleep':4
+'around':2 'deposits':5 'even':4 'regular':6 'slyly':1 'the':3
+'accounts':2 'final':1 'wa':3
+'accounts':3 'blit':5 'bold':2 'sleep':4 'slyly':1
+'lithely':1 'unusu':2
+'pa':3 'quests':1 'regular':2
+'blithe':3 'deposits':2 'ironic':1
+'do':4 'packages':3 'r':1 'slyly':2
+'platelets':1 'special':3 'use':2
+'ideas':2 'usual':1
+'asymptotes':2 'boost':3 'final':1 'qu':4
+'eas':1 'pending':2
+'ca':6 'cajole':5 'deposits':2 'grouches':4 'l':1 'pending':3
+'carefully':2 'iron':3 'ons':1
+'asymptotes':4 'even':3 'furiously':2 'hag':5 'xes':1
+'about':1 'f':5 'packages':4 'quiet':3 'the':2
+'blithely':2 'iously':1 'ironic':3 'reque':4
+'ndencies':1
+'alongside':2 'of':3 'th':4 'uickly':1
+'about':2 'ckages':1
+'a':4 'bold':3 'ily':1 'slyly':2
+'about':1 'package':3 'the':2
+'f':2 'quickly':1
+'a':6 'bout':1 'fluffily':5 'ideas':3 'integrate':4 'the':2
+'accounts':3 'bold':5 'cajole':4 'even':2 'excuses':6 'f':7 'iously':1
+'furiousl':3 'nag':2 'osits':1
+'b':4 'l':1 'pending':2 'theodolites':3
+'boost':2 'foxes':1
+'d':3 'unusual':2 'y':1
+'blithely':3 'ideas':2 'pac':5 'pending':1 'regular':4
+'furiously':1 'instr':3 'slow':2
+'along':2 'finally':1 'sl':4 'the':3
+'asymptotes':4 'even':2 'final':3 'furio':5 'he':1
+'detect':2 'expre':3 'otes':1
+'daring':2 'its':1
+'idea':3 'l':1 'special':2
+'even':2 'final':1 'requests':3
+'about':2 'courts':1 'silent':4 'the':3
+'accounts':2 'ruthless':1
+'as':1 'carefully':3 'nag':2 'unusual':4
+'alwa':3 'packages':2 'special':1
+'at':2 'foxes':5 'nod':1 'pending':4 'slyly':6 'the':3
+'bold':2 'foxes':3 'qui':4 'y':1
+'above':3 'nal':1 't':4 'tithes':2
+'after':3 'beans':1 'furiously':5 'nag':2 'the':4
+'furiously':2 'regul':3 'the':1
+'are':5 'express':3 'fur':6 'notornis':4 'quickly':2 'usly':1
+'requests':1
+'accounts':2 'bli':5 'detect':3 'gular':1 'slyly':4
+'carefully':1 'ironic':4 'pending':2 'realms':3 'regular':5
+'p':3 'regular':2 'ts':1
+'aggle':1 'around':3 'furiously':2 'slyly':5 'the':4
+'carefully':3 'reg':4 'the':2 'to':1
+'across':2 'd':5 'final':4 's':1 'the':3
+'acc':4 'ironic':3 'slyly':2 'the':1
+'ab':4 'busily':3 'haggle':2 'ts':1
+'bold':2 'ntly':1 't':3
+'even':4 'furiously':6 'ironic':3 'nd':1 'packages':5 'the':2
+'al':1 'dolphins':2
+'express':2 'furiously':4 'ideas':3 'pen':5 'uriously':1
+'dolites':1 'sle':2
+'beans':5 'express':3 'int':6 'pinto':4 'quietly':2 'requests':1
+'furious':2 'haggle':1
+'dependencies':3 'even':2 'y':1
+'above':5 'ideas':2,4 'regular':3 'special':1 'the':6
+'about':6 'c':8 'final':2 'platelets':3 'slyly':5 'the':7 'usly':1 'wake':4
+'about':2 'are':6 'ca':7 'even':4 'foxes':5 'phins':1 'the':3
+'bout':1 'i':4 'quickly':3 'the':2
+'asympto':4 'express':2 'unusual':3 'y':1
+'affix':2 'since':3 'th':4 'tructions':1
+'d':3 'even':2 'pending':1
+'beans':6 'even':4 'nic':1 'pinto':5 'requests':2 'sha':7 'slyly':3
+'aringly':1 'gift':3 'silent':2
+'at':5 'carefully':2 'final':3 'instructions':4 'kages':1 'th':6
+'acco':2 'gular':1
+'across':2 't':3 'uctions':1
+'cajol':2 'eposits':1
+'even':2 'packages':1
+'carefull':2 'egrate':1
+'bold':2 'furiou':6 'instructions':3 'quickly':5 'r':1 'use':4
+'beans':4 'cajole':5 'equests':1 'even':2 'pinto':3 'request':6
+'inst':2 'press':1
+'beans':3 'hely':1 'pinto':2,4
+'among':3 'e':1 'fluffily':2
+'accounts':3 'along':4 'ca':6 'packages':1 'special':2 'the':5
+'against':3 'eposits':1 'haggle':2 'i':5 'the':4
+'final':2 'lyly':1 'packages':3 'sl':5 'wake':4
+'carefully':2 'slyly':1
+'blithel':3 'dazzle':2 'es':1
+'carefully':4 'final':2 'ironic':5 'requests':3 'y':1
+'at':1 'sly':3 'the':2
+'instructio':3 'regular':2 'uffily':1
+'among':2 'f':4 'lithely':1 'the':3
+'p':3 'quickly':2 're':1
+'platelets':3 'silently':1 'unusual':2
+'final':3 'fo':4 'slyly':2 'yly':1
+'bold':2 'excu':3 'ickly':1
+'carefully':2 'furio':3 'haggle':1
+'accordi':3 'es':1 'use':2
+'cajole':2 'carefully':3 'requests':1 't':5 'within':4
+'cajole':2 'furiously':3 'ounts':1 'pending':4 'pl':5
+'after':4 'carefully':3 'posits':1 'quic':6 'sleep':2 'the':5
+'furiously':2 'ly':1
+'ong':1 'the':2 'unu':3
+'furiously':2 'regu':3 'uffily':1
+'cajole':3 'carefull':4 'nic':1 'packages':2
+'across':2 'haggle':1 'the':3 'thinly':4
+'carefully':3 'foxes':2 'onic':1 'regul':4
+'are':3 'excuses':2 'sl':4 'the':1
+'blithely':2 'de':4 'es':1 'ironic':3
+'along':2 'efully':1 'regul':4 'the':3
+'dogged':1 'foxes':2 'integrate':3
+'blithely':4 'foxes':2 'haggle':3 'r':1 'reque':6 'special':5
+'bold':2 'ly':1 'requests':3
+'asymptotes':2 'b':3 'ic':1
+'are':3 'excuses':2 'fluffily':4 'packages':5 'unusual':1
+'ely':1 'final':2 'ideas':3 'regular':4 'spec':5
+'nal':1 'requests':2
+'carefully':1 'pa':3 'unusual':2
+'beans':2 'pinto':1
+'blithe':3 'cajole':2 'eans':1
+'acc':5 'after':1 'bold':4 'carefully':3 'the':2
+'blithely':2 'wake':1
+'blithel':5 'foxes':3 'regular':2 'use':4 'ymptotes':1
+'nstructions':1 'pending':2,3 'pinto':4
+'ironic':3 'quickly':2 's':1 'theodolite':4
+'ly':1 'special':2 'theodo':3
+'across':2 'arefully':1 's':4 'the':3
+'about':1 'sly':3 'the':2
+'beans':2 'c':6 'dependencies':4 'nto':1 'special':3 'wake':5
+'inside':2 'sly':1 'spec':4 'the':3
+'blithe':3 'boost':5 'ets':1 'fluffily':2 'packages':4
+'among':2 'boost':1 'the':3
+'carefully':1 'fin':2
+'asymptotes':1 'express':2
+'foxes':2 'ir':3 's':1
+'bol':7 'foxes':5 'haggle':2 'pending':6 'regular':3 's':1 'thin':4
+'ideas':2 'ironi':4 'l':1 'sleep':3
+'accounts':3 'across':6 'are':4 'quickly':5 'regular':2 'ts':1
+'along':3 'blithely':2 'egrate':1 't':4
+'blithely':3 'cajole':2 'ironic':4 'patt':5 'theodolites':1
+'dolphins':4 'even':3 'slyly':2 'the':1 'thinly':6 'use':5
+'care':4 'furiously':1 'regular':2 'requests':3
+'even':2 'hely':1 'sauterne':3
+'haggle':4 'packages':3 'unusual':2 'y':1
+'accounts':2 'nal':1 'regular':4 'requests':5 'stealthy':3
+'are':4 'blith':6 'carefully':5 'foxes':3 'refully':1 'silent':2
+'accounts':3 'carefull':5 'pending':2 'promise':4 'sly':1
+'acco':6 'beans':4 'ironic':2 'ly':1 'pinto':3 'wake':5
+'accordin':5 'platelets':3 'silent':2 'sleep':4 'the':1
+'carefully':2 'xes':1
+'a':5 'final':2 'ickly':1 'instructions':3 'theodolites':4
+'according':3 'excus':6 'ptotes':1 'the':5 'theodolites':2 'to':4
+'accou':4 'even':3 'final':1 'theodolites':2
+'furio':4 'ing':1 'the':3 'to':2
+'abo':3 'carefully':2 'g':1
+'carefully':2 'even':3 'instructio':4 'rouches':1
+'are':2 'carefully':4 'packa':6 'posits':1 'slyly':3 'special':5
+'cajole':2 'furiousl':3 'ges':1
+'quickly':2 's':1
+'above':1 'ir':4 'regular':3 'the':2
+'ents':1 'fur':6 'packages':4 'sleep':5 'slyly':3 'use':2
+'instructio':3 'silent':2 'slyly':1
+'among':2 'es':1 'slyly':4 'the':3
+'accounts':4 'asymptote':6 'even':5 'he':1 'idle':2 'unusual':3
+'furiously':3 'regular':4 'the':2 'to':1
+'even':5 'furiously':4 'ngside':1 'of':2 'orbits':6 'sl':7 'the':3
+'dolphins':4 'final':3 'lithely':1 'quickly':2 'sl':5
+'instructio':1
+'accounts':3 'blithely':5 'ely':1 'regular':2 'sleep':4
+'posits':1 'slyly':2 'unusua':3
+'accoun':6 'even':2 'ideas':3 'ly':1 'special':5 'wake':4
+'f':4 'ironic':2 'ly':1 'packages':3
+'ex':6 'furiously':3 'regular':5 's':1 'sleep':2 'slyly':4
+'ong':1 'req':3 'the':2
+'b':6 'furiously':5 'packages':3 'regular':2 'sly':1 'wake':4
+'ake':1 'furious':2
+'a':5 'express':2 'final':1 'integrate':4 'packages':3
+'ans':1 'f':3 'use':2
+'final':4 'iously':1 'ironic':2 'platelets':3 're':5
+'ca':3 'foxes':2 'nic':1
+'are':2 'caref':4 'furiously':3 'sts':1
+'a':2 'dolites':1
+'carefully':2 'ironic':3 'request':4 'the':1
+'accounts':2 'nal':1
+'even':2 'fi':4 'lithely':1 'theodolites':3
+'cross':1 'regular':3 'the':2
+'c':7 'final':5 'ges':1 'the':4 'theodolites':6 'use':2 'within':3
+'blithely':3 'cajole':2 'eve':4 'ons':1
+'accounts':2 'c':3 's':1
+'aintain':1 'de':5 'even':4 'furiously':2 'slyly':3
+'c':1 'd':3 'silent':2
+'about':2 'e':1 'fluffily':4 'the':3
+'alongside':3 'en':1 'notornis':2 'of':4 'quic':6 'the':5
+'despite':2 'ironi':4 'the':3 'ts':1
+'cial':1 'final':3 'foxes':2 'r':4
+'blithely':2 'lyly':1
+'about':3 'accounts':2 'express':1 'the':4
+'b':2 'packages':1
+'hely':1 'packages':4 'regular':3 'slyly':2
+'beans':3 'nag':4 'pinto':2 'press':1 'slyl':5
+'boos':3 'deposits':2 'manent':1
+'a':4 'dolphins':3 'es':1 'ironic':2
+'carefully':2 'eve':6 'excuses':4 'ideas':1 'kindle':5 'pending':3
+'furiously':2 'hockey':4 'pending':3 'pl':5 'ts':1
+'ly':1 'regular':2
+'carefully':3 'eodolites':1 'mold':2 'regul':4
+'foxes':3 'regular':2 'sly':1
+'a':4 'daringly':2 'he':1 'quick':3
+'accordin':4 's':1 'stealthily':3 'use':2
+'pending':2 're':3 'slyly':1
+'furious':3 'furiously':2 'p':1
+'accounts':3 'ironic':2 'oldly':1 'slowly':4
+'impres':3 'packages':2 'w':1
+'among':2 'bo':5 'express':4 'gle':1 'the':3
+'about':3 'beans':2 'nto':1 'th':4
+'blithely':5 'cajole':4 'courts':2 'express':1 'iro':6 'may':3
+'bold':6 'd':7 'even':3 'pending':5 'round':1 'the':2 'tithes':4
+'are':2 'even':4 'idea':5 'requests':1 'slyly':3
+'integrate':2 'tructions':1 'unusual':3
+'beans':4 'c':1 'ironic':2 'pinto':3
+'doubt':2 'fur':3 's':1
+'blithely':1 'dolph':3 'even':2
+'accounts':2 'furi':6 'ironic':1 'to':4 'try':3 'use':5
+'final':5 'ording':1 'pa':6 'regular':4 'the':3 'to':2
+'bold':1 'deposits':2 'haggl':3
+'frets':1 'furiously':2 'i':3
+'furiously':2 'r':3 'symptotes':1
+'deposits':1 'kindle':2 'quickly':3
+'above':2 'quests':1 'th':3
+'aga':5 'carefully':2 'eodolites':1 'packages':4 'regular':3
+'ake':1 'attain':5 'quickly':2 'slyly':3 'unusual':4
+'carefull':2 'slyly':1
+'carefully':2 'lly':1 'regular':3 't':4
+'across':2 'b':4 'lyly':1 'the':3
+'multipliers':2 'regular':1
+'furiously':4 'the':3 'theodolites':6 'to':2 'ts':1 'unusual':5
+'foxes':4 'regular':6 'silent':3 'slyly':2,5 'the':1
+'according':1 'pint':4 'the':3 'to':2
+'beans':3 'careful':5 'ironic':1 'pinto':2 'wake':4
+'blithely':5 'dependencies':2 'ideas':3 'ious':1 'nag':4
+'above':5 'affix':3 'deposits':2 'inal':1 'quickly':4 'the':6
+'across':6 'beans':5 'blithely':2 'express':3 'pinto':4 's':1 'the':7
+'bout':1 'even':3 'pac':4 'the':2
+'about':4 'haggle':3 'instructions':2 'slyly':6 'the':5 'ven':1
+'final':3 'quickly':2 'the':1
+'accounts':1 'silent':5 'sleep':2 'slyly':3,4 't':6
+'cajole':3 'careful':4 'deposits':2 'the':1
+'above':2 'accounts':6 'carefully':4 'slyly':1 'the':3 'unusual':5
+'above':2 'osits':1
+'deposits':3 'even':2 'excuses':6 'fully':1 'slyly':4 'unusual':5
+'quick':2 'tegrate':1
+'e':1 'final':4 'instructions':5 'slyly':2,3
+'forges':3 'i':6 'ironic':2 'quickly':5 'sleep':4 'uickly':1
+'depend':5 'dinos':3 'ironic':2 'ly':1 'regular':4
+'asymptotes':4 'e':1 'even':3 'excuses':5 'quickly':2
+'deposits':4 'final':2 'integr':5 'refully':1 'special':3
+'are':2 'even':5 'excuses':1 'ironic':4 'quickly':3 'reque':6
+'about':3 'ainments':1 'fina':6 'mold':2 'slyly':5 'the':4
+'final':2 'iously':1 'requests':3
+'busy':2 'de':3 'fully':1
+'afte':5 'deposits':2 'express':3 'instructions':4 'lar':1
+'instructions':2 'r':3 's':1
+'ev':3 'even':2 'ouches':1
+'dogged':1 'theodol':2
+'heodolites':1
+'furiously':2,3 'unu':4 'wake':1
+'foxes':4 'quietly':2 'regular':3 'the':1
+'cajol':2 'theodolites':1
+'expres':2 'ptotes':1
+'fluffily':4 'ilent':1 'r':5 'theodolites':2 'wake':3
+'across':3 'dep':5 'eep':1 'slyly':2 'the':4
+'accounts':4 'cajole':2 'furious':5 'regular':3 'requests':1
+'along':3 'f':5 'final':1 'requests':2 'the':4
+'daring':2 'hagg':4 'packages':3 'y':1
+'eans':1 'promise':2
+'accoun':3 'excuses':1 'regular':2
+'deas':1 'ought':2 'to':3
+'beans':2 'carefully':4 'f':6 'into':1 'ironic':5 'wake':3
+'above':2 'instructions':1 'ironic':5 'quickly':4 're':6 'the':3
+'cajole':2 'pe':3 'sits':1
+'beans':1 'blithely':4 'furiously':3 'ir':5 'use':2
+'along':5 'bl':7 'boost':4 'busy':2 'foxes':3 'ly':1 'the':6
+'around':3 'cajole':1 'slyl':5 'slyly':2 'the':4
+'di':3 'ly':1 'silent':2
+'cajole':4 'fluffily':5 'foxes':3 'ironic':2 'the':7 'toward':6 'y':1
+'blithely':5 'carefully':2 'he':1 'pending':3 'requests':4
+'about':4 'cajole':2 'carefully':3 'reg':6 'sits':1 'the':5
+'cajole':4 'd':5 'fluffily':1 'instructions':3 'ironic':2
+'across':2 'expr':5 'furiously':4 'ickly':1 'the':3
+'depos':3 'ironic':2 'the':1
+'along':3 'detect':2 'equests':1 'pend':6 'slyly':5 'the':4
+'final':2 'theodol':3 'y':1
+'about':2 's':1 'th':3
+'bo':2 'packages':1
+'ckages':1 'even':3 'kindle':2
+'ideas':2 'should':3 'ven':1
+'daringl':4 'ecial':1 'pending':2 'theodolites':3
+'according':2 'blithely':1 'the':4 'to':3
+'against':4 'al':1 'nag':3 'packages':2
+'re':3 'regular':2 'stealthily':1
+'dinos':3 'ironic':2 'ly':1
+'ev':3 'slyly':2 'uses':1
+'excuses':3 'gle':1 'h':4 'ironic':2
+'aft':5 'ray':4 'requests':1 'x':3 'x-ray':2
+'its':1 'ought':2 'slyl':5 'to':3 'wake':4
+'deposits':5 'hely':1 'ironic':2,4 'poa':6 'requests':3
+'could':1 'have':2 'nag':4 'to':3
+'eve':2 'riously':1
+'fluff':3 's':1 'sleep':2
+'agai':5 'beans':4 'even':2 'fully':1 'pinto':3
+'ironic':4 'quickly':3 'st':1 'the':2
+'asymptotes':4 'd':1 'instructio':6 'of':2 'pending':5 'the':3
+'are':3 'blithely':4 'ca':5 'inal':1 'instructions':2
+'instructions':2 'ironic':1 'mold':3
+'accounts':3 'daringly':2 'te':1
+'attainments':3 'fluffily':5 'silent':2 'special':1 'wake':4
+'ffily':1 'idly':4 'ironic':2 'pe':5 'platelets':3
+'acc':6 'ages':1 'blithely':4 'busy':5 'carefully':3 'haggle':2
+'ole':1 'quickly':2 'requ':4 'unusual':3
+'cajole':3 'd':1 'requests':2
+'ctions':1 'fin':4 'quickly':3 'use':2
+'along':2 'deposits':6 'even':5 'furiously':4 'kages':1 'pl':7 'the':3
+'blithely':3 'courts':2 'pack':5 'pending':4 'ven':1
+'along':3 'ar':1 'requests':2 'the':4
+'slyly':2 'special':3 'the':1
+'a':4 'bold':2 'packages':3 'slyly':1
+'according':4 'accounts':2 'integrate':3 'nding':1 't':5
+'atop':3 'blithely':2 'deposi':6 'final':5 'the':4 'wake':1
+'quick':2 'quickly':4 'requests':3 'silen':5 'uriously':1
+'a':7 'above':3 'e':1 'ideas':6 'slyly':2 'the':4 'unusual':5
+'abou':3 'print':1 'quickly':2
+'alongside':2 'ironic':6 'of':3 'slyly':5 'tegrate':1 'the':4
+'cajole':5 'carefully':6 'could':2 'have':3 'ncies':1 'to':4
+'caref':3 'integrate':2 'ructions':1
+'instructions':1 'pl':2
+'blithely':3 'd':5 'final':4 'regular':1 'requests':2
+'accounts':3 'are':4 'doggedly':5 'instructions':1 'quick':2
+'bold':3 'ld':1 'pi':4 'theodolites':2
+'instructions':3 'ironic':2 'lyly':1
+'above':1 'cajol':6 'daringly':3 'excuses':5 'final':4 'the':2
+'dependencies':4 'even':3 'quickly':2 'sly':5 'y':1
+'accounts':2 'ly':1 'packag':5 'quickly':3 'special':4
+'hang':3 'packages':2 'quickly':4 'ructions':1
+'about':3 'fu':5 'realms':2 't':1 'the':4
+'asymptotes':2 'r':1 's':4 'special':3
+'blithely':4 'deposits':2 'f':6 'quickly':5 'quiet':1 'sleep':3
+'deposits':1 'quick':2
+'at':4 'deposits':2 'eve':6 'g':1 'the':5 'wake':3
+'final':6 'foxes':5 'ies':1 'sleep':2 'slyly':3 'special':4
+'bold':3 'cajole':5 'fu':6 'ideas':4 'mptotes':1 'slyly':2
+'blithely':1 'deposit':3 'regular':2
+'accounts':1 'are':5 'furiou':6 'packages':4 'pending':3 'slyly':2
+'carefully':2 'leep':1 'regular':3 'sleep':5 'theodolites':4
+'cajole':3 'could':2 'fluffily':5 'p':7 'rs':1 'slyly':4 'special':6
+'accoun':2 'regular':1
+'asymptotes':3 'fully':1 'regu':4 'special':2
+'against':2 'fluffily':4 'i':5 'osits':1 'the':3
+'beans':5 'blithe':3 'he':1 'pinto':4 'request':6 'slyly':2
+'carefully':5 'efore':1 'quick':3 'r':6 'requests':4 'the':2
+'final':2 'packages':3 'y':1
+'are':3 'dependencies':2 'fu':4 'g':1
+'after':1 'regul':4 'slyly':3 'the':2
+'boost':1 'carefully':2 'sp':3
+'packa':5 'regular':4 'slyly':3 't':1 'the':2
+'ideas':3 'regular':2 'thely':1 'unusual':4
+'along':2 'fina':5 'final':4 'lly':1 'the':3
+'carefully':3 'dolphins':2 'f':4 'g':1
+'beans':4 'even':5 'ironi':6 'ously':1 'pinto':3 'silent':2
+'against':2 'ect':1 'fox':6 'slyly':4 'the':3 'unusual':5
+'deas':1 'deposits':3 'ir':5 'regular':2 'use':4
+'final':2 'uffily':1
+'be':3 'pinto':2 'usual':1
+'accounts':4 'deposits':3 'final':1 'regular':2
+'rs':1 'the':4 'unusual':3 'wake':2
+'asymptotes':2 'car':3 'l':1
+'bold':5 'c':1 'cajole':3 'dependencie':6 'dugouts':2 'quickly':4
+'he':1 'regular':2 'theodolites':3
+'haggl':4 'ironic':2 'sauternes':3 'tions':1
+'regular':1 'requests':2 'snooz':3
+'along':2 'carefu':4 'dolites':1 'the':3
+'carefully':3,4 'e':6 'regular':5 'rnis':1 'sleep':2
+'are':2 'fin':5 'finally':3 'furiously':4 'ns':1
+'acco':3 't':1 'the':2
+'asymp':2 'bold':1
+'about':1 'blithe':3 'the':2
+'about':3 'ironi':5 'packages':2 'ronic':1 'the':4
+'accounts':2 'cajole':3 'carefully':4 'slyly':5 'xpress':1
+'busy':4 'carefully':3 'er':1 'package':5 'the':2
+'beans':2 'carefully':3 'even':4 'nto':1 'plate':5
+'final':2 'foxes':4 'lithely':1 'nag':5 'packages':3 'slyly':6
+'across':1 'quickly':3 'regul':4 'the':2
+'fluffi':3 'haggle':2 'heodolites':1
+'alongside':3 'n':1 'of':4 'pa':6 'the':5 'theodolites':2
+'dependencies':2 'fluffily':4 'n':1 'sleep':3 'slyly':5
+'do':4 'even':2 'lyly':1 'requests':3
+'believe':1 'final':2 'regu':3
+'depen':4 'e':1 'quickly':2 'unusual':3
+'accoun':5 'blithely':3 'ideas':2 'l':1 'special':4
+'blithely':3 'deposits':5 'express':4 'ong':1 'quickly':6 'the':2
+'according':6 'accounts':3 'careful':2 'nal':1 'never':5 'wake':4
+'forg':4 'regular':3 'slyly':2 'tes':1
+'dolphins':3 'regular':2 'slyly':1
+'even':3 'f':1 'plat':4 'the':2
+'against':3 'deposi':6 'ironic':5 'packages':2 'r':1 'the':4
+'nal':1 'reque':3 'warhorses':2
+'accounts':4 'silent':3 'sle':5 'special':2 'unts':1
+'asymptote':3 'ironic':2 'riously':1
+'among':5 'ar':1 'foxes':2 'fu':7 'packages':4 'pending':3 'the':6
+'accou':3 'ickly':1 'ironic':2
+'boost':1 'express':3 'ironic':2 'theodolite':4
+'accounts':5 'final':4 'furiously':3 'packages':1 'requ':6 'use':2
+'final':2 'n':1 'packages':3
+'dependencies':3 'haggle':4 'pending':2 'thily':1
+'about':6 'carefully':3 'even':4 'foxes':2 'packages':5 'ronic':1
+'alongside':4 'carefully':3 'eas':1 'sleep':2
+'a':6 'are':4 'gifts':3 'nding':1 'slyly':5 'special':2
+'ideas':4 'lithely':1 'quick':5 'slyly':2 'unusual':3
+'around':5 'in':7 'regular':3 'requests':4 'slyly':2 'the':6 'yly':1
+'accou':4 'carefully':2 'regular':3 'slyly':1
+'beans':5 'furiously':2 'ironic':3 'pinto':4 'ray':1 're':7 'slyly':6
+'instructi':4 'pending':3 'quickly':2 'sits':1
+'blithely':3 'deposits':1 'excus':5 'pending':4 'sleep':2
+'final':1 'instructions':2
+'above':3 'haggle':2 'odolites':1 'quickly':5 'silent':6 'the':4
+'ideas':2 'old':1 'sly':3
+'l':1 'packages':2 's':3
+'excuses':3 'kly':1 'mold':4 'pending':2
+'furiously':2 'p':4 'regular':3 'ructions':1
+'foxes':2 'sly':1 'stealthil':3
+'expr':4 'fily':1 'foxes':3 'unusual':2
+'accounts':2 'dep':4 's':1 'use':3
+'blithely':4 'ironic':2 'l':1 'theodolites':3
+'fin':2 'furiously':1
+'against':4 'c':1 'excuses':2 'furio':6 'integrate':3 'the':5
+'beans':4 'nag':5 'pending':2 'pinto':3 'quic':6 'the':1
+'accounts':1 'fi':5 'furiously':4 'quickly':3 'wake':2
+'across':4 'bold':1 'haggle':3 'requests':2 'the':5 'unu':6
+'accounts':2 'n':1 'pl':4 'unusual':3
+'furio':2 'furiously':1
+'final':2 'ilently':1 'packa':3
+'across':4 'are':2 'furiously':3 's':1 'th':5
+'cajol':3 'dinos':2 'express':1
+'accounts':1 'after':2 't':3
+'accounts':2 'carefully':4 'ld':1 'pa':7 'regular':6 'slyly':5 'use':3
+'affix':2 'ccounts':1 'quic':3
+'accounts':4 'blithely':2 'ckly':1 'final':3 'reques':5
+'ial':1 'theodo':2
+'arefully':1 'express':2 'fur':5 'requests':3 'sleep':4
+'instructions':5 'ole':1 'silent':4 'slyly':2,3
+'affix':4 'arefully':1 'blithe':2 'foxes':3 'slyly':5
+'blithely':6 'carefully':2 'ly':1 'nag':5 'regular':3 'somas':4
+'acc':5 'along':1 'carefully':3 'ironic':4 'the':2
+'eans':1 'sleep':2
+'beneath':3 'packages':1 'the':4 'wake':2
+'fluffily':1 'pending':2
+'blithely':2 'e':1 'ex':3
+'afte':2 'eposits':1
+'bl':6 'ests':1 'ideas':4 'ironic':3 'slyly':2 'wake':5
+'ully':1 'unusua':2
+'accounts':4 'along':1 'integra':5 'packages':3 'the':2
+'carefully':3 'eans':1 'even':4 'inst':5 'integrate':2
+'accounts':3 'eat':5 'foxes':4 'quiet':2 'rut':6 'thely':1
+'ar':3 'instructions':2 'l':1
+'beans':4 'c':6 'ironic':2 'pinto':3 'ular':1 'use':5
+'daring':3 'haggle':1 'packages':4 'quickly':2
+'about':3 'deposits':2 'old':1 'the':4
+'against':4 'deposits':2 'furio':6 'nag':3 'nusual':1 'the':5
+'accounts':4 'c':6 'express':3 'silent':2 'unts':1 'use':5
+'bold':2 'deposits':3 'e':1 'gift':5 'silent':4
+'as':4 'asymptotes':2 'ironic':3 'lar':1
+'blithely':2 'posits':1 'sp':3
+'ir':3 'ons':1 'slyly':2
+'l':5 'packages':4 'regular':3 'sometimes':2 'uriously':1
+'against':1 'furi':3 'the':2
+'even':1 'ideas':3 'platel':4 'unusual':2
+'al':1 'blithely':4 'cajole':3 'courts':2 'spe':5
+'di':4 'furiously':2 'h':1 'ironic':3
+'carefu':5 'multipliers':1 'ray':4 'x':3 'x-ray':2
+'busy':2 'excuses':1 'pi':4 'regular':3
+'ickly':1 'regula':3 'slyly':2
+'carefully':2 'gle':1 'pending':3 're':4
+'arefully':1 'asymptotes':4 'deposits':3 'hagg':5 'unusual':2
+'according':3 'intain':1 'slyly':2 'to':4
+'always':4 'ca':5 'hin':1 'integrate':3 'packages':2
+'are':2 'carefully':3 'fin':4 'packages':1
+'furiously':3 'neath':1 'pending':4 's':6 'the':2 'theodolites':5
+'accounts':5 'blithely':3 'dependencies':2 'final':4 'ha':6 'l':1
+'ironic':3 'regular':4 'requests':5 'slowly':2 'wake':1
+'cajole':2 's':1 'slyl':3
+'deposits':2 'final':1 'sl':3
+'along':1 'requ':3 'the':2
+'accounts':2 'against':5 'gular':1 'nag':3 'quickly':4
+'d':7 'furiously':4 'packages':6 'sleep':3 'special':5 'to':2 've':1
+'ac':3 'he':1 'unusual':2
+'carefull':4 'ideas':2 'onic':1 'use':3
+'iously':1 'regular':2
+'asympt':2 'egular':1
+'according':6 'al':1 'beans':3 'pinto':2 'sleep':4 'slyly':5 'to':7
+'accounts':2 'cajole':3 'even':1 'fluffily':4 'reg':5
+'arefully':1 'slyly':2 'stealthy':3
+'ar':1 'depths':2
+'acco':5 'ar':1 'blithely':3 'ironic':4 'requests':2
+'a':2 'blithely':1
+'according':5 'are':4 'bold':2 'iously':1 'orbits':3 't':6
+'bli':4 'even':1 'packages':2 'sleep':3
+'cajole':3 'ecial':1 'ironi':4 'warhorses':2
+'asy':2 'enticing':1
+'depen':2 'ending':1
+'amon':6 'eat':5 'ironic':3 'its':1 'quickly':2 'requests':4
+'counts':1 'det':3 'will':2
+'around':6 'asymptotes':2 'beans':4 'en':1 'haggle':5 'pinto':3
+'pen':2 'slyly':1
+'after':5 'are':4 'foxe':7 'foxes':3 'integrate':2 'the':6 'urts':1
+'dep':2 'regular':1
+'accounts':4 'are':5 'foxes':2 'furi':6 'ironic':3 'the':1
+'arefully':1 'pend':2
+'asymptotes':4 'express':3 'fox':6 'slyly':2 'special':5 'vely':1
+'alongside':2 'efully':1 'of':3
+'according':2 'leep':1
+'deposits':2,4 'hinder':3 'packa':5 'press':1
+'haggle':2 'q':3 's':1
+'excus':2 'ironic':1
+'about':2 'sleep':1 't':3
+'accordin':5 'final':2 'instructions':3 'mold':4 'unts':1
+'even':2 'ly':1 'packages':3 'quick':4
+'a':6 'are':4 'blithely':1 'carefully':5 'even':2 'packages':3
+'arefully':1 'ca':5 'ironic':2 'requests':3 'wake':4
+'oxes':1 'play':2 'sly':3
+'about':3 'blithel':5 'quickly':2 'sleep':1 'the':4
+'ironic':2 'som':3 'y':1
+'deposits':2 'furiou':4 'jole':1 'mold':3
+'ackages':1 'furiously':3 'ironic':4 'sleep':2 'theodo':5
+'beans':1 'fluffi':4 'instructions':3 'sleep':2
+'account':2 'nic':1
+'ccording':1 'special':4 'the':3 'to':2
+'bea':5 'even':2 'pinto':4 'special':3 'the':1
+'excuses':1 'hang':2 'ideas':5 'ironic':4 'quickl':6 'slyly':3
+'are':3 'carefu':5 'carefully':4 'deposits':2 'regular':1
+'d':3 'fully':1 'regular':2
+'accounts':1 'haggle':2 'slyly':3 'special':4
+'are':5 'carefully':2 'instructions':4 'pending':3 'ts':1
+'according':4 'carefully':3 'es':1 'sleep':2 'the':6 'to':5
+'integrate':2 'nts':1 'slyl':3
+'account':4 'blithely':2 'e':1 'ironic':3
+'bove':1 'carefully':3 'even':4 'instruct':5 'the':2
+'ach':1 'fu':3 'slyly':2
+'cajole':2 'express':3 'foxes':4 'ts':1
+'according':5 'cial':1 'foxes':3 'sleep':4 'special':2 'to':6
+'lar':1 'tithes':2
+'accounts':5 'final':4 'fluffily':3 'haggl':6 'ideas':2 'nusual':1
+'blithely':2 'p':1 'th':4 'to':3
+'fin':3 'integrate':2 'lites':1
+'forges':4 'fu':6 'nts':1 'regular':2,3 'sleep':5
+'bean':3 'pinto':2 'ven':1
+'above':1 'detect':4 'even':6 'foxes':3 'furiously':5 'idle':7 'the':2
+'beans':4 'bold':5 'furiously':1 'g':6 'ironic':2 'pinto':3
+'according':2 'eposits':1 'final':5 'i':6 'the':4 'to':3
+'bold':2 'deposits':3 'express':4 'fully':1 'unusua':5
+'beans':3 'pinto':2 'th':4 'y':1
+'depos':6 'final':5 'ironic':2 'quickly':4 'requests':3 'thely':1
+'after':2 'bold':5 'lithely':1 'quickly':4 't':6 'the':3
+'integ':3 'l':1 'packages':2
+'against':3 'blithel':5 'blithely':2 'e':1 'the':4
+'after':3 'nag':2 's':1,6 'special':5 'the':4
+'are':1 'carefully':2 'requests':3 'spec':4
+'ently':1 'regular':2
+'cajole':3 'furi':4 'platelets':2 'ress':1
+'furiously':3 'promise':2 'symptotes':1
+'ckages':1 'ironic':3 'sheave':4 'slyly':2
+'am':3 'furiously':2 'ke':1
+'cingly':1 'express':4 'instructions':3 'ironic':2 'u':5
+'around':2 'carefully':4 'the':3 'ully':1

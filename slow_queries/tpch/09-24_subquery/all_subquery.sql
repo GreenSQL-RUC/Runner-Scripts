@@ -1,0 +1,22 @@
+-- 9.24 Subquery Expressions
+-- Operation: all_subquery
+-- These take the WHERE-clause form because that is how subquery expressions are
+-- actually used; the planner turns most of them into semi/anti-joins.
+-- WARNING - PATHOLOGICAL: ~45 MIN PER RUN (measured: ~80 min single-threaded,
+-- ~45 min with 2 parallel workers). RUNS=3 on this one file takes ~2.2 hours.
+-- It does complete - it is CPU-bound and finite, not hung - but it will stall
+-- any sweep it is part of. Run it deliberately with RUNS=1, not in a batch.
+--
+-- Why: compare its plan with not_in_subquery.sql, which is semantically
+-- identical but runs in ~2s. The planner turns NOT IN into a 'hashed SubPlan'
+-- (one hash build, O(1) probes), whereas <> ALL gets a 'Materialize' SubPlan
+-- re-scanned for every outer row: 6M rows x 16209 inner rows. Measured cost is
+-- ~803 us per outer row, and it scales with the INNER SET SIZE (a 1-row inner
+-- set costs only ~12 us/row, i.e. ~72s total - that is the SubPlan invocation
+-- floor). This NOT IN vs <> ALL pair is the most striking energy finding in
+-- the set: identical semantics, ~1000x the energy.
+-- Full lineitem scan (no LIMIT). EXPLAIN ANALYZE executes the plan and
+-- evaluates the target list, but discards rows server-side: no aggregate
+-- is added and no rows are transferred to the client.
+EXPLAIN (ANALYZE, TIMING OFF, COSTS ON, SUMMARY ON, BUFFERS)
+SELECT 1 FROM lineitem l WHERE l.l_partkey <> ALL (SELECT p_partkey FROM part WHERE p_size < 5);

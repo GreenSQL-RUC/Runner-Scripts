@@ -1,0 +1,1001 @@
+l_shipmode
+MAIL      
+TRUCK     
+SHIP      
+FOB       
+FOB       
+FOB       
+TRUCK     
+RAIL      
+MAIL      
+MAIL      
+SHIP      
+SHIP      
+RAIL      
+REG AIR   
+AIR       
+SHIP      
+REG AIR   
+RAIL      
+AIR       
+SHIP      
+FOB       
+REG AIR   
+AIR       
+TRUCK     
+SHIP      
+MAIL      
+RAIL      
+TRUCK     
+MAIL      
+TRUCK     
+REG AIR   
+AIR       
+SHIP      
+MAIL      
+SHIP      
+FOB       
+FOB       
+SHIP      
+AIR       
+AIR       
+FOB       
+FOB       
+RAIL      
+TRUCK     
+FOB       
+SHIP      
+AIR       
+SHIP      
+AIR       
+TRUCK     
+RAIL      
+TRUCK     
+FOB       
+REG AIR   
+TRUCK     
+MAIL      
+MAIL      
+TRUCK     
+MAIL      
+REG AIR   
+RAIL      
+AIR       
+MAIL      
+TRUCK     
+REG AIR   
+RAIL      
+RAIL      
+MAIL      
+AIR       
+REG AIR   
+MAIL      
+FOB       
+FOB       
+MAIL      
+REG AIR   
+REG AIR   
+MAIL      
+SHIP      
+FOB       
+RAIL      
+FOB       
+FOB       
+AIR       
+FOB       
+RAIL      
+SHIP      
+FOB       
+AIR       
+SHIP      
+TRUCK     
+SHIP      
+REG AIR   
+REG AIR   
+TRUCK     
+REG AIR   
+SHIP      
+SHIP      
+SHIP      
+SHIP      
+REG AIR   
+FOB       
+AIR       
+TRUCK     
+REG AIR   
+FOB       
+SHIP      
+RAIL      
+SHIP      
+SHIP      
+SHIP      
+TRUCK     
+SHIP      
+SHIP      
+AIR       
+TRUCK     
+MAIL      
+TRUCK     
+MAIL      
+MAIL      
+RAIL      
+MAIL      
+AIR       
+TRUCK     
+RAIL      
+REG AIR   
+FOB       
+TRUCK     
+MAIL      
+SHIP      
+AIR       
+RAIL      
+MAIL      
+SHIP      
+RAIL      
+RAIL      
+AIR       
+AIR       
+AIR       
+TRUCK     
+RAIL      
+FOB       
+FOB       
+FOB       
+AIR       
+FOB       
+TRUCK     
+RAIL      
+AIR       
+MAIL      
+RAIL      
+REG AIR   
+FOB       
+RAIL      
+MAIL      
+REG AIR   
+FOB       
+RAIL      
+TRUCK     
+AIR       
+FOB       
+RAIL      
+RAIL      
+MAIL      
+AIR       
+REG AIR   
+TRUCK     
+FOB       
+MAIL      
+RAIL      
+RAIL      
+FOB       
+FOB       
+SHIP      
+REG AIR   
+MAIL      
+SHIP      
+TRUCK     
+SHIP      
+FOB       
+MAIL      
+SHIP      
+SHIP      
+SHIP      
+RAIL      
+SHIP      
+MAIL      
+FOB       
+RAIL      
+FOB       
+SHIP      
+MAIL      
+AIR       
+SHIP      
+MAIL      
+RAIL      
+AIR       
+MAIL      
+FOB       
+AIR       
+FOB       
+RAIL      
+TRUCK     
+SHIP      
+AIR       
+TRUCK     
+SHIP      
+TRUCK     
+MAIL      
+REG AIR   
+REG AIR   
+TRUCK     
+SHIP      
+FOB       
+RAIL      
+FOB       
+MAIL      
+RAIL      
+AIR       
+RAIL      
+AIR       
+FOB       
+MAIL      
+SHIP      
+FOB       
+AIR       
+FOB       
+RAIL      
+TRUCK     
+FOB       
+TRUCK     
+REG AIR   
+AIR       
+AIR       
+AIR       
+FOB       
+RAIL      
+REG AIR   
+MAIL      
+AIR       
+MAIL      
+FOB       
+FOB       
+RAIL      
+REG AIR   
+TRUCK     
+FOB       
+SHIP      
+SHIP      
+RAIL      
+TRUCK     
+AIR       
+SHIP      
+TRUCK     
+REG AIR   
+FOB       
+FOB       
+FOB       
+AIR       
+REG AIR   
+FOB       
+MAIL      
+SHIP      
+MAIL      
+TRUCK     
+RAIL      
+FOB       
+MAIL      
+TRUCK     
+TRUCK     
+TRUCK     
+SHIP      
+SHIP      
+REG AIR   
+REG AIR   
+RAIL      
+FOB       
+AIR       
+SHIP      
+TRUCK     
+FOB       
+MAIL      
+SHIP      
+MAIL      
+AIR       
+TRUCK     
+AIR       
+TRUCK     
+SHIP      
+RAIL      
+FOB       
+FOB       
+AIR       
+REG AIR   
+MAIL      
+FOB       
+AIR       
+FOB       
+REG AIR   
+REG AIR   
+TRUCK     
+SHIP      
+TRUCK     
+SHIP      
+REG AIR   
+RAIL      
+SHIP      
+SHIP      
+AIR       
+RAIL      
+MAIL      
+RAIL      
+AIR       
+FOB       
+MAIL      
+REG AIR   
+RAIL      
+RAIL      
+SHIP      
+REG AIR   
+AIR       
+TRUCK     
+FOB       
+TRUCK     
+TRUCK     
+SHIP      
+RAIL      
+FOB       
+SHIP      
+FOB       
+AIR       
+SHIP      
+AIR       
+REG AIR   
+SHIP      
+AIR       
+TRUCK     
+TRUCK     
+SHIP      
+SHIP      
+REG AIR   
+AIR       
+RAIL      
+MAIL      
+RAIL      
+MAIL      
+FOB       
+SHIP      
+AIR       
+SHIP      
+AIR       
+REG AIR   
+AIR       
+REG AIR   
+TRUCK     
+AIR       
+REG AIR   
+MAIL      
+TRUCK     
+REG AIR   
+TRUCK     
+TRUCK     
+AIR       
+RAIL      
+FOB       
+AIR       
+MAIL      
+RAIL      
+SHIP      
+MAIL      
+FOB       
+MAIL      
+RAIL      
+AIR       
+TRUCK     
+AIR       
+FOB       
+TRUCK     
+SHIP      
+SHIP      
+SHIP      
+REG AIR   
+TRUCK     
+MAIL      
+SHIP      
+FOB       
+AIR       
+SHIP      
+REG AIR   
+REG AIR   
+AIR       
+SHIP      
+RAIL      
+AIR       
+REG AIR   
+AIR       
+MAIL      
+AIR       
+TRUCK     
+FOB       
+MAIL      
+REG AIR   
+SHIP      
+TRUCK     
+REG AIR   
+TRUCK     
+AIR       
+SHIP      
+MAIL      
+SHIP      
+FOB       
+REG AIR   
+MAIL      
+MAIL      
+TRUCK     
+RAIL      
+FOB       
+TRUCK     
+AIR       
+MAIL      
+FOB       
+AIR       
+TRUCK     
+MAIL      
+AIR       
+SHIP      
+SHIP      
+RAIL      
+MAIL      
+AIR       
+FOB       
+FOB       
+AIR       
+FOB       
+SHIP      
+MAIL      
+SHIP      
+FOB       
+SHIP      
+REG AIR   
+AIR       
+AIR       
+MAIL      
+AIR       
+RAIL      
+REG AIR   
+SHIP      
+MAIL      
+RAIL      
+TRUCK     
+REG AIR   
+MAIL      
+FOB       
+MAIL      
+SHIP      
+SHIP      
+RAIL      
+SHIP      
+SHIP      
+SHIP      
+TRUCK     
+FOB       
+REG AIR   
+FOB       
+AIR       
+FOB       
+REG AIR   
+FOB       
+MAIL      
+TRUCK     
+TRUCK     
+TRUCK     
+RAIL      
+RAIL      
+MAIL      
+FOB       
+TRUCK     
+AIR       
+TRUCK     
+AIR       
+RAIL      
+AIR       
+MAIL      
+RAIL      
+MAIL      
+AIR       
+MAIL      
+REG AIR   
+MAIL      
+FOB       
+FOB       
+TRUCK     
+REG AIR   
+AIR       
+TRUCK     
+REG AIR   
+RAIL      
+MAIL      
+TRUCK     
+MAIL      
+REG AIR   
+TRUCK     
+TRUCK     
+TRUCK     
+MAIL      
+SHIP      
+FOB       
+RAIL      
+TRUCK     
+AIR       
+AIR       
+SHIP      
+AIR       
+MAIL      
+SHIP      
+RAIL      
+RAIL      
+FOB       
+SHIP      
+REG AIR   
+REG AIR   
+SHIP      
+FOB       
+AIR       
+REG AIR   
+REG AIR   
+TRUCK     
+REG AIR   
+REG AIR   
+RAIL      
+TRUCK     
+RAIL      
+SHIP      
+REG AIR   
+AIR       
+SHIP      
+RAIL      
+AIR       
+RAIL      
+FOB       
+AIR       
+TRUCK     
+TRUCK     
+TRUCK     
+AIR       
+AIR       
+RAIL      
+SHIP      
+TRUCK     
+REG AIR   
+RAIL      
+REG AIR   
+REG AIR   
+AIR       
+MAIL      
+TRUCK     
+FOB       
+FOB       
+FOB       
+TRUCK     
+RAIL      
+TRUCK     
+MAIL      
+FOB       
+AIR       
+TRUCK     
+RAIL      
+RAIL      
+REG AIR   
+AIR       
+FOB       
+SHIP      
+MAIL      
+REG AIR   
+SHIP      
+MAIL      
+REG AIR   
+SHIP      
+AIR       
+TRUCK     
+REG AIR   
+REG AIR   
+RAIL      
+REG AIR   
+MAIL      
+REG AIR   
+RAIL      
+RAIL      
+TRUCK     
+RAIL      
+REG AIR   
+REG AIR   
+SHIP      
+AIR       
+RAIL      
+SHIP      
+FOB       
+SHIP      
+RAIL      
+TRUCK     
+REG AIR   
+TRUCK     
+SHIP      
+SHIP      
+MAIL      
+RAIL      
+RAIL      
+MAIL      
+TRUCK     
+SHIP      
+TRUCK     
+SHIP      
+REG AIR   
+MAIL      
+RAIL      
+SHIP      
+REG AIR   
+FOB       
+MAIL      
+RAIL      
+TRUCK     
+RAIL      
+FOB       
+AIR       
+FOB       
+TRUCK     
+FOB       
+SHIP      
+TRUCK     
+MAIL      
+FOB       
+RAIL      
+RAIL      
+TRUCK     
+TRUCK     
+TRUCK     
+REG AIR   
+REG AIR   
+TRUCK     
+SHIP      
+TRUCK     
+AIR       
+TRUCK     
+FOB       
+AIR       
+RAIL      
+MAIL      
+FOB       
+MAIL      
+RAIL      
+MAIL      
+TRUCK     
+REG AIR   
+RAIL      
+AIR       
+REG AIR   
+REG AIR   
+AIR       
+SHIP      
+FOB       
+TRUCK     
+FOB       
+MAIL      
+FOB       
+SHIP      
+REG AIR   
+FOB       
+SHIP      
+REG AIR   
+MAIL      
+RAIL      
+REG AIR   
+TRUCK     
+FOB       
+FOB       
+REG AIR   
+MAIL      
+REG AIR   
+RAIL      
+REG AIR   
+MAIL      
+AIR       
+FOB       
+TRUCK     
+TRUCK     
+SHIP      
+TRUCK     
+FOB       
+REG AIR   
+RAIL      
+TRUCK     
+SHIP      
+REG AIR   
+FOB       
+MAIL      
+MAIL      
+RAIL      
+RAIL      
+SHIP      
+REG AIR   
+MAIL      
+MAIL      
+RAIL      
+RAIL      
+FOB       
+MAIL      
+RAIL      
+TRUCK     
+TRUCK     
+AIR       
+TRUCK     
+REG AIR   
+AIR       
+TRUCK     
+TRUCK     
+MAIL      
+TRUCK     
+SHIP      
+MAIL      
+REG AIR   
+MAIL      
+TRUCK     
+SHIP      
+TRUCK     
+AIR       
+FOB       
+REG AIR   
+REG AIR   
+FOB       
+REG AIR   
+AIR       
+RAIL      
+REG AIR   
+MAIL      
+MAIL      
+REG AIR   
+AIR       
+REG AIR   
+MAIL      
+REG AIR   
+REG AIR   
+AIR       
+FOB       
+REG AIR   
+REG AIR   
+SHIP      
+REG AIR   
+RAIL      
+RAIL      
+AIR       
+AIR       
+MAIL      
+FOB       
+SHIP      
+RAIL      
+AIR       
+TRUCK     
+REG AIR   
+SHIP      
+SHIP      
+REG AIR   
+RAIL      
+SHIP      
+AIR       
+REG AIR   
+FOB       
+FOB       
+TRUCK     
+SHIP      
+TRUCK     
+SHIP      
+MAIL      
+SHIP      
+MAIL      
+SHIP      
+MAIL      
+REG AIR   
+RAIL      
+FOB       
+MAIL      
+RAIL      
+TRUCK     
+REG AIR   
+MAIL      
+REG AIR   
+FOB       
+AIR       
+FOB       
+MAIL      
+RAIL      
+REG AIR   
+REG AIR   
+SHIP      
+AIR       
+AIR       
+SHIP      
+AIR       
+AIR       
+AIR       
+RAIL      
+RAIL      
+AIR       
+SHIP      
+REG AIR   
+REG AIR   
+AIR       
+REG AIR   
+REG AIR   
+AIR       
+REG AIR   
+MAIL      
+TRUCK     
+FOB       
+MAIL      
+RAIL      
+SHIP      
+REG AIR   
+MAIL      
+REG AIR   
+FOB       
+FOB       
+MAIL      
+RAIL      
+REG AIR   
+SHIP      
+MAIL      
+REG AIR   
+TRUCK     
+TRUCK     
+AIR       
+TRUCK     
+REG AIR   
+MAIL      
+AIR       
+FOB       
+FOB       
+RAIL      
+FOB       
+MAIL      
+RAIL      
+MAIL      
+REG AIR   
+TRUCK     
+AIR       
+AIR       
+TRUCK     
+AIR       
+TRUCK     
+TRUCK     
+MAIL      
+FOB       
+RAIL      
+SHIP      
+FOB       
+RAIL      
+MAIL      
+TRUCK     
+SHIP      
+SHIP      
+REG AIR   
+TRUCK     
+FOB       
+MAIL      
+MAIL      
+SHIP      
+REG AIR   
+FOB       
+TRUCK     
+MAIL      
+MAIL      
+AIR       
+REG AIR   
+RAIL      
+TRUCK     
+MAIL      
+SHIP      
+TRUCK     
+SHIP      
+REG AIR   
+SHIP      
+MAIL      
+RAIL      
+AIR       
+TRUCK     
+RAIL      
+SHIP      
+REG AIR   
+TRUCK     
+FOB       
+MAIL      
+SHIP      
+RAIL      
+AIR       
+TRUCK     
+MAIL      
+SHIP      
+SHIP      
+SHIP      
+REG AIR   
+FOB       
+FOB       
+MAIL      
+RAIL      
+AIR       
+AIR       
+REG AIR   
+SHIP      
+REG AIR   
+TRUCK     
+SHIP      
+REG AIR   
+AIR       
+REG AIR   
+MAIL      
+FOB       
+SHIP      
+FOB       
+MAIL      
+TRUCK     
+FOB       
+AIR       
+REG AIR   
+RAIL      
+RAIL      
+SHIP      
+REG AIR   
+AIR       
+AIR       
+REG AIR   
+AIR       
+MAIL      
+SHIP      
+RAIL      
+SHIP      
+MAIL      
+SHIP      
+REG AIR   
+REG AIR   
+RAIL      
+REG AIR   
+REG AIR   
+REG AIR   
+REG AIR   
+TRUCK     
+FOB       
+REG AIR   
+RAIL      
+RAIL      
+TRUCK     
+REG AIR   
+REG AIR   
+RAIL      
+RAIL      
+REG AIR   
+RAIL      
+FOB       
+SHIP      
+AIR       
+REG AIR   
+RAIL      
+SHIP      
+RAIL      
+MAIL      
+FOB       
+TRUCK     
+AIR       
+AIR       
+SHIP      
+RAIL      
+RAIL      
+TRUCK     
+MAIL      
+MAIL      
+TRUCK     
+FOB       
+REG AIR   
+FOB       
+FOB       
+REG AIR   
+REG AIR   
+RAIL      
+FOB       
+RAIL      
+REG AIR   
+FOB       
+MAIL      
+MAIL      
+MAIL      
+RAIL      
+FOB       
+MAIL      
+TRUCK     
+MAIL      
+SHIP      
+TRUCK     
+TRUCK     
+MAIL      
+FOB       
+FOB       
+REG AIR   
+AIR       

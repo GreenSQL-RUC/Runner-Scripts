@@ -1,0 +1,6 @@
+                        QUERY PLAN                        
+----------------------------------------------------------
+ ProjectSet (actual rows=27124176 loops=1)
+   ->  Seq Scan on lineitem (actual rows=6001215 loops=1)
+(2 rows)
+

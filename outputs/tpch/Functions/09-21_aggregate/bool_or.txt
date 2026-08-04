@@ -1,0 +1,3 @@
+bool_or
+t
+(1 row)

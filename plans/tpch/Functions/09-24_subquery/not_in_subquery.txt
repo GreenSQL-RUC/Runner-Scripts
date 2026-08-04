@@ -1,0 +1,11 @@
+                      QUERY PLAN                      
+------------------------------------------------------
+ Seq Scan on lineitem l (actual rows=5515653 loops=1)
+   Filter: (NOT (hashed SubPlan 1))
+   Rows Removed by Filter: 485562
+   SubPlan 1
+     ->  Seq Scan on part (actual rows=16209 loops=1)
+           Filter: (p_size < 5)
+           Rows Removed by Filter: 183791
+(7 rows)
+

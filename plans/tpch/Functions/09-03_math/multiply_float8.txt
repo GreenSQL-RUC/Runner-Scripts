@@ -1,0 +1,5 @@
+                     QUERY PLAN                     
+----------------------------------------------------
+ Seq Scan on lineitem (actual rows=6001215 loops=1)
+(1 row)
+

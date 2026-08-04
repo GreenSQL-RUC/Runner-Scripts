@@ -1,0 +1,5 @@
+l_returnflag|count
+A|1478493
+N|3043852
+R|1478870
+(3 rows)

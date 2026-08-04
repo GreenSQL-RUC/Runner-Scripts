@@ -1,0 +1,12 @@
+                         QUERY PLAN                         
+------------------------------------------------------------
+ Hash Semi Join (actual rows=485562 loops=1)
+   Hash Cond: (l.l_partkey = part.p_partkey)
+   ->  Seq Scan on lineitem l (actual rows=6001215 loops=1)
+   ->  Hash (actual rows=16209 loops=1)
+         Buckets: 16384  Batches: 1  Memory Usage: 698kB
+         ->  Seq Scan on part (actual rows=16209 loops=1)
+               Filter: (p_size < 5)
+               Rows Removed by Filter: 183791
+(8 rows)
+

@@ -1,0 +1,1001 @@
+to_char
+Monday   , 16 February  1998
+Saturday , 28 March     1998
+Saturday , 25 April     1998
+Tuesday  , 17 February  1998
+Sunday   , 11 January   1998
+Thursday , 11 December  1997
+Saturday , 14 February  1998
+Monday   , 15 December  1997
+Wednesday, 03 December  1997
+Sunday   , 26 January   1992
+Thursday , 26 March     1992
+Wednesday, 01 December  1993
+Wednesday, 05 January   1994
+Friday   , 04 March     1994
+Wednesday, 12 January   1994
+Tuesday  , 15 February  1994
+Saturday , 25 December  1993
+Saturday , 08 November  1997
+Wednesday, 29 October   1997
+Thursday , 09 October   1997
+Wednesday, 03 June      1992
+Friday   , 29 May       1992
+Monday   , 25 May       1992
+Monday   , 14 December  1992
+Friday   , 13 November  1992
+Sunday   , 24 September 1995
+Saturday , 26 August    1995
+Saturday , 26 August    1995
+Thursday , 03 August    1995
+Saturday , 26 August    1995
+Tuesday  , 15 August    1995
+Friday   , 04 November  1994
+Monday   , 12 September 1994
+Friday   , 30 September 1994
+Wednesday, 03 March     1993
+Sunday   , 21 April     1996
+Tuesday  , 16 July      1996
+Saturday , 27 April     1996
+Thursday , 06 June      1996
+Tuesday  , 14 May       1996
+Saturday , 20 April     1996
+Sunday   , 03 March     1996
+Sunday   , 10 March     1996
+Friday   , 08 March     1996
+Sunday   , 05 May       1996
+Sunday   , 07 December  1997
+Friday   , 27 February  1998
+Thursday , 11 December  1997
+Monday   , 09 February  1998
+Wednesday, 27 November  1996
+Wednesday, 30 November  1994
+Thursday , 05 January   1995
+Saturday , 07 January   1995
+Saturday , 04 March     1995
+Thursday , 16 March     1995
+Saturday , 24 December  1994
+Sunday   , 31 May       1998
+Wednesday, 13 March     1996
+Saturday , 13 April     1996
+Friday   , 29 March     1996
+Saturday , 20 April     1996
+Saturday , 13 April     1996
+Monday   , 18 March     1996
+Saturday , 16 October   1993
+Thursday , 16 September 1993
+Wednesday, 20 October   1993
+Saturday , 07 August    1993
+Sunday   , 23 June      1996
+Monday   , 05 December  1994
+Saturday , 19 November  1994
+Friday   , 30 October   1992
+Monday   , 28 December  1992
+Monday   , 22 March     1993
+Wednesday, 14 April     1993
+Monday   , 15 March     1993
+Friday   , 15 March     1996
+Sunday   , 21 April     1996
+Friday   , 15 March     1996
+Tuesday  , 12 November  1996
+Monday   , 27 January   1997
+Sunday   , 26 January   1997
+Tuesday  , 31 December  1996
+Sunday   , 10 November  1996
+Monday   , 27 January   1997
+Thursday , 10 July      1997
+Tuesday  , 22 September 1992
+Tuesday  , 05 January   1993
+Tuesday  , 01 December  1992
+Thursday , 18 March     1993
+Monday   , 08 March     1993
+Saturday , 27 March     1993
+Tuesday  , 23 March     1993
+Wednesday, 10 March     1993
+Monday   , 10 March     1997
+Sunday   , 02 March     1997
+Tuesday  , 25 March     1997
+Saturday , 15 March     1997
+Thursday , 16 January   1997
+Thursday , 13 February  1997
+Wednesday, 26 March     1997
+Tuesday  , 06 May       1997
+Wednesday, 09 April     1997
+Sunday   , 06 April     1997
+Tuesday  , 01 July      1997
+Saturday , 20 September 1997
+Wednesday, 18 June      1997
+Friday   , 03 October   1997
+Wednesday, 09 July      1997
+Wednesday, 20 April     1994
+Saturday , 26 February  1994
+Monday   , 02 May       1994
+Thursday , 07 April     1994
+Saturday , 02 April     1994
+Tuesday  , 18 March     1997
+Thursday , 20 March     1997
+Tuesday  , 18 November  1997
+Thursday , 23 October   1997
+Thursday , 01 January   1998
+Sunday   , 19 October   1997
+Thursday , 15 January   1998
+Saturday , 25 November  1995
+Thursday , 02 November  1995
+Friday   , 04 April     1997
+Wednesday, 30 April     1997
+Thursday , 27 February  1997
+Monday   , 05 May       1997
+Monday   , 28 April     1997
+Wednesday, 15 November  1995
+Thursday , 26 October   1995
+Thursday , 09 November  1995
+Thursday , 25 January   1996
+Wednesday, 13 December  1995
+Wednesday, 13 December  1995
+Thursday , 30 November  1995
+Tuesday  , 14 March     1995
+Thursday , 04 May       1995
+Wednesday, 22 February  1995
+Monday   , 18 March     1996
+Saturday , 02 September 1995
+Monday   , 14 October   1996
+Monday   , 09 December  1996
+Thursday , 09 January   1997
+Friday   , 27 September 1996
+Wednesday, 09 October   1996
+Sunday   , 06 October   1996
+Thursday , 27 August    1998
+Friday   , 26 June      1998
+Monday   , 12 October   1998
+Friday   , 17 July      1998
+Sunday   , 30 May       1993
+Thursday , 13 March     1997
+Tuesday  , 25 March     1997
+Thursday , 13 March     1997
+Sunday   , 13 April     1997
+Friday   , 07 March     1997
+Thursday , 10 April     1997
+Thursday , 26 June      1997
+Saturday , 20 April     1996
+Sunday   , 09 June      1996
+Sunday   , 01 May       1994
+Wednesday, 21 April     1993
+Saturday , 01 May       1993
+Wednesday, 24 March     1993
+Tuesday  , 23 March     1993
+Thursday , 08 April     1993
+Thursday , 25 August    1994
+Thursday , 29 September 1994
+Wednesday, 26 October   1994
+Sunday   , 06 November  1994
+Monday   , 26 September 1994
+Wednesday, 28 September 1994
+Sunday   , 04 September 1994
+Wednesday, 14 August    1996
+Sunday   , 14 July      1996
+Thursday , 30 May       1996
+Monday   , 09 September 1996
+Thursday , 01 August    1996
+Wednesday, 18 November  1992
+Saturday , 17 October   1992
+Tuesday  , 10 November  1992
+Sunday   , 13 December  1992
+Sunday   , 06 September 1992
+Friday   , 10 March     1995
+Thursday , 16 February  1995
+Sunday   , 15 January   1995
+Saturday , 25 February  1995
+Friday   , 03 June      1994
+Sunday   , 05 June      1994
+Sunday   , 17 April     1994
+Thursday , 05 May       1994
+Tuesday  , 26 April     1994
+Monday   , 18 July      1994
+Wednesday, 14 April     1993
+Monday   , 19 July      1993
+Thursday , 20 June      1996
+Thursday , 11 July      1996
+Tuesday  , 30 April     1996
+Saturday , 20 April     1996
+Tuesday  , 18 May       1993
+Thursday , 22 July      1993
+Monday   , 14 June      1993
+Monday   , 12 April     1993
+Tuesday  , 13 July      1993
+Wednesday, 14 April     1993
+Monday   , 19 April     1993
+Saturday , 25 December  1993
+Saturday , 29 January   1994
+Tuesday  , 12 October   1993
+Sunday   , 07 November  1993
+Tuesday  , 13 August    1996
+Thursday , 25 July      1996
+Friday   , 05 July      1996
+Wednesday, 22 June      1994
+Friday   , 16 September 1994
+Sunday   , 14 August    1994
+Wednesday, 31 January   1996
+Thursday , 07 December  1995
+Saturday , 13 January   1996
+Monday   , 04 August    1997
+Friday   , 08 August    1997
+Monday   , 09 June      1997
+Friday   , 11 July      1997
+Thursday , 22 May       1997
+Tuesday  , 11 March     1997
+Saturday , 10 May       1997
+Wednesday, 09 April     1997
+Tuesday  , 18 March     1997
+Wednesday, 30 April     1997
+Sunday   , 11 May       1997
+Monday   , 07 July      1997
+Tuesday  , 12 July      1994
+Wednesday, 03 December  1997
+Tuesday  , 09 September 1997
+Sunday   , 28 December  1997
+Tuesday  , 16 September 1997
+Sunday   , 26 October   1997
+Sunday   , 07 September 1997
+Sunday   , 23 November  1997
+Thursday , 25 January   1996
+Saturday , 23 March     1996
+Tuesday  , 06 February  1996
+Tuesday  , 12 December  1995
+Wednesday, 13 December  1995
+Thursday , 21 December  1995
+Monday   , 18 March     1996
+Friday   , 06 November  1992
+Saturday , 10 October   1992
+Thursday , 17 September 1992
+Wednesday, 05 January   1994
+Saturday , 20 November  1993
+Saturday , 22 January   1994
+Tuesday  , 18 January   1994
+Friday   , 04 February  1994
+Monday   , 10 January   1994
+Friday   , 08 October   1993
+Wednesday, 22 September 1993
+Saturday , 06 November  1993
+Sunday   , 21 November  1993
+Friday   , 20 November  1992
+Saturday , 30 January   1993
+Friday   , 09 June      1995
+Tuesday  , 06 January   1998
+Saturday , 08 November  1997
+Tuesday  , 06 January   1998
+Saturday , 15 May       1993
+Wednesday, 07 April     1993
+Tuesday  , 11 May       1993
+Sunday   , 01 August    1993
+Friday   , 23 February  1996
+Monday   , 10 June      1996
+Saturday , 01 June      1996
+Sunday   , 23 January   1994
+Saturday , 19 February  1994
+Monday   , 18 April     1994
+Thursday , 21 April     1994
+Thursday , 20 January   1994
+Wednesday, 02 March     1994
+Thursday , 16 June      1994
+Thursday , 23 June      1994
+Monday   , 11 July      1994
+Sunday   , 06 August    1995
+Saturday , 24 June      1995
+Wednesday, 17 May       1995
+Sunday   , 30 July      1995
+Monday   , 02 October   1995
+Saturday , 13 January   1996
+Wednesday, 29 November  1995
+Saturday , 21 November  1992
+Saturday , 24 October   1992
+Tuesday  , 15 December  1992
+Thursday , 17 September 1992
+Tuesday  , 10 November  1992
+Thursday , 27 October   1994
+Sunday   , 10 December  1995
+Friday   , 03 November  1995
+Wednesday, 15 November  1995
+Tuesday  , 26 December  1995
+Friday   , 29 November  1996
+Friday   , 13 December  1996
+Friday   , 15 November  1996
+Friday   , 13 December  1996
+Wednesday, 28 May       1997
+Thursday , 05 June      1997
+Friday   , 28 February  1997
+Friday   , 17 November  1995
+Monday   , 11 September 1995
+Wednesday, 06 September 1995
+Sunday   , 10 December  1995
+Saturday , 30 September 1995
+Saturday , 11 March     1995
+Wednesday, 22 February  1995
+Friday   , 20 January   1995
+Wednesday, 22 March     1995
+Saturday , 11 December  1993
+Wednesday, 08 December  1993
+Thursday , 21 October   1993
+Friday   , 20 August    1993
+Saturday , 25 September 1993
+Tuesday  , 21 September 1993
+Thursday , 07 October   1993
+Saturday , 28 August    1993
+Monday   , 23 August    1993
+Sunday   , 10 October   1993
+Monday   , 20 September 1993
+Sunday   , 12 September 1993
+Tuesday  , 18 November  1997
+Sunday   , 19 September 1993
+Friday   , 16 July      1993
+Sunday   , 27 June      1993
+Wednesday, 04 August    1993
+Saturday , 09 October   1993
+Sunday   , 02 August    1998
+Wednesday, 12 August    1998
+Tuesday  , 15 September 1998
+Friday   , 11 September 1998
+Wednesday, 23 October   1996
+Monday   , 30 December  1996
+Tuesday  , 06 September 1994
+Saturday , 30 October   1993
+Tuesday  , 23 November  1993
+Monday   , 28 March     1994
+Saturday , 26 February  1994
+Thursday , 20 January   1994
+Thursday , 07 April     1994
+Sunday   , 17 May       1998
+Thursday , 04 June      1998
+Wednesday, 22 July      1998
+Saturday , 15 October   1994
+Friday   , 21 October   1994
+Sunday   , 07 August    1994
+Wednesday, 24 August    1994
+Monday   , 19 September 1994
+Tuesday  , 06 September 1994
+Wednesday, 27 July      1994
+Tuesday  , 19 September 1995
+Monday   , 25 September 1995
+Wednesday, 13 September 1995
+Monday   , 06 November  1995
+Tuesday  , 18 April     1995
+Friday   , 19 May       1995
+Tuesday  , 08 September 1992
+Monday   , 05 October   1992
+Tuesday  , 11 February  1997
+Thursday , 20 February  1997
+Wednesday, 12 March     1997
+Sunday   , 23 February  1997
+Friday   , 06 March     1998
+Thursday , 19 March     1998
+Friday   , 29 May       1998
+Friday   , 22 May       1998
+Tuesday  , 07 April     1998
+Tuesday  , 17 March     1998
+Tuesday  , 18 March     1997
+Thursday , 13 July      1995
+Tuesday  , 29 August    1995
+Monday   , 21 August    1995
+Thursday , 13 July      1995
+Sunday   , 11 June      1995
+Thursday , 28 September 1995
+Saturday , 01 November  1997
+Tuesday  , 12 August    1997
+Monday   , 27 January   1997
+Tuesday  , 28 January   1997
+Saturday , 14 December  1996
+Friday   , 27 December  1996
+Saturday , 14 December  1996
+Saturday , 18 September 1993
+Monday   , 29 November  1993
+Friday   , 12 November  1993
+Monday   , 03 January   1994
+Sunday   , 17 October   1993
+Tuesday  , 23 November  1993
+Sunday   , 16 January   1994
+Monday   , 21 February  1994
+Saturday , 30 April     1994
+Tuesday  , 01 March     1994
+Sunday   , 13 February  1994
+Saturday , 05 March     1994
+Tuesday  , 02 May       1995
+Wednesday, 26 July      1995
+Sunday   , 18 June      1995
+Wednesday, 09 March     1994
+Saturday , 05 February  1994
+Friday   , 01 April     1994
+Monday   , 07 February  1994
+Saturday , 04 June      1994
+Saturday , 16 April     1994
+Friday   , 28 June      1996
+Sunday   , 14 July      1996
+Monday   , 05 August    1996
+Friday   , 18 October   1996
+Thursday , 21 December  1995
+Thursday , 11 January   1996
+Monday   , 27 November  1995
+Friday   , 01 December  1995
+Wednesday, 01 March     1995
+Tuesday  , 21 February  1995
+Sunday   , 05 March     1995
+Tuesday  , 14 February  1995
+Thursday , 01 February  1996
+Friday   , 10 April     1992
+Friday   , 05 June      1992
+Thursday , 28 May       1992
+Wednesday, 13 May       1992
+Monday   , 01 June      1992
+Thursday , 21 April     1994
+Tuesday  , 29 March     1994
+Sunday   , 01 May       1994
+Friday   , 18 February  1994
+Wednesday, 25 May       1994
+Monday   , 14 March     1994
+Saturday , 05 March     1994
+Wednesday, 07 September 1994
+Tuesday  , 16 August    1994
+Tuesday  , 23 August    1994
+Monday   , 08 August    1994
+Sunday   , 17 July      1994
+Wednesday, 15 June      1994
+Tuesday  , 25 June      1996
+Monday   , 12 October   1998
+Monday   , 17 August    1998
+Wednesday, 09 October   1996
+Wednesday, 09 October   1996
+Thursday , 03 October   1996
+Wednesday, 21 August    1996
+Tuesday  , 26 December  1995
+Monday   , 18 December  1995
+Saturday , 06 January   1996
+Tuesday  , 19 December  1995
+Monday   , 15 April     1996
+Sunday   , 12 June      1994
+Friday   , 15 April     1994
+Saturday , 09 July      1994
+Tuesday  , 21 June      1994
+Monday   , 04 July      1994
+Wednesday, 23 March     1994
+Tuesday  , 31 May       1994
+Wednesday, 30 March     1994
+Saturday , 26 February  1994
+Saturday , 12 March     1994
+Sunday   , 06 March     1994
+Sunday   , 17 April     1994
+Friday   , 11 December  1992
+Saturday , 07 November  1992
+Sunday   , 11 October   1992
+Saturday , 12 December  1992
+Thursday , 24 February  1994
+Monday   , 04 April     1994
+Wednesday, 09 February  1994
+Sunday   , 06 February  1994
+Tuesday  , 31 May       1994
+Friday   , 05 December  1997
+Thursday , 01 January   1998
+Friday   , 28 November  1997
+Wednesday, 12 October   1994
+Wednesday, 14 September 1994
+Sunday   , 26 June      1994
+Tuesday  , 05 July      1994
+Sunday   , 26 June      1994
+Sunday   , 11 December  1994
+Monday   , 15 August    1994
+Tuesday  , 18 October   1994
+Wednesday, 26 October   1994
+Friday   , 12 August    1994
+Saturday , 03 September 1994
+Sunday   , 24 August    1997
+Saturday , 13 September 1997
+Tuesday  , 09 September 1997
+Thursday , 10 March     1994
+Sunday   , 08 May       1994
+Monday   , 28 February  1994
+Tuesday  , 21 June      1994
+Tuesday  , 22 February  1994
+Wednesday, 11 January   1995
+Thursday , 02 March     1995
+Sunday   , 15 January   1995
+Wednesday, 02 July      1997
+Sunday   , 18 October   1992
+Monday   , 27 July      1992
+Sunday   , 09 August    1992
+Monday   , 19 October   1992
+Wednesday, 02 September 1992
+Monday   , 06 November  1995
+Saturday , 02 December  1995
+Tuesday  , 12 December  1995
+Sunday   , 03 December  1995
+Wednesday, 29 November  1995
+Sunday   , 08 October   1995
+Friday   , 01 January   1993
+Wednesday, 16 December  1992
+Saturday , 02 January   1993
+Wednesday, 10 February  1993
+Sunday   , 24 December  1995
+Wednesday, 11 October   1995
+Friday   , 04 November  1994
+Friday   , 07 October   1994
+Sunday   , 02 October   1994
+Saturday , 30 December  1995
+Wednesday, 21 February  1996
+Sunday   , 21 January   1996
+Monday   , 11 December  1995
+Friday   , 12 January   1996
+Thursday , 04 January   1996
+Saturday , 18 July      1998
+Tuesday  , 19 May       1998
+Friday   , 24 April     1998
+Monday   , 20 July      1998
+Monday   , 29 June      1998
+Wednesday, 08 July      1998
+Saturday , 13 June      1998
+Thursday , 24 February  1994
+Sunday   , 06 February  1994
+Saturday , 19 March     1994
+Sunday   , 06 February  1994
+Monday   , 06 May       1996
+Friday   , 15 March     1996
+Tuesday  , 23 April     1996
+Wednesday, 08 December  1993
+Monday   , 29 November  1993
+Saturday , 18 December  1993
+Thursday , 02 December  1993
+Saturday , 30 October   1993
+Sunday   , 30 January   1994
+Friday   , 22 October   1993
+Friday   , 25 September 1992
+Thursday , 15 October   1992
+Thursday , 01 October   1992
+Wednesday, 18 March     1998
+Thursday , 16 April     1998
+Saturday , 16 May       1998
+Wednesday, 20 May       1998
+Monday   , 04 May       1998
+Thursday , 19 February  1998
+Tuesday  , 12 December  1995
+Saturday , 11 November  1995
+Tuesday  , 30 January   1996
+Tuesday  , 27 January   1998
+Thursday , 09 February  1995
+Thursday , 09 March     1995
+Thursday , 12 January   1995
+Saturday , 19 November  1994
+Sunday   , 05 March     1995
+Wednesday, 30 July      1997
+Friday   , 30 May       1997
+Tuesday  , 12 August    1997
+Monday   , 02 June      1997
+Thursday , 31 July      1997
+Saturday , 26 April     1997
+Wednesday, 25 June      1997
+Saturday , 14 September 1996
+Thursday , 03 July      1997
+Thursday , 12 June      1997
+Saturday , 03 May       1997
+Saturday , 06 June      1992
+Friday   , 31 July      1992
+Wednesday, 22 July      1992
+Friday   , 22 May       1992
+Thursday , 12 March     1992
+Sunday   , 02 February  1992
+Saturday , 16 May       1992
+Thursday , 13 February  1992
+Wednesday, 08 April     1992
+Thursday , 12 March     1992
+Sunday   , 05 April     1992
+Tuesday  , 16 February  1993
+Tuesday  , 26 January   1993
+Thursday , 04 March     1993
+Monday   , 11 January   1993
+Sunday   , 31 January   1993
+Monday   , 08 February  1993
+Thursday , 06 May       1993
+Monday   , 19 September 1994
+Friday   , 02 September 1994
+Friday   , 14 October   1994
+Tuesday  , 11 October   1994
+Sunday   , 28 August    1994
+Wednesday, 21 September 1994
+Monday   , 28 November  1994
+Wednesday, 11 August    1993
+Monday   , 23 November  1992
+Monday   , 16 November  1992
+Sunday   , 30 August    1992
+Saturday , 21 November  1992
+Sunday   , 01 November  1992
+Saturday , 10 October   1992
+Saturday , 04 July      1992
+Saturday , 13 June      1992
+Sunday   , 05 April     1992
+Tuesday  , 26 March     1996
+Monday   , 22 April     1996
+Thursday , 30 May       1996
+Saturday , 25 May       1996
+Tuesday  , 18 June      1996
+Monday   , 16 May       1994
+Wednesday, 03 August    1994
+Friday   , 25 October   1996
+Thursday , 12 September 1996
+Friday   , 25 October   1996
+Friday   , 19 January   1996
+Sunday   , 03 March     1996
+Sunday   , 10 March     1996
+Tuesday  , 06 February  1996
+Tuesday  , 12 March     1996
+Thursday , 16 November  1995
+Monday   , 02 January   1995
+Tuesday  , 28 February  1995
+Thursday , 28 April     1994
+Saturday , 26 August    1995
+Monday   , 06 November  1995
+Friday   , 17 November  1995
+Monday   , 02 October   1995
+Saturday , 17 January   1998
+Sunday   , 03 May       1998
+Wednesday, 25 March     1998
+Sunday   , 08 March     1998
+Monday   , 06 April     1998
+Friday   , 31 January   1992
+Tuesday  , 11 February  1992
+Saturday , 11 April     1992
+Thursday , 26 March     1992
+Tuesday  , 23 August    1994
+Wednesday, 24 August    1994
+Wednesday, 07 September 1994
+Saturday , 11 June      1994
+Monday   , 06 June      1994
+Thursday , 07 December  1995
+Friday   , 13 June      1997
+Friday   , 20 June      1997
+Friday   , 25 November  1994
+Friday   , 09 December  1994
+Saturday , 29 October   1994
+Thursday , 06 June      1996
+Friday   , 26 July      1996
+Monday   , 15 April     1996
+Sunday   , 08 August    1993
+Thursday , 12 August    1993
+Sunday   , 18 April     1993
+Thursday , 29 April     1993
+Wednesday, 07 September 1994
+Thursday , 08 December  1994
+Friday   , 18 September 1998
+Thursday , 25 June      1998
+Tuesday  , 30 June      1998
+Friday   , 02 October   1998
+Friday   , 10 July      1998
+Sunday   , 02 August    1998
+Monday   , 29 June      1998
+Monday   , 18 July      1994
+Wednesday, 13 July      1994
+Saturday , 23 July      1994
+Wednesday, 15 June      1994
+Thursday , 26 May       1994
+Friday   , 04 June      1993
+Wednesday, 21 April     1993
+Thursday , 10 June      1993
+Wednesday, 25 August    1993
+Monday   , 28 June      1993
+Monday   , 20 September 1993
+Friday   , 30 August    1996
+Monday   , 23 September 1996
+Saturday , 16 November  1996
+Sunday   , 17 November  1996
+Monday   , 16 September 1996
+Sunday   , 17 July      1994
+Monday   , 23 May       1994
+Friday   , 15 July      1994
+Sunday   , 12 July      1998
+Tuesday  , 01 July      1997
+Tuesday  , 22 July      1997
+Monday   , 07 July      1997
+Saturday , 10 May       1997
+Tuesday  , 15 July      1997
+Thursday , 17 July      1997
+Wednesday, 18 June      1997
+Sunday   , 04 February  1996
+Tuesday  , 17 November  1992
+Saturday , 30 January   1993
+Tuesday  , 10 November  1992
+Sunday   , 09 November  1997
+Thursday , 16 October   1997
+Friday   , 19 September 1997
+Monday   , 10 November  1997
+Monday   , 08 December  1997
+Tuesday  , 25 March     1997
+Saturday , 15 March     1997
+Tuesday  , 28 January   1997
+Thursday , 24 April     1997
+Tuesday  , 21 January   1997
+Sunday   , 28 November  1993
+Thursday , 04 November  1993
+Saturday , 25 September 1993
+Wednesday, 15 September 1993
+Saturday , 09 October   1993
+Monday   , 05 August    1996
+Monday   , 15 July      1996
+Sunday   , 15 September 1996
+Tuesday  , 10 September 1996
+Wednesday, 21 August    1996
+Tuesday  , 17 September 1996
+Sunday   , 13 October   1996
+Friday   , 14 August    1992
+Friday   , 11 September 1992
+Thursday , 10 September 1992
+Wednesday, 28 October   1992
+Thursday , 16 July      1992
+Friday   , 21 August    1992
+Thursday , 13 August    1992
+Monday   , 05 February  1996
+Wednesday, 20 March     1996
+Wednesday, 29 November  1995
+Sunday   , 17 March     1996
+Monday   , 11 March     1996
+Thursday , 11 January   1996
+Thursday , 21 December  1995
+Monday   , 01 June      1992
+Wednesday, 13 May       1992
+Sunday   , 21 June      1992
+Friday   , 12 June      1992
+Thursday , 16 July      1992
+Monday   , 01 April     1996
+Sunday   , 14 April     1996
+Sunday   , 28 April     1996
+Sunday   , 19 May       1996
+Saturday , 27 July      1996
+Sunday   , 16 June      1996
+Wednesday, 15 May       1996
+Sunday   , 19 May       1996
+Friday   , 28 June      1996
+Thursday , 25 July      1996
+Sunday   , 27 October   1996
+Tuesday  , 24 September 1996
+Friday   , 04 October   1996
+Friday   , 06 December  1996
+Saturday , 23 December  1995
+Saturday , 23 September 1995
+Monday   , 08 January   1996
+Friday   , 10 November  1995
+Tuesday  , 26 September 1995
+Tuesday  , 24 November  1992
+Friday   , 18 December  1992
+Thursday , 10 December  1992
+Thursday , 15 October   1992
+Thursday , 19 November  1992
+Saturday , 19 August    1995
+Wednesday, 02 August    1995
+Saturday , 23 September 1995
+Saturday , 22 July      1995
+Friday   , 30 August    1996
+Wednesday, 07 August    1996
+Monday   , 26 August    1996
+Tuesday  , 11 July      1995
+Tuesday  , 07 July      1998
+Sunday   , 19 July      1998
+Saturday , 18 July      1998
+Friday   , 21 August    1998
+Wednesday, 26 August    1992
+Monday   , 06 June      1994
+Thursday , 24 March     1994
+Sunday   , 17 July      1994
+Wednesday, 06 July      1994
+Monday   , 08 July      1996
+Monday   , 08 July      1996
+Sunday   , 16 June      1996
+Sunday   , 09 March     1997
+Tuesday  , 15 April     1997
+Friday   , 06 June      1997
+Saturday , 28 June      1997
+Friday   , 07 March     1997
+Saturday , 26 April     1997
+Tuesday  , 05 March     1996
+Tuesday  , 16 April     1996
+Thursday , 16 May       1996
+Thursday , 14 March     1996
+Sunday   , 17 December  1995
+Thursday , 21 March     1996
+Sunday   , 02 May       1993
+Monday   , 19 April     1993
+Tuesday  , 06 April     1993
+Sunday   , 02 May       1993
+Sunday   , 07 March     1993
+Saturday , 30 January   1993
+Wednesday, 18 November  1992
+Thursday , 18 June      1998
+Tuesday  , 14 April     1998
+Monday   , 06 July      1998
+Friday   , 24 April     1998
+Friday   , 24 April     1998
+Friday   , 17 April     1998
+Monday   , 04 January   1993
+Monday   , 25 January   1993
+Thursday , 27 June      1996
+Wednesday, 22 May       1996
+Tuesday  , 11 June      1996
+Friday   , 07 June      1996
+Tuesday  , 09 January   1996
+Thursday , 01 May       1997
+Tuesday  , 08 April     1997
+Friday   , 28 March     1997
+Saturday , 22 March     1997
+Friday   , 14 February  1997
+Wednesday, 26 March     1997
+Tuesday  , 27 May       1997
+Sunday   , 12 November  1995
+Thursday , 12 October   1995
+Monday   , 21 November  1994
+Thursday , 08 December  1994
+Saturday , 23 November  1996
+Friday   , 04 October   1996
+Monday   , 27 January   1997
+Wednesday, 16 October   1996
+Monday   , 18 November  1996
+Wednesday, 23 October   1996
+Saturday , 29 April     1995
+Tuesday  , 11 April     1995
+Friday   , 10 March     1995
+Monday   , 15 November  1993
+Monday   , 03 January   1994
+Friday   , 14 January   1994
+Friday   , 28 January   1994
+Tuesday  , 09 November  1993
+Wednesday, 01 December  1993
+Thursday , 18 November  1993
+Thursday , 24 December  1992
+Friday   , 11 December  1992
+Tuesday  , 22 December  1992
+Monday   , 08 November  1993
+Tuesday  , 28 December  1993
+Thursday , 30 September 1993
+Sunday   , 19 September 1993
+Saturday , 04 September 1993
+Wednesday, 01 September 1993
+Friday   , 29 November  1996
+Monday   , 15 January   1996
+Friday   , 27 October   1995
+Tuesday  , 02 September 1997
+Wednesday, 09 March     1994
+Wednesday, 04 May       1994
+Monday   , 30 May       1994
+Saturday , 25 April     1998
+Thursday , 05 March     1998
+Saturday , 16 May       1998
+Tuesday  , 16 June      1998
+Tuesday  , 02 June      1998
+Tuesday  , 25 March     1997
+Wednesday, 07 May       1997
+Thursday , 08 May       1997
+Saturday , 14 June      1997
+Monday   , 09 June      1997
+Tuesday  , 30 June      1998
+Monday   , 28 September 1998
+Monday   , 07 December  1992
+Saturday , 17 October   1992
+Tuesday  , 12 November  1996
+Friday   , 20 September 1996
+Sunday   , 08 September 1996
+Thursday , 14 November  1996
+Wednesday, 19 June      1996
+Sunday   , 28 April     1996
+Saturday , 11 May       1996
+Wednesday, 26 June      1996
+Saturday , 22 June      1996
+Friday   , 12 April     1996
+Saturday , 06 June      1992
+Wednesday, 10 June      1992
+Tuesday  , 16 June      1992
+Friday   , 10 July      1992
+Thursday , 06 August    1992
+Friday   , 26 June      1992
+Wednesday, 20 May       1992
+Friday   , 05 April     1996
+Wednesday, 14 February  1996
+Thursday , 24 June      1993
+Friday   , 06 August    1993
+Monday   , 07 June      1993
+Thursday , 22 July      1993
+Sunday   , 19 December  1993
+Saturday , 25 December  1993
+Tuesday  , 22 February  1994
+Saturday , 05 March     1994
+Tuesday  , 18 January   1994
+Friday   , 18 October   1996
+Friday   , 04 October   1996
+Tuesday  , 19 November  1996
+Sunday   , 22 September 1996
+Thursday , 14 November  1996
+Wednesday, 30 October   1996
+Thursday , 19 September 1996
+Wednesday, 08 July      1992
+Friday   , 29 May       1992
+Wednesday, 17 June      1992
+Wednesday, 08 July      1992
+Sunday   , 12 July      1992
+Tuesday  , 23 June      1992
+Saturday , 12 September 1992
+Tuesday  , 01 September 1992
+Wednesday, 02 September 1992
+Tuesday  , 27 October   1992
+Tuesday  , 29 September 1992
+Friday   , 21 July      1995
+Thursday , 16 April     1992
+Friday   , 27 March     1992
+Wednesday, 11 March     1992
+Thursday , 25 May       1995
+Saturday , 27 September 1997
+Thursday , 23 October   1997
+Thursday , 12 November  1992
+Tuesday  , 10 November  1992
+Saturday , 28 November  1992
+Thursday , 05 November  1992
+Thursday , 11 February  1993
+Monday   , 28 December  1992
+Tuesday  , 09 February  1993
+Saturday , 16 March     1996
+Wednesday, 08 May       1996
+Friday   , 31 May       1996
+Wednesday, 01 May       1996
+Thursday , 04 November  1993
+Monday   , 29 November  1993
+Sunday   , 09 November  1997
+Saturday , 01 November  1997
+Wednesday, 19 November  1997
+Saturday , 20 June      1998
+Saturday , 04 July      1998
+Friday   , 05 June      1998
+Thursday , 20 August    1998
+Thursday , 06 August    1998
+Wednesday, 01 July      1998
+Tuesday  , 04 August    1998
+Wednesday, 12 January   1994
+Friday   , 01 November  1996
+Thursday , 05 September 1996
+Tuesday  , 03 September 1996
+Tuesday  , 21 May       1996
+Friday   , 19 April     1996
+Tuesday  , 25 June      1996
+Saturday , 13 April     1996
+Tuesday  , 21 May       1996
+Sunday   , 02 June      1996
+Thursday , 25 April     1996
+Saturday , 12 June      1993
+Monday   , 22 January   1996
+Tuesday  , 06 February  1996
+Thursday , 28 March     1996
+Saturday , 17 February  1996
+Thursday , 07 March     1996
+Wednesday, 01 January   1997
+Wednesday, 19 February  1997
+Sunday   , 29 December  1996
+Monday   , 03 March     1997
+Monday   , 21 April     1997
+Monday   , 18 September 1995
+Friday   , 27 October   1995
+Friday   , 29 September 1995
+Sunday   , 12 April     1998
+Thursday , 22 January   1998
+Monday   , 11 September 1995
+Monday   , 18 July      1994
+Monday   , 11 July      1994
+Friday   , 01 July      1994
+Wednesday, 17 April     1996
+Saturday , 18 May       1996
+Tuesday  , 12 March     1996
+Friday   , 22 March     1996
+Tuesday  , 09 April     1996
+Tuesday  , 30 April     1996
+Monday   , 27 May       1996
+Thursday , 06 March     1997
+Monday   , 16 December  1996
+Saturday , 16 November  1996
+Tuesday  , 03 December  1996
+Tuesday  , 04 March     1997
+Tuesday  , 18 February  1997
+Thursday , 12 December  1996
+Thursday , 04 December  1997
+Monday   , 22 December  1997
+Friday   , 26 September 1997
+Friday   , 26 September 1997
+Thursday , 06 November  1997
+Wednesday, 16 December  1992
+Wednesday, 06 January   1993

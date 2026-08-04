@@ -1,0 +1,13 @@
+                                     QUERY PLAN                                     
+------------------------------------------------------------------------------------
+ Index Only Scan using idx_lineitem_order on lineitem (actual rows=6001215 loops=1)
+   Heap Fetches: 0
+   InitPlan 1 (returns $1)
+     ->  Finalize Aggregate (actual rows=1 loops=1)
+           ->  Gather (actual rows=3 loops=1)
+                 Workers Planned: 2
+                 Workers Launched: 2
+                 ->  Partial Aggregate (actual rows=1 loops=3)
+                       ->  Parallel Seq Scan on part (actual rows=66667 loops=3)
+(9 rows)
+

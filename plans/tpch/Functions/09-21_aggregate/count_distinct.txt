@@ -1,0 +1,7 @@
+                                        QUERY PLAN                                        
+------------------------------------------------------------------------------------------
+ Aggregate (actual rows=1 loops=1)
+   ->  Index Only Scan using idx_lineitem_order on lineitem (actual rows=6001215 loops=1)
+         Heap Fetches: 0
+(3 rows)
+

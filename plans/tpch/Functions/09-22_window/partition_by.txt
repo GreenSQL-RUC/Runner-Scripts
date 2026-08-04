@@ -1,0 +1,9 @@
+                           QUERY PLAN                           
+----------------------------------------------------------------
+ WindowAgg (actual rows=6001215 loops=1)
+   ->  Sort (actual rows=6001215 loops=1)
+         Sort Key: l_returnflag, l_shipdate
+         Sort Method: external merge  Disk: 94024kB
+         ->  Seq Scan on lineitem (actual rows=6001215 loops=1)
+(5 rows)
+

@@ -1,0 +1,19 @@
+# Previous project, kept locally for reference but not part of this repo.
+old/
+archive/
+# Generated TPC-H data (dbgen output).
+*.tbl
+
+# tpch-dbgen is fetched on demand by build_tpch.sh (git clone of a pinned
+# upstream commit), so the source tree is not committed here.
+/tpch-dbgen/
+
+# Compiled runner binaries (build outputs of `make`; rebuilt from the .c sources).
+/query_runner
+/cold_runner
+/plan_builder
+/output_runner
+/write_runner
+
+# Unattended matrix sweep logs (run artifacts, not source).
+matrix_logs/
