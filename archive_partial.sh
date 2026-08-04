@@ -13,8 +13,9 @@
 #           id. RUNID=<id> alone pulls every row of that run; empty = any run
 #   VER     (optional) pg_version filter (col 3): "16" matches 16.x, "16.14"
 #           matches exactly; empty = every version
-#   DB      (optional) database suffix: only query_*_<DB>.csv are touched;
-#           empty = every database's files
+#   DB      (optional) database suffix: only <LOGS_DIR>/query_*_<DB>.csv are
+#           touched; empty = every database's files
+#   LOGS_DIR(optional) directory holding the live result CSVs (default: logs)
 #   DRYRUN  (optional) 1 = report what WOULD move and change nothing
 #
 # At least one of QUERY / RUNID is required. When both are given they AND
@@ -34,6 +35,7 @@ RUNID="${RUNID:-}"
 VER="${VER:-}"
 DB="${DB:-}"
 DRYRUN="${DRYRUN:-0}"
+LOGS_DIR="${LOGS_DIR:-logs}"     # where the live result CSVs are kept
 
 if [ -z "$QUERY" ] && [ -z "$RUNID" ]; then
     echo "usage: { QUERY=<name> | RUNID=<id> } [VER=<pgver>] [DB=<db>] [DRYRUN=1] bash archive_partial.sh" >&2
@@ -60,9 +62,9 @@ busy() {
 }
 
 if [ -n "$DB" ]; then
-    FILES="query_timing_${DB}.csv query_samples_${DB}.csv query_slope_${DB}.csv"
+    FILES="$LOGS_DIR/query_timing_${DB}.csv $LOGS_DIR/query_samples_${DB}.csv $LOGS_DIR/query_slope_${DB}.csv"
 else
-    FILES="$(ls query_timing_*.csv query_samples_*.csv query_slope_*.csv 2>/dev/null)"
+    FILES="$(ls "$LOGS_DIR"/query_timing_*.csv "$LOGS_DIR"/query_samples_*.csv "$LOGS_DIR"/query_slope_*.csv 2>/dev/null)"
 fi
 
 echo "partial-archive: QUERY~='${QUERY:-any}'  RUNID='${RUNID:-any}'  VER='${VER:-any}'  DB='${DB:-all}'$([ "$DRYRUN" = 1 ] && echo '   [DRY RUN]')"

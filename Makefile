@@ -54,6 +54,8 @@ SRC     = query_runner.c rapl.c
 # dataset runs with e.g. `make run DATASET=datatypes DB_NAME=datatypes`.
 DATASET       ?= tpch
 DIR           ?= queries/$(DATASET)
+# All result CSVs are written under LOGS_DIR (the runners create it if missing).
+LOGS_DIR      ?= logs
 RUNS          ?= 1
 # Unmeasured batches before the measured ones; 0 disables. Comment kept off the
 # value line: GNU Make folds the whitespace before an inline "#" into the value.
@@ -76,10 +78,10 @@ WORKERS       ?=              # max_parallel_workers_per_gather for every query;
 # for unattended sweeps - a wedged query is cancelled rather than running all
 # night. Comment kept off the value line (GNU Make folds trailing whitespace).
 STATEMENT_TIMEOUT ?=
-LOG_FILE      ?=              # default: query_timing_<DB_NAME>.csv (one log per database)
-SAMPLE_FILE   ?=              # default: query_samples_<DB_NAME>.csv (one row per individual run)
-CATALOG_FILE  ?=              # default: query_catalog_<DB_NAME>.csv (relation sizes, once per sweep)
-SLOPE_FILE    ?=              # default: query_slope_<DB_NAME>.csv (per-query slope, BATCHNUM>1 only)
+LOG_FILE      ?=              # default: $(LOGS_DIR)/query_timing_<DB_NAME>.csv (one log per database)
+SAMPLE_FILE   ?=              # default: $(LOGS_DIR)/query_samples_<DB_NAME>.csv (one row per individual run)
+CATALOG_FILE  ?=              # default: $(LOGS_DIR)/query_catalog_<DB_NAME>.csv (relation sizes, once per sweep)
+SLOPE_FILE    ?=              # default: $(LOGS_DIR)/query_slope_<DB_NAME>.csv (per-query slope, BATCHNUM>1 only)
 SIGLESS_ADDR  ?=              # e.g. 127.0.0.1:8000 to enable the power meter
 SIGLESS_CHANNEL ?= CH1
 
@@ -92,6 +94,7 @@ SUDO_PRIME    = printf '%s\n' '$(SUDO_PASSWORD)' | sudo -S -v >/dev/null 2>&1
 RUN_ENV = QUERY_DIR="$(DIR)" RUNS=$(RUNS) WARMUP="$(WARMUP)" BATCHNUM="$(BATCHNUM)" \
           DB_NAME="$(DB_NAME)" DB_USER="$(DB_USER)" PGPORT="$(PGPORT)" \
           WORKERS="$(WORKERS)" STATEMENT_TIMEOUT="$(STATEMENT_TIMEOUT)" \
+          LOGS_DIR="$(LOGS_DIR)" \
           LOG_FILE="$(LOG_FILE)" SAMPLE_FILE="$(SAMPLE_FILE)" CATALOG_FILE="$(CATALOG_FILE)" \
           SLOPE_FILE="$(SLOPE_FILE)" \
           SIGLESS_ADDR="$(SIGLESS_ADDR)" SIGLESS_CHANNEL="$(SIGLESS_CHANNEL)"
@@ -126,7 +129,7 @@ WRITE_LOG      ?=
 WRITE_SAMPLES  ?=
 WRITE_ENV = QUERY_DIR="$(WRITE_DIR)" DB_NAME="$(WRITE_DB)" DB_USER="$(DB_USER)" \
             RUNS="$(WRITE_RUNS)" WARMUP="$(WRITE_WARMUP)" PGPORT="$(PGPORT)" \
-            LOG_FILE="$(WRITE_LOG)" SAMPLE_FILE="$(WRITE_SAMPLES)"
+            LOG_FILE="$(WRITE_LOG)" SAMPLE_FILE="$(WRITE_SAMPLES)" LOGS_DIR="$(LOGS_DIR)"
 
 # COLD-cache benchmark - a SEPARATE mode (cold_runner.c). It ignores BATCHNUM and
 # WARMUP: each query is run RUNS times, and before every run the OS page cache is
@@ -140,7 +143,7 @@ COLD_DRY   ?=
 COLD_ENV = QUERY_DIR="$(DIR)" DB_NAME="$(DB_NAME)" DB_USER="$(DB_USER)" \
            RUNS="$(RUNS)" PGVER="$(PGVER)" PGPORT="$(PGPORT)" \
            WORKERS="$(WORKERS)" STATEMENT_TIMEOUT="$(STATEMENT_TIMEOUT)" \
-           COLD_LOG="$(COLD_LOG)" DRYRUN="$(COLD_DRY)"
+           COLD_LOG="$(COLD_LOG)" DRYRUN="$(COLD_DRY)" LOGS_DIR="$(LOGS_DIR)"
 
 # `all` (build) is the default even though it is not the first rule in the file.
 .DEFAULT_GOAL := all
@@ -167,7 +170,7 @@ partial-archive:
 	@[ -n "$(QUERY)" ] || [ -n "$(RUNID)" ] || { echo "usage: make partial-archive { QUERY=<name> | RUNID=<id> } [VER=<pgver>] [DB=<dbname>] [DRYRUN=1]"; exit 1; }
 	@$(SUDO_PRIME) \
 	    || { echo "sudo authentication failed (override with: make partial-archive SUDO_PASSWORD=...)"; exit 1; }; \
-	  sudo -n env QUERY="$(QUERY)" RUNID="$(RUNID)" VER="$(VER)" DB="$(DB)" DRYRUN="$(DRYRUN)" bash archive_partial.sh
+	  sudo -n env QUERY="$(QUERY)" RUNID="$(RUNID)" VER="$(VER)" DB="$(DB)" DRYRUN="$(DRYRUN)" LOGS_DIR="$(LOGS_DIR)" bash archive_partial.sh
 
 # Show the installed clusters and what PGVER currently resolves to.
 pg-info:
@@ -207,7 +210,8 @@ $(COLD_TARGET): $(COLD_TARGET).c rapl.c rapl.h
 # terminal, and make runs each recipe line in a separate shell, so a credential
 # primed on its own line would not be visible to the run on the next line.
 run: $(TARGET) $(COLD_TARGET) check-pg
-	@$(SUDO_PRIME) \
+	@mkdir -p "$(LOGS_DIR)"; \
+	  $(SUDO_PRIME) \
 	    || { echo "sudo authentication failed (override with: make run SUDO_PASSWORD=...)"; exit 1; }; \
 	  sudo -n modprobe msr 2>/dev/null || true; \
 	  if [ "$(COLD)" = "1" ]; then \
@@ -221,7 +225,8 @@ run: $(TARGET) $(COLD_TARGET) check-pg
 #   make cold PGVER=16 DB_NAME=tpch RUNS=5 DIR=queries/tpch/Core/00_baseline
 #   make cold PGVER=16 COLD_DRY=1        # warm dry run, no drop/restart (test)
 cold: $(COLD_TARGET) check-pg
-	@$(SUDO_PRIME) \
+	@mkdir -p "$(LOGS_DIR)"; \
+	  $(SUDO_PRIME) \
 	    || { echo "sudo authentication failed (override with: make cold SUDO_PASSWORD=...)"; exit 1; }; \
 	  sudo -n modprobe msr 2>/dev/null || true; \
 	  sudo -n env $(COLD_ENV) ./$(COLD_TARGET)
@@ -254,7 +259,7 @@ DBS    ?= tpch tpch2 tpch5
 
 MATRIX_ENV = PGVERS="$(PGVERS)" DBS="$(DBS)" RUNS="$(RUNS)" WARMUP="$(WARMUP)" \
              BATCHNUM="$(BATCHNUM)" DIR="$(DIR)" REFERENCE_DIR="queries/$(DATASET)" \
-             WORKERS="$(WORKERS)" \
+             WORKERS="$(WORKERS)" LOGS_DIR="$(LOGS_DIR)" \
              STATEMENT_TIMEOUT="$(STATEMENT_TIMEOUT)" FRESH="$(FRESH)"
 FRESH ?= 0
 
@@ -282,7 +287,8 @@ write-db: check-pg
 # Measure the write corpus (./write_queries) against the scratch DB. Refuses to
 # run if WRITE_DB is a canonical read database (enforced in write_runner.c).
 write: $(WRITE_TARGET) check-pg
-	@$(SUDO_PRIME) \
+	@mkdir -p "$(LOGS_DIR)"; \
+	  $(SUDO_PRIME) \
 	    || { echo "sudo authentication failed (override with: make write SUDO_PASSWORD=...)"; exit 1; }; \
 	  sudo -n modprobe msr 2>/dev/null || true; \
 	  sudo -n env $(WRITE_ENV) ./$(WRITE_TARGET)

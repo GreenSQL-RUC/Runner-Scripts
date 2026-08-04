@@ -85,6 +85,7 @@
 #define DEFAULT_SAMPLE_PREFIX "query_samples_" /* per-run log is <prefix><db>.csv  */
 #define DEFAULT_CATALOG_PREFIX "query_catalog_" /* size snapshot <prefix><db>.csv  */
 #define DEFAULT_SLOPE_PREFIX "query_slope_"  /* per-query slope <prefix><db>.csv   */
+#define DEFAULT_LOGS_DIR  "logs"    /* CSVs default to <logs_dir>/<prefix><db>.csv */
 #define DEFAULT_DB_NAME   "tpch"
 #define DEFAULT_DB_USER   "postgres"
 #define DEFAULT_RUNS      2      /* measured BATCHES per query at N=BATCHNUM    */
@@ -951,6 +952,13 @@ int main(void) {
     const char *db_name       = env_or("DB_NAME",   DEFAULT_DB_NAME);
     const char *db_user       = env_or("DB_USER",   DEFAULT_DB_USER);
 
+    /* All result CSVs default into ./logs (LOGS_DIR overrides). Created here so
+     * open_csv_append's fopen("a") does not fail on a missing directory; an
+     * explicit LOG_FILE/SAMPLE_FILE/CATALOG_FILE/SLOPE_FILE still overrides the
+     * full path. */
+    const char *logs_dir = env_or("LOGS_DIR", DEFAULT_LOGS_DIR);
+    (void)mkdir(logs_dir, 0755);
+
     /* Log file defaults to a per-database name (query_timing_<db>.csv) so runs
      * against different databases land in separate files, while the column
      * layout stays identical for easy comparison across DB sizes. LOG_FILE
@@ -958,7 +966,7 @@ int main(void) {
     char log_file_buf[PATH_MAX];
     const char *log_file = getenv("LOG_FILE");
     if (!log_file || !*log_file) {
-        snprintf(log_file_buf, sizeof(log_file_buf), "%s%s.csv", DEFAULT_LOG_PREFIX, db_name);
+        snprintf(log_file_buf, sizeof(log_file_buf), "%s/%s%s.csv", logs_dir, DEFAULT_LOG_PREFIX, db_name);
         log_file = log_file_buf;
     }
     /* Companion per-run log: one row per individual execution, so run-to-run
@@ -967,8 +975,8 @@ int main(void) {
     char sample_file_buf[PATH_MAX];
     const char *sample_file = getenv("SAMPLE_FILE");
     if (!sample_file || !*sample_file) {
-        snprintf(sample_file_buf, sizeof(sample_file_buf), "%s%s.csv",
-                 DEFAULT_SAMPLE_PREFIX, db_name);
+        snprintf(sample_file_buf, sizeof(sample_file_buf), "%s/%s%s.csv",
+                 logs_dir, DEFAULT_SAMPLE_PREFIX, db_name);
         sample_file = sample_file_buf;
     }
 
@@ -976,8 +984,8 @@ int main(void) {
     char catalog_file_buf[PATH_MAX];
     const char *catalog_file = getenv("CATALOG_FILE");
     if (!catalog_file || !*catalog_file) {
-        snprintf(catalog_file_buf, sizeof(catalog_file_buf), "%s%s.csv",
-                 DEFAULT_CATALOG_PREFIX, db_name);
+        snprintf(catalog_file_buf, sizeof(catalog_file_buf), "%s/%s%s.csv",
+                 logs_dir, DEFAULT_CATALOG_PREFIX, db_name);
         catalog_file = catalog_file_buf;
     }
 
@@ -985,8 +993,8 @@ int main(void) {
     char slope_file_buf[PATH_MAX];
     const char *slope_file = getenv("SLOPE_FILE");
     if (!slope_file || !*slope_file) {
-        snprintf(slope_file_buf, sizeof(slope_file_buf), "%s%s.csv",
-                 DEFAULT_SLOPE_PREFIX, db_name);
+        snprintf(slope_file_buf, sizeof(slope_file_buf), "%s/%s%s.csv",
+                 logs_dir, DEFAULT_SLOPE_PREFIX, db_name);
         slope_file = slope_file_buf;
     }
 

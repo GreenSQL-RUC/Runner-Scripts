@@ -59,6 +59,7 @@
 
 #define DEFAULT_QUERY_DIR  "queries"
 #define DEFAULT_COLD_PREFIX "query_cold_"
+#define DEFAULT_LOGS_DIR   "logs"   /* CSVs default to <logs_dir>/<prefix><db>.csv */
 #define DEFAULT_DB_NAME    "tpch"
 #define DEFAULT_DB_USER    "postgres"
 #define DEFAULT_RUNS       3
@@ -518,10 +519,15 @@ int main(void) {
     int runs = atoi(env_or("RUNS", ""));
     if (runs <= 0) runs = DEFAULT_RUNS;
 
+    /* Cold CSV defaults into ./logs (LOGS_DIR overrides); create it so the
+     * append does not fail on a missing directory. COLD_LOG overrides the path. */
+    const char *logs_dir = env_or("LOGS_DIR", DEFAULT_LOGS_DIR);
+    (void)mkdir(logs_dir, 0755);
+
     char cold_log_buf[PATH_MAX];
     const char *cold_log = getenv("COLD_LOG");
     if (!cold_log || !*cold_log) {
-        snprintf(cold_log_buf, sizeof(cold_log_buf), "%s%s.csv", DEFAULT_COLD_PREFIX, db_name);
+        snprintf(cold_log_buf, sizeof(cold_log_buf), "%s/%s%s.csv", logs_dir, DEFAULT_COLD_PREFIX, db_name);
         cold_log = cold_log_buf;
     }
 

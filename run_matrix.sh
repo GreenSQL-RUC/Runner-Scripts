@@ -40,6 +40,7 @@ BATCHNUM="${BATCHNUM:-1}"
 DIR="${DIR:-queries}"
 WORKERS="${WORKERS:-}"
 STATEMENT_TIMEOUT="${STATEMENT_TIMEOUT:-900}"
+LOGS_DIR="${LOGS_DIR:-logs}"
 MATRIX_DIR="${MATRIX_DIR:-matrix_logs}"
 DRYRUN="${DRYRUN:-0}"
 FRESH="${FRESH:-0}"
@@ -182,6 +183,7 @@ for c in "${COMBOS[@]}"; do
     make run PGVER="$ver" DB_NAME="$db" RUNS="$RUNS" WARMUP="$WARMUP" \
              BATCHNUM="$BATCHNUM" \
              DIR="$DIR" WORKERS="$WORKERS" STATEMENT_TIMEOUT="$STATEMENT_TIMEOUT" \
+             LOGS_DIR="$LOGS_DIR" \
              > "$combo_log" 2>&1
     rc=$?
     dt=$(($(date +%s) - t0))
@@ -209,10 +211,10 @@ echo | tee -a "$MASTER_LOG"
 log "MATRIX DONE in $(fmt_hms $(($(date +%s) - START_ALL))): $FINISHED ok, $FAILED failed"
 echo
 echo "=========================== RESULT FILES ==========================="
-ls -la query_timing_*.csv query_samples_*.csv query_slope_*.csv query_catalog_*.csv 2>/dev/null | awk '{printf "  %-34s %10s bytes\n", $NF, $5}'
+ls -la "$LOGS_DIR"/query_timing_*.csv "$LOGS_DIR"/query_samples_*.csv "$LOGS_DIR"/query_slope_*.csv "$LOGS_DIR"/query_catalog_*.csv 2>/dev/null | awk '{printf "  %-40s %10s bytes\n", $NF, $5}'
 echo
 echo "  batch rows per version x database (query_timing):"
-for f in query_timing_*.csv; do
+for f in "$LOGS_DIR"/query_timing_*.csv; do
     [ -e "$f" ] || continue
     awk -F, -v f="$f" 'NR>1 {n[$3]++} END {for (v in n) printf "    %-28s PG%-8s %6d batch rows\n", f, v, n[v]}' "$f"
 done

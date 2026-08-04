@@ -64,6 +64,7 @@
 #define DEFAULT_QUERY_DIR  "write_queries"
 #define DEFAULT_LOG_PREFIX "write_timing_"
 #define DEFAULT_SAMPLE_PREFIX "write_samples_"
+#define DEFAULT_LOGS_DIR   "logs"   /* CSVs default to <logs_dir>/<prefix><db>.csv */
 #define DEFAULT_DB_NAME    "tpch_write"
 #define DEFAULT_DB_USER    "postgres"
 #define DEFAULT_RUNS       3
@@ -379,10 +380,16 @@ int main(void) {
         }
     }
 
+    /* Result CSVs default into ./logs (LOGS_DIR overrides); create it so the
+     * append does not fail on a missing directory. LOG_FILE/SAMPLE_FILE still
+     * override the full path. */
+    const char *logs_dir = env_or("LOGS_DIR", DEFAULT_LOGS_DIR);
+    (void)mkdir(logs_dir, 0755);
+
     char log_file_buf[PATH_MAX];
     const char *log_file = getenv("LOG_FILE");
     if (!log_file || !*log_file) {
-        snprintf(log_file_buf, sizeof(log_file_buf), "%s%s.csv", DEFAULT_LOG_PREFIX, db_name);
+        snprintf(log_file_buf, sizeof(log_file_buf), "%s/%s%s.csv", logs_dir, DEFAULT_LOG_PREFIX, db_name);
         log_file = log_file_buf;
     }
 
@@ -391,8 +398,8 @@ int main(void) {
     char sample_file_buf[PATH_MAX];
     const char *sample_file = getenv("SAMPLE_FILE");
     if (!sample_file || !*sample_file) {
-        snprintf(sample_file_buf, sizeof(sample_file_buf), "%s%s.csv",
-                 DEFAULT_SAMPLE_PREFIX, db_name);
+        snprintf(sample_file_buf, sizeof(sample_file_buf), "%s/%s%s.csv",
+                 logs_dir, DEFAULT_SAMPLE_PREFIX, db_name);
         sample_file = sample_file_buf;
     }
 
