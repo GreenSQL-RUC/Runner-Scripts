@@ -1,0 +1,3 @@
+
+EXPLAIN (ANALYZE, TIMING OFF, COSTS ON, SUMMARY ON, BUFFERS)
+SELECT warehouse_sales FROM sales ORDER BY warehouse_sales;
