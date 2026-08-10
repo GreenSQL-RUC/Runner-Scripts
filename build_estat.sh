@@ -167,7 +167,7 @@ SELECT
 FROM staging_capital_stock s
 JOIN dim_geo g ON g.geo_code = s.geo
 JOIN dim_unit u ON u.unit_code = s.unit
-JOIN dim_nace nON n.nace_code = s.nace_r2
+JOIN dim_nace n ON n.nace_code = s.nace_r2
 JOIN dim_asset a ON a.asset_code = s.asset10
 JOIN dim_na_item ni ON ni.na_item_code = s.na_item
 CROSS JOIN LATERAL (
@@ -191,6 +191,7 @@ SQL
 } > /tmp/load_fact.sql
 
 echo "==> [$DB] loading fact table"
+t1=$(date +%s)
 pg -d "$DB" -f /tmp/load_fact.sql
 echo "    - fact table loaded ($(($(date +%s) - t1))s)"
 
