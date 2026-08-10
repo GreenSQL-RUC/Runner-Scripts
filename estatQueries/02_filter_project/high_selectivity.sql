@@ -1,0 +1,2 @@
+EXPLAIN (ANALYZE, TIMING OFF, COSTS ON, SUMMARY ON, BUFFERS)
+SELECT value FROM fact_capital_stock WHERE year = 2025 AND geo_id = 1;
