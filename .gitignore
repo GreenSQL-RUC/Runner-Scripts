@@ -17,3 +17,7 @@ archive/
 
 # Unattended matrix sweep logs (run artifacts, not source).
 matrix_logs/
+
+
+/Data/estat_nama_10_a64_p5.csv
+Data/estat_nama_10_a64_p5.tsv

@@ -1,4 +1,5 @@
 -- tests sort/partition memory, distinct from simple aggregation
+EXPLAIN (ANALYZE, TIMING OFF, COSTS ON, SUMMARY ON, BUFFERS)
 SELECT item_id, sale_month, SUM(warehouse_sales) AS monthly_total, 
        SUM(SUM(warehouse_sales)) OVER (PARTITION BY item_id ORDER BY sale_month) AS running_total
 FROM sales

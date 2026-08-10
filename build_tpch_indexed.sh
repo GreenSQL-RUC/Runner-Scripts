@@ -28,7 +28,7 @@ DBS="${1:-tpch tpch2 tpch5}"
 VERS="${2:-14 16 18}"
 
 HERE="$(cd "$(dirname "$0")" && pwd)"
-SCHEMA="${INDEX_SCHEMA:-$HERE/index_schema_tpch.sql}"
+SCHEMA="${INDEX_SCHEMA:-$HERE/schema/index_schema_tpch.sql}"
 PGUSER=postgres
 
 [ -f "$SCHEMA" ] || { echo "index schema not found: $SCHEMA" >&2; exit 1; }

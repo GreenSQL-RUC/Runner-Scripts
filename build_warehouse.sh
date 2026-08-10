@@ -7,8 +7,12 @@
 # no dbgen, no scale factor, and PORT is passed directly rather than a lookup by 
 # pg_lclusters (when initially added)
 
-#Run as root so the inner "sudo -u postgres" needs no password:
-# for v18 sudo bash build_warehouse.sh warehouse Data/export.csv 5432
+# Run as root so the inner "sudo -u postgres" needs no password. The 3rd arg is
+# the PostgreSQL MAJOR VERSION (default 16); the port is looked up from it, so
+# this stays correct across machines (pg_createcluster assigns ports by install
+# order).
+#   sudo bash build_warehouse.sh warehouse Data/export.csv        # PG16
+#   sudo bash build_warehouse.sh warehouse Data/export.csv 18     # PG18
 
 #
 # Generates TPC-H data at <scale_factor> and loads it into a fresh <db_name>,
@@ -43,14 +47,25 @@
 
 set -euo pipefail
 
-DB="${1:?usage: build_warehouse.sh <db_name> <csv_path> [pg_port]}"
-CSV="${2:?usage: build_warehouse.sh <db_name> <csv_path> [pg_port]}"
-PORT="${3:-5432}"
+DB="${1:?usage: build_warehouse.sh <db_name> <csv_path> [pg_version]}"
+CSV="${2:?usage: build_warehouse.sh <db_name> <csv_path> [pg_version]}"
+CSV="$(realpath "$CSV")"
+PGVER="${3:-16}"
 
 HERE="$(cd "$(dirname "$0")" && pwd)"
 
-SCHEMA="$HERE/warehouse_schema.sql"
+SCHEMA="$HERE/schema/warehouse_schema.sql"
 PGUSER=postgres
+
+# Look the port up from the version rather than hard-coding it: pg_createcluster
+# hands out ports in install order, so which version got which port is
+# machine-specific (here PG16=5432, but not necessarily elsewhere).
+PORT="$(pg_lsclusters -h | awk -v v="$PGVER" '$1 == v && $2 == "main" { print $3 }')"
+if [ -z "$PORT" ]; then
+    echo "No 'main' cluster for PostgreSQL $PGVER. Installed clusters:" >&2
+    pg_lsclusters >&2
+    exit 1
+fi
 
 if [ ! -f "$CSV" ]; then
     echo "CSV not found: $CSV" >&2
@@ -58,7 +73,7 @@ if [ ! -f "$CSV" ]; then
 
 fi 
 
-echo "==> [$DB] target: PostgreSQL on port $PORT"
+echo "==> [$DB] target: PostgreSQL $PGVER on port $PORT"
 
 pg() { sudo -u "$PGUSER" psql -p "$PORT" -v ON_ERROR_STOP=1 "$@"; }
 

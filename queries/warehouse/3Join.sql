@@ -1,4 +1,5 @@
 -- closer to tpc-h multi-table join
+EXPLAIN (ANALYZE, TIMING OFF, COSTS ON, SUMMARY ON, BUFFERS)
 SELECT sup.supplier_name, i.item_type, SUM(s.retail_transfers) AS total_transfers
 FROM sales s
 JOIN suppliers sup ON sup.supplier_id = s.supplier_id

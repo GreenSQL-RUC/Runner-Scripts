@@ -1,5 +1,5 @@
 -- make sure to have created index 
-SET enable_seqscan SET enable_seqscan = off;
+SET enable_seqscan = off;
 SET enable_indexscan = on;
 SET enable_bitmapscan = off;
 EXPLAIN (ANALYZE, TIMING OFF, COSTS ON, SUMMARY ON, BUFFERS)

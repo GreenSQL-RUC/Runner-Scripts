@@ -21,13 +21,15 @@
 # At least one of QUERY / RUNID is required. When both are given they AND
 # together (e.g. archive just scan_orders' rows from one specific run).
 #
-# query_timing / query_samples / query_slope are processed; query_catalog is
-# left alone (it is per-relation, not per-query).
+# query_timing / query_samples / query_slope / query_cold are processed - warm
+# AND cold rows, and indexed databases too (their CSVs are just query_*_<db>_idx,
+# e.g. DB=tpch_idx, matched like any other DB). query_catalog is left alone (it
+# is per-relation, not per-query).
 #
-# SAFETY (this is what makes it safe to run alongside the matrix): any CSV that a
-# running query_runner currently holds open - i.e. the sweep's ACTIVE database -
-# is SKIPPED, so this never races the sweep's appends. Run it against a database
-# the sweep is not currently on, or when the sweep is idle.
+# SAFETY (this is what makes it safe to run alongside a sweep): any CSV that a
+# running query_runner OR cold_runner currently holds open - i.e. the sweep's
+# ACTIVE database - is SKIPPED, so this never races the sweep's appends. Run it
+# against a database the sweep is not currently on, or when the sweep is idle.
 set -uo pipefail
 
 QUERY="${QUERY:-}"
@@ -47,11 +49,11 @@ TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
 BUSY_PID=""
 
-# True (and sets BUSY_PID) if a running query_runner has $1 (an absolute path)
-# open. Needs to read other users' /proc/<pid>/fd, hence this runs as root.
+# True (and sets BUSY_PID) if a running query_runner or cold_runner has $1 (an
+# absolute path) open. Needs to read other users' /proc/<pid>/fd, hence root.
 busy() {
     local target="$1" pid fd link
-    for pid in $(pgrep -x query_runner 2>/dev/null); do
+    for pid in $(pgrep -x 'query_runner|cold_runner' 2>/dev/null); do
         for fd in /proc/"$pid"/fd/*; do
             link=$(readlink "$fd" 2>/dev/null) || continue
             link=${link% (deleted)}
@@ -62,9 +64,9 @@ busy() {
 }
 
 if [ -n "$DB" ]; then
-    FILES="$LOGS_DIR/query_timing_${DB}.csv $LOGS_DIR/query_samples_${DB}.csv $LOGS_DIR/query_slope_${DB}.csv"
+    FILES="$LOGS_DIR/query_timing_${DB}.csv $LOGS_DIR/query_samples_${DB}.csv $LOGS_DIR/query_slope_${DB}.csv $LOGS_DIR/query_cold_${DB}.csv"
 else
-    FILES="$(ls "$LOGS_DIR"/query_timing_*.csv "$LOGS_DIR"/query_samples_*.csv "$LOGS_DIR"/query_slope_*.csv 2>/dev/null)"
+    FILES="$(ls "$LOGS_DIR"/query_timing_*.csv "$LOGS_DIR"/query_samples_*.csv "$LOGS_DIR"/query_slope_*.csv "$LOGS_DIR"/query_cold_*.csv 2>/dev/null)"
 fi
 
 echo "partial-archive: QUERY~='${QUERY:-any}'  RUNID='${RUNID:-any}'  VER='${VER:-any}'  DB='${DB:-all}'$([ "$DRYRUN" = 1 ] && echo '   [DRY RUN]')"

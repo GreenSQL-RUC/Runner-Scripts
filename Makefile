@@ -306,7 +306,7 @@ write: $(WRITE_TARGET) check-pg
 #   make index-build DRYRUN=1                   # show the plan, build nothing
 #   make index-verify DB_NAME=tpch_idx PGVER=18
 #   make index-drop-db PGVER=18                # drop the _idx clones on one version
-IDX_SCHEMA ?= index_schema_$(DATASET).sql
+IDX_SCHEMA ?= schema/index_schema_$(DATASET).sql
 index-build:
 	@$(SUDO_PRIME) \
 	    || { echo "sudo authentication failed (override with: make index-build SUDO_PASSWORD=...)"; exit 1; }; \

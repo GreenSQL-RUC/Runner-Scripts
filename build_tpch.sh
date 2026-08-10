@@ -29,7 +29,7 @@ PGVER="${3:-16}"
 
 HERE="$(cd "$(dirname "$0")" && pwd)"
 DBGEN_DIR="$HERE/tpch-dbgen"
-SCHEMA="$HERE/tpch_schema.sql"
+SCHEMA="$HERE/schema/tpch_schema.sql"
 PGUSER=postgres
 TABLES="region nation supplier customer part partsupp orders lineitem"
 
