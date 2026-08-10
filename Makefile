@@ -147,7 +147,7 @@ COLD_ENV = QUERY_DIR="$(DIR)" DB_NAME="$(DB_NAME)" DB_USER="$(DB_USER)" \
 
 # `all` (build) is the default even though it is not the first rule in the file.
 .DEFAULT_GOAL := all
-.PHONY: all run cold plans outputs write write-db clean pg-info check-pg matrix matrix-plan partial-archive
+.PHONY: all run cold plans outputs write write-db clean pg-info check-pg matrix matrix-plan partial-archive index-build index-verify index-drop-db
 
 # Move a query's - or a whole run's - rows out of the live result CSVs into
 # archive/partial/ (e.g. to pull a bad measurement without re-running the whole
@@ -292,6 +292,42 @@ write: $(WRITE_TARGET) check-pg
 	    || { echo "sudo authentication failed (override with: make write SUDO_PASSWORD=...)"; exit 1; }; \
 	  sudo -n modprobe msr 2>/dev/null || true; \
 	  sudo -n env $(WRITE_ENV) ./$(WRITE_TARGET)
+
+# ----- Indexed-test databases (architecture B of INDEXED_TEST_PLAN.md) --------
+# Build <db>_idx clones for every DB in DBS across every version in PGVERS, each a
+# full copy of its base DB plus the extensive ixtest_ index suite. Base DBs are
+# used only as templates and never modified, so the default (minimal-index)
+# baseline stays clean. Existing _idx DBs are skipped (FORCE=1 rebuilds). Run the
+# indexed corpus with e.g. `make run DB_NAME=tpch_idx PGVER=18` (add a second run
+# over slow_queries/tpch/tpch-queries - Q17/Q20 are fast on the indexed DB).
+#   make index-build PGVERS=18                 # tpch_idx/tpch2_idx/tpch5_idx on PG18
+#   make index-build                           # all versions (14 16 18) - large; see disk note
+#   make index-build PGVERS="16 18" DBS=tpch    # a subset
+#   make index-build DRYRUN=1                   # show the plan, build nothing
+#   make index-verify DB_NAME=tpch_idx PGVER=18
+#   make index-drop-db PGVER=18                # drop the _idx clones on one version
+IDX_SCHEMA ?= index_schema_$(DATASET).sql
+index-build:
+	@$(SUDO_PRIME) \
+	    || { echo "sudo authentication failed (override with: make index-build SUDO_PASSWORD=...)"; exit 1; }; \
+	  sudo -n env INDEX_SCHEMA="$(IDX_SCHEMA)" FORCE="$(FORCE)" DRYRUN="$(DRYRUN)" \
+	    bash build_tpch_indexed.sh "$(DBS)" "$(PGVERS)"
+
+# Show the ixtest_ indexes on DB_NAME (empty on a clean base DB; populated on _idx).
+index-verify: check-pg
+	@$(SUDO_PRIME) \
+	    || { echo "sudo authentication failed"; exit 1; }; \
+	  sudo -n -u $(DB_USER) psql -p $(PGPORT) -d $(DB_NAME) -c \
+	    "SELECT indexrelname, pg_size_pretty(pg_relation_size(indexrelid)) AS size \
+	       FROM pg_stat_user_indexes WHERE indexrelname LIKE 'ixtest_%' ORDER BY 1;"
+
+# Drop the _idx clones for every DB in DBS (reclaim disk).
+index-drop-db:
+	@$(SUDO_PRIME) \
+	    || { echo "sudo authentication failed"; exit 1; }; \
+	  for db in $(DBS); do \
+	    sudo -n -u $(DB_USER) psql -p $(PGPORT) -d postgres -c "DROP DATABASE IF EXISTS $${db}_idx;"; \
+	  done
 
 clean:
 	rm -f $(TARGET) $(PLAN_TARGET) $(OUTPUT_TARGET) $(WRITE_TARGET) $(COLD_TARGET)

@@ -1,0 +1,43 @@
+-- TPC-H Q22: Global Sales Opportunity - variant: materialized
+-- Generated from tpch-dbgen by generate_tpch_query_set.py (validation params, PG fixes).
+EXPLAIN (ANALYZE, TIMING OFF, COSTS ON, SUMMARY ON, BUFFERS)
+with _m as materialized (
+select
+	cntrycode,
+	count(*) as numcust,
+	sum(c_acctbal) as totacctbal
+from
+	(
+		select
+			substring(c_phone from 1 for 2) as cntrycode,
+			c_acctbal
+		from
+			customer
+		where
+			substring(c_phone from 1 for 2) in
+				('13', '31', '23', '29', '30', '18', '17')
+			and c_acctbal > (
+				select
+					avg(c_acctbal)
+				from
+					customer
+				where
+					c_acctbal > 0.00
+					and substring(c_phone from 1 for 2) in
+						('13', '31', '23', '29', '30', '18', '17')
+			)
+			and not exists (
+				select
+					*
+				from
+					orders
+				where
+					o_custkey = c_custkey
+			)
+	) as custsale
+group by
+	cntrycode
+)
+select * from _m
+order by
+	cntrycode;
