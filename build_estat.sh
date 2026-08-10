@@ -75,20 +75,20 @@ echo "==> [$DB] creating staging table"
 {
 cat <<'SQL'
 CREATE TABLE staging_capital_stock (
-freq TEXT,
-unit TEXT,
-nace_r2 TEXT,
-asset10 TEXT,
-na_item TEXT,
-geo TEXT,
+    freq TEXT,
+    unit TEXT,
+    nace_r2 TEXT,
+    asset10 TEXT,
+    na_item TEXT,
+    geo TEXT,
 SQL
 
 for y in $(seq 1975 2025); do
-if [ "$y" -eq 2025 ]; then
-echo " y${y} TEXT"
-else
-echo " y${y} TEXT,"
-fi
+    if [ "$y" -eq 2025 ]; then
+        echo " y${y} TEXT"
+    else
+        echo " y${y} TEXT,"
+    fi
 done
 
 echo ");"
@@ -96,24 +96,21 @@ echo ");"
 
 pg -d "$DB" -f /tmp/create_staging.sql
 
-echo "==> [$DB] loading csv"
-
+echo "==> [$DB] fixing header row"
 HEADER_TMP=/tmp/estat_header_fix.csv
 
-python3 <<'PY'
-import csv
+CSV="$CSV" DST="$HEADER_TMP" python3 <<'PY'
+import csv, os
 
-src = "Data/estat_nama_10_a64_p5.csv"
-dst = "/tmp/estat_header_fix.csv"
+src = os.environ["CSV"]
+dst = os.environ["DST"]
 
 with open(src, newline='', encoding='utf-8') as f:
     reader = csv.reader(f)
     rows = list(reader)
 
 header = rows[0]
-
 header[5] = "geo"
-
 for i in range(6, len(header)):
     header[i] = "y" + header[i].strip()
 
@@ -123,126 +120,79 @@ with open(dst, "w", newline='', encoding='utf-8') as f:
     writer.writerows(rows[1:])
 PY
 
+echo "==> [$DB] loading raw csv into staging"
+t0=$(date +%s)
 pg -d "$DB" -c "\copy staging_capital_stock FROM '$HEADER_TMP' CSV HEADER"
+echo "    - staging loaded ($(($(date +%s) - t0))s)"  
 
 echo "==> [$DB] populating dimensions"
-
 pg -d "$DB" <<'SQL'
 
-INSERT INTO dim_geo (geo_code)
-SELECT DISTINCT geo
-FROM staging_capital_stock
-WHERE geo IS NOT NULL;
+INSERT INTO dim_geo (geo_code) 
+SELECT DISTINCT geo FROM staging_capital_stock WHERE geo IS NOT NULL;
 
 INSERT INTO dim_unit (unit_code)
-SELECT DISTINCT unit
-FROM staging_capital_stock
-WHERE unit IS NOT NULL;
+SELECT DISTINCT unit FROM staging_capital_stock WHERE unit IS NOT NULL;
 
 INSERT INTO dim_nace (nace_code)
-SELECT DISTINCT nace_r2
-FROM staging_capital_stock
-WHERE nace_r2 IS NOT NULL;
+SELECT DISTINCT nace_r2 FROM staging_capital_stock WHERE nace_r2 IS NOT NULL;
 
 INSERT INTO dim_asset (asset_code)
-SELECT DISTINCT asset10
-FROM staging_capital_stock
-WHERE asset10 IS NOT NULL;
+SELECT DISTINCT asset10 FROM staging_capital_stock WHERE asset10 IS NOT NULL;
 
 INSERT INTO dim_na_item (na_item_code)
-SELECT DISTINCT na_item
-FROM staging_capital_stock
-WHERE na_item IS NOT NULL;
-
+SELECT DISTINCT na_item FROM staging_capital_stock WHERE na_item IS NOT NULL;
 SQL
 
 echo "==> [$DB] generating unpivot SQL"
-
 {
 cat <<'SQL'
 INSERT INTO fact_capital_stock
-(
-year,
-geo_id,
-unit_id,
-nace_id,
-asset_id,
-na_item_id,
-value,
-flag
-)
+(year, geo_id, unit_id, nace_id, asset_id, na_item_id, value, flag)
 SELECT
-v.year,
-g.geo_id,
-u.unit_id,
-n.nace_id,
-a.asset_id,
-ni.na_item_id,
+    v.year,
+    g.geo_id,
+    u.unit_id,
+    n.nace_id,
+    a.asset_id,
+    ni.na_item_id,
 
-CASE
-    WHEN trim(v.raw_value) = ':'
-        THEN NULL
-    ELSE
-        NULLIF(
-            regexp_replace(v.raw_value,
-                           '[^0-9\.-]',
-                           '',
-                           'g'),
-            ''
-        )::numeric
-END AS value,
+    CASE
+        WHEN trim(v.raw_value) = ':' THEN NULL
+        ELSE NULLIF(regexp_replace(v.raw_value, '[^0-9\.-]', '', 'g'), '')::numeric
+    END AS value,
 
-NULLIF(
-    regexp_replace(
-        trim(v.raw_value),
-        '[0-9\.\-: ]',
-        '',
-        'g'
-    ),
-    ''
-) AS flag
+    NULLIF(regexp_replace(trim(v.raw_value), '[0-9\.\-: ]', '', 'g'), '') AS flag
 
 FROM staging_capital_stock s
-
-JOIN dim_geo g
-ON g.geo_code = s.geo
-
-JOIN dim_unit u
-ON u.unit_code = s.unit
-
-JOIN dim_nace n
-ON n.nace_code = s.nace_r2
-
-JOIN dim_asset a
-ON a.asset_code = s.asset10
-
-JOIN dim_na_item ni
-ON ni.na_item_code = s.na_item
-
+JOIN dim_geo g ON g.geo_code = s.geo
+JOIN dim_unit u ON u.unit_code = s.unit
+JOIN dim_nace nON n.nace_code = s.nace_r2
+JOIN dim_asset a ON a.asset_code = s.asset10
+JOIN dim_na_item ni ON ni.na_item_code = s.na_item
 CROSS JOIN LATERAL (
 VALUES
 SQL
 
 first=1
 for y in $(seq 1975 2025); do
-if [ $first -eq 1 ]; then
-first=0
-echo " ($y, s.y${y})"
-else
-echo " , ($y, s.y${y})"
-fi
+    if [ $first -eq 1 ]; then
+        first=0
+        echo " ($y, s.y${y})"
+    else
+        echo " , ($y, s.y${y})"
+    fi
 done
 
 cat <<'SQL'
 ) AS v(year, raw_value)
-
 WHERE trim(v.raw_value) <> ':';
 SQL
-
 } > /tmp/load_fact.sql
 
 echo "==> [$DB] loading fact table"
 pg -d "$DB" -f /tmp/load_fact.sql
+echo "    - fact table loaded ($(($(date +%s) - t1))s)"
 
 echo "==> [$DB] dropping staging table"
 pg -d "$DB" -c "DROP TABLE staging_capital_stock;"
