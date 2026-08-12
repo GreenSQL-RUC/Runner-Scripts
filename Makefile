@@ -102,12 +102,17 @@ RUN_ENV = QUERY_DIR="$(DIR)" RUNS=$(RUNS) WARMUP="$(WARMUP)" BATCHNUM="$(BATCHNU
 PLAN_TARGET = plan_builder
 PLAN_ENV = QUERY_DIR="$(DIR)" PLANS_DIR="$(PLANS_DIR)" DB_NAME="$(DB_NAME)" DB_USER="$(DB_USER)" \
            WORKERS="$(WORKERS)" PGPORT="$(PGPORT)"
-PLANS_DIR ?= plans/$(DATASET)
+# plan_builder writes under $(PLANS_DIR)/<DB_NAME>/, so this is just the root -
+# the per-database subfolder (tpch, tpch_idx, ...) comes from DB_NAME, which is
+# what keeps tpch and tpch_idx plans from overwriting each other.
+PLANS_DIR ?= plans
 
 OUTPUT_TARGET = output_runner
 OUTPUT_ENV = QUERY_DIR="$(DIR)" OUTPUTS_DIR="$(OUTPUTS_DIR)" DB_NAME="$(DB_NAME)" DB_USER="$(DB_USER)" \
              MAX_ROWS="$(MAX_ROWS)" PGPORT="$(PGPORT)"
-OUTPUTS_DIR ?= outputs/$(DATASET)
+# output_runner writes under $(OUTPUTS_DIR)/<DB_NAME>/ (per-database subfolder
+# comes from DB_NAME), so this is just the root - keeps tpch vs tpch_idx apart.
+OUTPUTS_DIR ?= outputs
 MAX_ROWS ?= 1000
 
 # Write benchmark (mutating SQL) - strictly isolated from the read corpus.
@@ -147,7 +152,7 @@ COLD_ENV = QUERY_DIR="$(DIR)" DB_NAME="$(DB_NAME)" DB_USER="$(DB_USER)" \
 
 # `all` (build) is the default even though it is not the first rule in the file.
 .DEFAULT_GOAL := all
-.PHONY: all run cold plans outputs write write-db clean pg-info check-pg matrix matrix-plan partial-archive index-build index-verify index-drop-db
+.PHONY: all run cold plans outputs write write-db clean pg-info check-pg matrix matrix-plan partial-archive index-build index-verify index-drop-db test-shared-buffer
 
 # Move a query's - or a whole run's - rows out of the live result CSVs into
 # archive/partial/ (e.g. to pull a bad measurement without re-running the whole
@@ -328,6 +333,31 @@ index-drop-db:
 	  for db in $(DBS); do \
 	    sudo -n -u $(DB_USER) psql -p $(PGPORT) -d postgres -c "DROP DATABASE IF EXISTS $${db}_idx;"; \
 	  done
+
+# ----- shared_buffers sweep (warm-cache runs at several buffer sizes) ----------
+# test_shared_buffer.sh sweeps shared_buffers (128MB default, 512MB, 1GB, 4GB,
+# 8GB - the SIZES live in the script) and runs the warm-cache benchmark at each,
+# on SB_DBS across PGVERS, writing each size's results to its own dir under
+# SB_LOGS/sb_<size>/. It sets shared_buffers via ALTER SYSTEM + a cluster restart
+# and resets to the default when done; if it is interrupted, reset it by hand
+# with:  sudo bash reset_shared_buffer.sh [version...]
+# Everything except the buffer SIZES is configured here (DIR, RUNS, WARMUP,
+# BATCHNUM, WORKERS, STATEMENT_TIMEOUT, PGVERS). NOTE: DIR defaults to the whole
+# tpch corpus - scope it (e.g. DIR=queries/tpch/tpch-queries) unless you want a
+# very long sweep, since it runs per size x version x database.
+#   make test-shared-buffer                                  # tpch+tpch_idx, all versions
+#   make test-shared-buffer PGVERS=18 DIR=queries/tpch/tpch-queries
+#   make test-shared-buffer DRYRUN=1                          # print the plan only
+SB_DBS  ?= tpch tpch_idx
+SB_LOGS ?= logs/shared_buffers
+test-shared-buffer:
+	@$(SUDO_PRIME) \
+	    || { echo "sudo authentication failed (override with: make test-shared-buffer SUDO_PASSWORD=...)"; exit 1; }; \
+	  sudo -n modprobe msr 2>/dev/null || true; \
+	  sudo -n env DBS="$(SB_DBS)" PGVERS="$(PGVERS)" DIR="$(DIR)" \
+	    RUNS="$(RUNS)" WARMUP="$(WARMUP)" BATCHNUM="$(BATCHNUM)" WORKERS="$(WORKERS)" \
+	    STATEMENT_TIMEOUT="$(STATEMENT_TIMEOUT)" LOGS_ROOT="$(SB_LOGS)" DRYRUN="$(DRYRUN)" \
+	    bash test_shared_buffer.sh
 
 clean:
 	rm -f $(TARGET) $(PLAN_TARGET) $(OUTPUT_TARGET) $(WRITE_TARGET) $(COLD_TARGET)

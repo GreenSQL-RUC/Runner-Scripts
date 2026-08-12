@@ -1,0 +1,64 @@
+                                                                            QUERY PLAN                                                                            
+------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Aggregate  (cost=409235.92..409235.93 rows=1 width=32) (actual rows=1.00 loops=1)
+   Buffers: shared hit=10425 read=109101, temp read=33169 written=55264
+   ->  Nested Loop  (cost=348387.10..409230.93 rows=1994 width=8) (actual rows=587.00 loops=1)
+         Join Filter: (lineitem.l_partkey = part.p_partkey)
+         Buffers: shared hit=10425 read=109101, temp read=33169 written=55264
+         ->  Merge Join  (cost=348386.67..408503.97 rows=199 width=40) (actual rows=204.00 loops=1)
+               Merge Cond: (part.p_partkey = lineitem_1.l_partkey)
+               Buffers: shared hit=9518 read=103310, temp read=33169 written=55264
+               ->  Sort  (cost=844.13..844.65 rows=209 width=4) (actual rows=204.00 loops=1)
+                     Sort Key: part.p_partkey
+                     Sort Method: quicksort  Memory: 25kB
+                     Buffers: shared hit=198 read=16
+                     ->  Bitmap Heap Scan on part  (cost=152.99..836.08 rows=209 width=4) (actual rows=204.00 loops=1)
+                           Recheck Cond: ((p_container = 'MED BOX'::bpchar) AND (p_brand = 'Brand#23'::bpchar))
+                           Heap Blocks: exact=198
+                           Buffers: shared hit=198 read=16
+                           ->  BitmapAnd  (cost=152.99..152.99 rows=209 width=0) (actual rows=0.00 loops=1)
+                                 Buffers: shared read=16
+                                 ->  Bitmap Index Scan on ixtest_part_container  (cost=0.00..58.62 rows=5093 width=0) (actual rows=5043.00 loops=1)
+                                       Index Cond: (p_container = 'MED BOX'::bpchar)
+                                       Index Searches: 1
+                                       Buffers: shared read=7
+                                 ->  Bitmap Index Scan on ixtest_part_brand  (cost=0.00..94.02 rows=8213 width=0) (actual rows=7870.00 loops=1)
+                                       Index Cond: (p_brand = 'Brand#23'::bpchar)
+                                       Index Searches: 1
+                                       Buffers: shared read=9
+               ->  Finalize GroupAggregate  (cost=347542.54..407179.73 rows=190827 width=36) (actual rows=199510.00 loops=1)
+                     Group Key: lineitem_1.l_partkey
+                     Buffers: shared hit=9320 read=103294, temp read=33169 written=55264
+                     ->  Gather Merge  (cost=347542.54..400882.44 rows=457985 width=36) (actual rows=598502.00 loops=1)
+                           Workers Planned: 2
+                           Workers Launched: 2
+                           Buffers: shared hit=9320 read=103294, temp read=33169 written=55264
+                           ->  Sort  (cost=346542.52..347019.58 rows=190827 width=36) (actual rows=199827.33 loops=3)
+                                 Sort Key: lineitem_1.l_partkey
+                                 Sort Method: external merge  Disk: 15088kB
+                                 Buffers: shared hit=9320 read=103294, temp read=33169 written=55264
+                                 Worker 0:  Sort Method: external merge  Disk: 15088kB
+                                 Worker 1:  Sort Method: external merge  Disk: 15088kB
+                                 ->  Partial HashAggregate  (cost=297783.66..324586.67 rows=190827 width=36) (actual rows=199990.33 loops=3)
+                                       Group Key: lineitem_1.l_partkey
+                                       Planned Partitions: 8  Batches: 41  Memory Usage: 8273kB  Disk Usage: 72288kB
+                                       Buffers: shared hit=9306 read=103294, temp read=27511 written=49591
+                                       Worker 0:  Batches: 41  Memory Usage: 8273kB  Disk Usage: 64664kB
+                                       Worker 1:  Batches: 41  Memory Usage: 8273kB  Disk Usage: 64544kB
+                                       ->  Parallel Seq Scan on lineitem lineitem_1  (cost=0.00..137603.70 rows=2500370 width=9) (actual rows=2000405.00 loops=3)
+                                             Buffers: shared hit=9306 read=103294
+         ->  Index Scan using ixtest_lineitem_partkey on lineitem  (cost=0.43..3.53 rows=10 width=17) (actual rows=2.88 loops=204)
+               Index Cond: (l_partkey = lineitem_1.l_partkey)
+               Filter: (l_quantity < ((0.2 * avg(lineitem_1.l_quantity))))
+               Rows Removed by Filter: 27
+               Index Searches: 204
+               Buffers: shared hit=907 read=5791
+ Planning:
+   Buffers: shared hit=413 read=24
+ Planning Time: 1.322 ms
+ JIT:
+   Functions: 62
+   Options: Inlining false, Optimization false, Expressions true, Deforming true
+ Execution Time: 2294.975 ms
+(60 rows)
+

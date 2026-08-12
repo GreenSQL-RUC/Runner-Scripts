@@ -1,0 +1,46 @@
+                                                                        QUERY PLAN                                                                        
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+ GroupAggregate  (cost=47254.07..47254.10 rows=1 width=72) (actual rows=7.00 loops=1)
+   Group Key: (SUBSTRING(customer.c_phone FROM 1 FOR 2))
+   Buffers: shared hit=7440 read=25905
+   InitPlan 1
+     ->  Finalize Aggregate  (cost=6245.83..6245.84 rows=1 width=32) (actual rows=1.00 loops=1)
+           Buffers: shared hit=3606
+           ->  Gather  (cost=6245.61..6245.82 rows=2 width=32) (actual rows=3.00 loops=1)
+                 Workers Planned: 2
+                 Workers Launched: 2
+                 Buffers: shared hit=3606
+                 ->  Partial Aggregate  (cost=5245.61..5245.62 rows=1 width=32) (actual rows=1.00 loops=3)
+                       Buffers: shared hit=3606
+                       ->  Parallel Seq Scan on customer customer_1  (cost=0.00..5240.62 rows=1993 width=6) (actual rows=12706.67 loops=3)
+                             Filter: ((c_acctbal > 0.00) AND (SUBSTRING(c_phone FROM 1 FOR 2) = ANY ('{13,31,23,29,30,18,17}'::text[])))
+                             Rows Removed by Filter: 37293
+                             Buffers: shared hit=3606
+   ->  Sort  (cost=41008.23..41008.23 rows=1 width=38) (actual rows=6384.00 loops=1)
+         Sort Key: (SUBSTRING(customer.c_phone FROM 1 FOR 2))
+         Sort Method: quicksort  Memory: 392kB
+         Buffers: shared hit=7440 read=25905
+         ->  Gather  (cost=6249.74..41008.22 rows=1 width=38) (actual rows=6384.00 loops=1)
+               Workers Planned: 2
+               Workers Launched: 2
+               Buffers: shared hit=7437 read=25905
+               ->  Parallel Hash Right Join  (cost=5249.74..40008.12 rows=1 width=38) (actual rows=2128.00 loops=3)
+                     Hash Cond: (orders.o_custkey = customer.c_custkey)
+                     Filter: (orders.o_orderkey IS NULL)
+                     Rows Removed by Filter: 63356
+                     Buffers: shared hit=3831 read=25905
+                     ->  Parallel Seq Scan on orders  (cost=0.00..32384.73 rows=624873 width=8) (actual rows=500000.00 loops=3)
+                           Buffers: shared hit=231 read=25905
+                     ->  Parallel Hash  (cost=5240.62..5240.62 rows=729 width=26) (actual rows=6333.33 loops=3)
+                           Buckets: 32768 (originally 2048)  Batches: 1 (originally 1)  Memory Usage: 1712kB
+                           Buffers: shared hit=3600
+                           ->  Parallel Seq Scan on customer  (cost=0.00..5240.62 rows=729 width=26) (actual rows=6333.33 loops=3)
+                                 Filter: ((c_acctbal > (InitPlan 1).col1) AND (SUBSTRING(c_phone FROM 1 FOR 2) = ANY ('{13,31,23,29,30,18,17}'::text[])))
+                                 Rows Removed by Filter: 43667
+                                 Buffers: shared hit=3600
+ Planning:
+   Buffers: shared hit=260
+ Planning Time: 0.734 ms
+ Execution Time: 143.545 ms
+(42 rows)
+

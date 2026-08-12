@@ -268,6 +268,12 @@ int main(void) {
     const char *pg_port     = env_or("PGPORT",      "");
     const char *env_prefix  = build_psql_env_prefix(pg_port);
 
+    /* Outputs are written under <OUTPUTS_DIR>/<DB_NAME>/ so different databases
+     * on the same query corpus (e.g. tpch vs tpch_idx) do not overwrite each
+     * other's outputs. */
+    char outputs_base[PATH_MAX];
+    snprintf(outputs_base, sizeof(outputs_base), "%s/%s", outputs_dir, db_name);
+
     int max_rows = DEFAULT_MAX_ROWS;
     const char *mr = getenv("MAX_ROWS");
     if (mr && *mr) {
@@ -280,6 +286,7 @@ int main(void) {
     printf("  QUERY_DIR   = %s\n", query_dir);
     printf("  OUTPUTS_DIR = %s\n", outputs_dir);
     printf("  DB_NAME     = %s\n", db_name);
+    printf("  outputs ->    %s/\n", outputs_base);
     printf("  DB_USER     = %s\n", db_user);
     if (max_rows > 0)
         printf("  MAX_ROWS    = %d rows/query\n\n", max_rows);
@@ -298,8 +305,8 @@ int main(void) {
     size_t dir_prefix = strlen(query_dir);
     if (dir_prefix > 0 && query_dir[dir_prefix - 1] != '/') dir_prefix++;
 
-    if (ensure_dir(outputs_dir) != 0) {
-        fprintf(stderr, "Failed to create outputs dir: %s\n", outputs_dir);
+    if (ensure_dir(outputs_base) != 0) {
+        fprintf(stderr, "Failed to create outputs dir: %s\n", outputs_base);
         return 1;
     }
 
@@ -317,7 +324,7 @@ int main(void) {
         int rel_len = (int)strlen(rel);
         int stem_len = (rel_len >= 4) ? rel_len - 4 : rel_len;   /* drop ".sql" */
         int n = snprintf(out_path, sizeof(out_path), "%s/%.*s.txt",
-                         outputs_dir, stem_len, rel);
+                         outputs_base, stem_len, rel);
         if (n <= 0 || n >= (int)sizeof(out_path)) {
             fprintf(stderr, "Output path too long for %s, skipping\n", rel);
             failures++;

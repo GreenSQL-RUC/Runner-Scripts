@@ -1,0 +1,54 @@
+                                                                        QUERY PLAN                                                                         
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=36581.48..36621.02 rows=15815 width=44) (actual rows=18314.00 loops=1)
+   Sort Key: (count(DISTINCT partsupp.ps_suppkey)) DESC, part.p_brand, part.p_type, part.p_size
+   Sort Method: quicksort  Memory: 1912kB
+   Buffers: shared hit=93811 read=7
+   ->  GroupAggregate  (cost=20702.05..35478.46 rows=15815 width=44) (actual rows=18314.00 loops=1)
+         Group Key: part.p_brand, part.p_type, part.p_size
+         Buffers: shared hit=93808 read=7
+         ->  Gather Merge  (cost=20702.05..34164.41 rows=115590 width=40) (actual rows=118274.00 loops=1)
+               Workers Planned: 2
+               Workers Launched: 2
+               Buffers: shared hit=93808 read=7
+               ->  Sort  (cost=19702.03..19822.44 rows=48162 width=40) (actual rows=39424.67 loops=3)
+                     Sort Key: part.p_brand, part.p_type, part.p_size, partsupp.ps_suppkey
+                     Sort Method: quicksort  Memory: 3579kB
+                     Buffers: shared hit=93808 read=7
+                     Worker 0:  Sort Method: quicksort  Memory: 3602kB
+                     Worker 1:  Sort Method: quicksort  Memory: 3275kB
+                     ->  Hash Anti Join  (cost=711.14..15956.08 rows=48162 width=40) (actual rows=39424.67 loops=3)
+                           Hash Cond: (partsupp.ps_suppkey = supplier.s_suppkey)
+                           Buffers: shared hit=93764 read=7
+                           ->  Nested Loop  (cost=363.12..15000.00 rows=48168 width=40) (actual rows=39441.33 loops=3)
+                                 Buffers: shared hit=93095 read=7
+                                 ->  Parallel Bitmap Heap Scan on part  (cost=362.70..4814.45 rows=12066 width=40) (actual rows=9860.33 loops=3)
+                                       Recheck Cond: (p_size = ANY ('{49,14,23,45,19,3,36,9}'::integer[]))
+                                       Filter: ((p_brand <> 'Brand#45'::bpchar) AND ((p_type)::text !~~ 'MEDIUM POLISHED%'::text))
+                                       Rows Removed by Filter: 748
+                                       Heap Blocks: exact=1428
+                                       Buffers: shared hit=4186
+                                       Worker 0:  Heap Blocks: exact=1420
+                                       Worker 1:  Heap Blocks: exact=1247
+                                       ->  Bitmap Index Scan on ixtest_part_size  (cost=0.00..355.46 rows=31080 width=0) (actual rows=31826.00 loops=1)
+                                             Index Cond: (p_size = ANY ('{49,14,23,45,19,3,36,9}'::integer[]))
+                                             Index Searches: 8
+                                             Buffers: shared hit=51
+                                 ->  Index Only Scan using ixtest_partsupp_pk on partsupp  (cost=0.42..0.80 rows=4 width=8) (actual rows=4.00 loops=29581)
+                                       Index Cond: (ps_partkey = part.p_partkey)
+                                       Heap Fetches: 0
+                                       Index Searches: 29581
+                                       Buffers: shared hit=88909 read=7
+                           ->  Hash  (cost=348.00..348.00 rows=1 width=4) (actual rows=4.00 loops=3)
+                                 Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                                 Buffers: shared hit=669
+                                 ->  Seq Scan on supplier  (cost=0.00..348.00 rows=1 width=4) (actual rows=4.00 loops=3)
+                                       Filter: ((s_comment)::text ~~ '%Customer%Complaints%'::text)
+                                       Rows Removed by Filter: 9996
+                                       Buffers: shared hit=669
+ Planning:
+   Buffers: shared hit=332 read=8
+ Planning Time: 1.757 ms
+ Execution Time: 222.416 ms
+(50 rows)
+

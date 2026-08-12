@@ -1,0 +1,36 @@
+                                                                      QUERY PLAN                                                                      
+------------------------------------------------------------------------------------------------------------------------------------------------------
+ Finalize GroupAggregate  (cost=71089.60..71139.10 rows=5 width=24) (actual rows=5.00 loops=1)
+   Group Key: orders.o_orderpriority
+   Buffers: shared hit=174224 read=81244
+   ->  Gather Merge  (cost=71089.60..71138.99 rows=12 width=24) (actual rows=15.00 loops=1)
+         Workers Planned: 2
+         Workers Launched: 2
+         Buffers: shared hit=174224 read=81244
+         ->  Partial GroupAggregate  (cost=70089.57..70137.59 rows=5 width=24) (actual rows=5.00 loops=3)
+               Group Key: orders.o_orderpriority
+               Buffers: shared hit=174224 read=81244
+               ->  Sort  (cost=70089.57..70105.56 rows=6395 width=16) (actual rows=17507.67 loops=3)
+                     Sort Key: orders.o_orderpriority
+                     Sort Method: quicksort  Memory: 769kB
+                     Buffers: shared hit=174224 read=81244
+                     Worker 0:  Sort Method: quicksort  Memory: 385kB
+                     Worker 1:  Sort Method: quicksort  Memory: 769kB
+                     ->  Nested Loop Semi Join  (cost=0.43..69685.32 rows=6395 width=16) (actual rows=17507.67 loops=3)
+                           Buffers: shared hit=174210 read=81244
+                           ->  Parallel Seq Scan on orders  (cost=0.00..35509.10 rows=24409 width=20) (actual rows=19072.67 loops=3)
+                                 Filter: ((o_orderdate >= '1993-07-01'::date) AND (o_orderdate < '1993-10-01 00:00:00'::timestamp without time zone))
+                                 Rows Removed by Filter: 480927
+                                 Buffers: shared read=26136
+                           ->  Index Scan using idx_lineitem_order on lineitem  (cost=0.43..4.56 rows=5 width=4) (actual rows=0.92 loops=57218)
+                                 Index Cond: (l_orderkey = orders.o_orderkey)
+                                 Filter: (l_commitdate < l_receiptdate)
+                                 Rows Removed by Filter: 1
+                                 Index Searches: 57218
+                                 Buffers: shared hit=174210 read=55108
+ Planning:
+   Buffers: shared hit=203 read=43
+ Planning Time: 0.874 ms
+ Execution Time: 199.300 ms
+(32 rows)
+

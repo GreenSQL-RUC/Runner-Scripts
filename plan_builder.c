@@ -280,12 +280,19 @@ int main(void) {
     const char *pg_port   = env_or("PGPORT",    "");
     const char *env_prefix = build_psql_env_prefix(pg_port, workers);
 
+    /* Plans are written under <PLANS_DIR>/<DB_NAME>/ so different databases on
+     * the same query corpus (e.g. tpch vs tpch_idx) do not overwrite each
+     * other's plans. */
+    char plans_base[PATH_MAX];
+    snprintf(plans_base, sizeof(plans_base), "%s/%s", plans_dir, db_name);
+
     printf("plan_builder configuration:\n");
     printf("  PGPORT    = %s\n",
            (pg_port && *pg_port) ? pg_port : "(psql default, 5432)");
     printf("  QUERY_DIR = %s\n", query_dir);
     printf("  PLANS_DIR = %s\n", plans_dir);
     printf("  DB_NAME   = %s\n", db_name);
+    printf("  plans ->    %s/\n", plans_base);
     printf("  DB_USER   = %s\n", db_user);
     printf("  WORKERS   = %s\n\n",
            (workers && *workers) ? workers : "(planner default)");
@@ -303,11 +310,12 @@ int main(void) {
     size_t dir_prefix = strlen(query_dir);
     if (dir_prefix > 0 && query_dir[dir_prefix - 1] != '/') dir_prefix++;
 
-    if (ensure_dir(plans_dir) != 0) {
-        fprintf(stderr, "Failed to create plans dir: %s\n", plans_dir);
+    if (ensure_dir(plans_base) != 0) {
+        fprintf(stderr, "Failed to create plans dir: %s\n", plans_base);
         return 1;
     }
     chown_to_invoker(plans_dir);
+    chown_to_invoker(plans_base);
 
     char temp_sql[PATH_MAX];
     snprintf(temp_sql, sizeof(temp_sql), "/tmp/plan_builder_%d.sql", (int)getpid());
@@ -323,7 +331,7 @@ int main(void) {
         int rel_len = (int)strlen(rel);
         int stem_len = (rel_len >= 4) ? rel_len - 4 : rel_len;   /* drop ".sql" */
         int n = snprintf(plan_path, sizeof(plan_path), "%s/%.*s.txt",
-                         plans_dir, stem_len, rel);
+                         plans_base, stem_len, rel);
         if (n <= 0 || n >= (int)sizeof(plan_path)) {
             fprintf(stderr, "Plan path too long for %s, skipping\n", rel);
             failures++;

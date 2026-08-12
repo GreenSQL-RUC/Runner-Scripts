@@ -1,0 +1,23 @@
+                                                                            QUERY PLAN                                                                             
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Finalize Aggregate  (cost=38775.75..38775.76 rows=1 width=32) (actual rows=1.00 loops=1)
+   Buffers: shared hit=4274 read=5442
+   ->  Gather  (cost=38775.52..38775.73 rows=2 width=32) (actual rows=3.00 loops=1)
+         Workers Planned: 2
+         Workers Launched: 2
+         Buffers: shared hit=4274 read=5442
+         ->  Partial Aggregate  (cost=37775.52..37775.53 rows=1 width=32) (actual rows=1.00 loops=3)
+               Buffers: shared hit=4274 read=5442
+               ->  Parallel Index Only Scan using ixtest_lineitem_ship_cover on lineitem  (cost=0.43..37541.83 rows=46739 width=12) (actual rows=38053.33 loops=3)
+                     Index Cond: ((l_shipdate >= '1994-01-01'::date) AND (l_shipdate < '1995-01-01 00:00:00'::timestamp without time zone))
+                     Filter: ((l_discount >= 0.05) AND (l_discount <= 0.07) AND (l_quantity < '24'::numeric))
+                     Rows Removed by Filter: 265098
+                     Heap Fetches: 0
+                     Index Searches: 1
+                     Buffers: shared hit=4274 read=5442
+ Planning:
+   Buffers: shared hit=175 read=43
+ Planning Time: 0.773 ms
+ Execution Time: 70.310 ms
+(19 rows)
+

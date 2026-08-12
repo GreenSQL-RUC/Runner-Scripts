@@ -1,0 +1,52 @@
+                                                                       QUERY PLAN                                                                       
+--------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=201666.17..201666.20 rows=10 width=44) (actual rows=10.00 loops=1)
+   Buffers: shared hit=502098 read=124530
+   ->  Sort  (cost=201666.17..202479.24 rows=325229 width=44) (actual rows=10.00 loops=1)
+         Sort Key: (sum((lineitem.l_extendedprice * ('1'::numeric - lineitem.l_discount)))) DESC, orders.o_orderdate
+         Sort Method: top-N heapsort  Memory: 26kB
+         Buffers: shared hit=502098 read=124530
+         ->  GroupAggregate  (cost=147816.02..194638.09 rows=325229 width=44) (actual rows=11620.00 loops=1)
+               Group Key: lineitem.l_orderkey, orders.o_orderdate, orders.o_shippriority
+               Buffers: shared hit=502095 read=124530
+               ->  Gather Merge  (cost=147816.02..185694.29 rows=325229 width=24) (actual rows=30519.00 loops=1)
+                     Workers Planned: 2
+                     Workers Launched: 2
+                     Buffers: shared hit=502095 read=124530
+                     ->  Sort  (cost=146815.99..147154.77 rows=135512 width=24) (actual rows=10173.00 loops=3)
+                           Sort Key: lineitem.l_orderkey, orders.o_orderdate, orders.o_shippriority
+                           Sort Method: quicksort  Memory: 867kB
+                           Buffers: shared hit=502095 read=124530
+                           Worker 0:  Sort Method: quicksort  Memory: 841kB
+                           Worker 1:  Sort Method: quicksort  Memory: 818kB
+                           ->  Nested Loop  (cost=4541.53..132482.41 rows=135512 width=24) (actual rows=10173.00 loops=3)
+                                 Buffers: shared hit=502065 read=124530
+                                 ->  Parallel Hash Join  (cost=4541.10..39898.53 rows=62702 width=12) (actual rows=49042.00 loops=3)
+                                       Hash Cond: (orders.o_custkey = customer.c_custkey)
+                                       Buffers: shared read=29736
+                                       ->  Parallel Seq Scan on orders  (cost=0.00..33946.92 rows=306464 width=16) (actual rows=242435.00 loops=3)
+                                             Filter: (o_orderdate < '1995-03-15'::date)
+                                             Rows Removed by Filter: 257565
+                                             Buffers: shared read=26136
+                                       ->  Parallel Hash  (cost=4381.25..4381.25 rows=12788 width=4) (actual rows=10047.33 loops=3)
+                                             Buckets: 32768  Batches: 1  Memory Usage: 1504kB
+                                             Buffers: shared read=3600
+                                             ->  Parallel Seq Scan on customer  (cost=0.00..4381.25 rows=12788 width=4) (actual rows=10047.33 loops=3)
+                                                   Filter: (c_mktsegment = 'BUILDING'::bpchar)
+                                                   Rows Removed by Filter: 39953
+                                                   Buffers: shared read=3600
+                                 ->  Index Scan using idx_lineitem_order on lineitem  (cost=0.43..1.40 rows=8 width=16) (actual rows=0.21 loops=147126)
+                                       Index Cond: (l_orderkey = orders.o_orderkey)
+                                       Filter: (l_shipdate > '1995-03-15'::date)
+                                       Rows Removed by Filter: 4
+                                       Index Searches: 147126
+                                       Buffers: shared hit=502065 read=94794
+ Planning:
+   Buffers: shared hit=219 read=17
+ Planning Time: 0.906 ms
+ JIT:
+   Functions: 67
+   Options: Inlining false, Optimization false, Expressions true, Deforming true
+ Execution Time: 499.288 ms
+(48 rows)
+

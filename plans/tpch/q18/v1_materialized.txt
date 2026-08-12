@@ -1,0 +1,64 @@
+                                                                                            QUERY PLAN                                                                                            
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=514589.03..514589.28 rows=100 width=130) (actual rows=57.00 loops=1)
+   Buffers: shared hit=245428 read=151889
+   CTE _m
+     ->  GroupAggregate  (cost=408625.09..484076.77 rows=524092 width=71) (actual rows=57.00 loops=1)
+           Group Key: customer.c_name, customer.c_custkey, orders.o_orderkey, orders.o_orderdate, orders.o_totalprice
+           Buffers: shared hit=245428 read=151889
+           ->  Gather Merge  (cost=408625.09..469664.24 rows=524092 width=44) (actual rows=399.00 loops=1)
+                 Workers Planned: 2
+                 Workers Launched: 2
+                 Buffers: shared hit=245428 read=151889
+                 ->  Sort  (cost=407625.06..408170.99 rows=218372 width=44) (actual rows=133.00 loops=3)
+                       Sort Key: customer.c_name, customer.c_custkey, orders.o_orderkey, orders.o_orderdate, orders.o_totalprice
+                       Sort Method: quicksort  Memory: 33kB
+                       Buffers: shared hit=245428 read=151889
+                       Worker 0:  Sort Method: quicksort  Memory: 32kB
+                       Worker 1:  Sort Method: quicksort  Memory: 33kB
+                       ->  Nested Loop  (cost=283197.18..381539.37 rows=218372 width=44) (actual rows=133.00 loops=3)
+                             Buffers: shared hit=245368 read=151889
+                             ->  Parallel Hash Join  (cost=283196.74..317653.79 rows=54571 width=43) (actual rows=19.00 loops=3)
+                                   Hash Cond: (orders.o_custkey = customer.c_custkey)
+                                   Buffers: shared hit=245271 read=151754
+                                   ->  Hash Join  (cost=278190.49..312215.52 rows=54571 width=24) (actual rows=19.00 loops=3)
+                                         Hash Cond: (orders.o_orderkey = lineitem_1.l_orderkey)
+                                         Buffers: shared hit=245271 read=148154
+                                         ->  Parallel Seq Scan on orders  (cost=0.00..32384.73 rows=624873 width=20) (actual rows=500000.00 loops=3)
+                                               Buffers: shared hit=4 read=26132
+                                         ->  Hash  (cost=276553.37..276553.37 rows=130970 width=4) (actual rows=57.00 loops=3)
+                                               Buckets: 131072  Batches: 1  Memory Usage: 1027kB
+                                               Buffers: shared hit=245267 read=122022
+                                               ->  GroupAggregate  (cost=0.43..276553.37 rows=130970 width=4) (actual rows=57.00 loops=3)
+                                                     Group Key: lineitem_1.l_orderkey
+                                                     Filter: (sum(lineitem_1.l_quantity) > '300'::numeric)
+                                                     Rows Removed by Filter: 1499943
+                                                     Buffers: shared hit=245267 read=122022
+                                                     ->  Index Scan using idx_lineitem_order on lineitem lineitem_1  (cost=0.43..240653.66 rows=6001215 width=9) (actual rows=6001215.00 loops=3)
+                                                           Index Searches: 3
+                                                           Buffers: shared hit=245267 read=122022
+                                   ->  Parallel Hash  (cost=4225.00..4225.00 rows=62500 width=23) (actual rows=50000.00 loops=3)
+                                         Buckets: 262144  Batches: 1  Memory Usage: 10336kB
+                                         Buffers: shared read=3600
+                                         ->  Parallel Seq Scan on customer  (cost=0.00..4225.00 rows=62500 width=23) (actual rows=50000.00 loops=3)
+                                               Buffers: shared read=3600
+                             ->  Index Scan using idx_lineitem_order on lineitem  (cost=0.43..1.02 rows=15 width=9) (actual rows=7.00 loops=57)
+                                   Index Cond: (l_orderkey = orders.o_orderkey)
+                                   Index Searches: 57
+                                   Buffers: shared hit=97 read=135
+   ->  Sort  (cost=30512.26..31822.49 rows=524092 width=130) (actual rows=57.00 loops=1)
+         Sort Key: _m.o_totalprice DESC, _m.o_orderdate
+         Sort Method: quicksort  Memory: 29kB
+         Buffers: shared hit=74388 read=62313
+         ->  CTE Scan on _m  (cost=0.00..10481.84 rows=524092 width=130) (actual rows=57.00 loops=1)
+               Storage: Memory  Maximum Storage: 21kB
+               Buffers: shared hit=74388 read=62313
+ Planning:
+   Buffers: shared hit=187 read=50
+ Planning Time: 1.309 ms
+ JIT:
+   Functions: 88
+   Options: Inlining true, Optimization true, Expressions true, Deforming true
+ Execution Time: 3187.563 ms
+(60 rows)
+
