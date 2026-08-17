@@ -1,0 +1,63 @@
+                                                                                  QUERY PLAN                                                                                  
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=129252.71..129252.76 rows=20 width=640) (actual rows=20.00 loops=1)
+   Buffers: shared hit=258521
+   CTE _m
+     ->  HashAggregate  (cost=125919.99..126624.76 rows=56382 width=201) (actual rows=37967.00 loops=1)
+           Group Key: customer.c_custkey, customer.c_name, customer.c_acctbal, customer.c_phone, nation.n_name, customer.c_address, customer.c_comment
+           Batches: 1  Memory Usage: 21529kB
+           Buffers: shared hit=258518
+           ->  Gather  (cost=113701.57..124510.44 rows=56382 width=181) (actual rows=114705.00 loops=1)
+                 Workers Planned: 2
+                 Workers Launched: 2
+                 Buffers: shared hit=258518
+                 ->  Hash Join  (cost=112701.57..117872.24 rows=23492 width=181) (actual rows=38235.00 loops=3)
+                       Hash Cond: (customer.c_nationkey = nation.n_nationkey)
+                       Buffers: shared hit=258518
+                       ->  Parallel Hash Join  (cost=112700.01..117547.66 rows=23492 width=159) (actual rows=38235.00 loops=3)
+                             Hash Cond: (customer.c_custkey = orders.o_custkey)
+                             Buffers: shared hit=258515
+                             ->  Parallel Seq Scan on customer  (cost=0.00..4225.00 rows=62500 width=147) (actual rows=50000.00 loops=3)
+                                   Buffers: shared hit=3600
+                             ->  Parallel Hash  (cost=112472.66..112472.66 rows=18188 width=16) (actual rows=38235.00 loops=3)
+                                   Buckets: 131072 (originally 65536)  Batches: 1 (originally 1)  Memory Usage: 7648kB
+                                   Buffers: shared hit=254915
+                                   ->  Nested Loop  (cost=786.65..112472.66 rows=18188 width=16) (actual rows=38235.00 loops=3)
+                                         Buffers: shared hit=254915
+                                         ->  Parallel Bitmap Heap Scan on orders  (cost=786.22..27196.86 rows=18310 width=8) (actual rows=19023.00 loops=3)
+                                               Recheck Cond: ((o_orderdate >= '1993-10-01'::date) AND (o_orderdate < '1994-01-01 00:00:00'::timestamp without time zone))
+                                               Heap Blocks: exact=9202
+                                               Buffers: shared hit=23355
+                                               Worker 0:  Heap Blocks: exact=7168
+                                               Worker 1:  Heap Blocks: exact=6932
+                                               ->  Bitmap Index Scan on ixtest_orders_orderdate  (cost=0.00..772.03 rows=56760 width=0) (actual rows=57069.00 loops=1)
+                                                     Index Cond: ((o_orderdate >= '1993-10-01'::date) AND (o_orderdate < '1994-01-01 00:00:00'::timestamp without time zone))
+                                                     Index Searches: 1
+                                                     Buffers: shared hit=53
+                                         ->  Index Scan using idx_lineitem_order on lineitem  (cost=0.43..4.62 rows=4 width=16) (actual rows=2.01 loops=57069)
+                                               Index Cond: (l_orderkey = orders.o_orderkey)
+                                               Filter: (l_returnflag = 'R'::bpchar)
+                                               Rows Removed by Filter: 2
+                                               Index Searches: 57069
+                                               Buffers: shared hit=231560
+                       ->  Hash  (cost=1.25..1.25 rows=25 width=30) (actual rows=25.00 loops=3)
+                             Buckets: 1024  Batches: 1  Memory Usage: 10kB
+                             Buffers: shared hit=3
+                             ->  Seq Scan on nation  (cost=0.00..1.25 rows=25 width=30) (actual rows=25.00 loops=3)
+                                   Buffers: shared hit=3
+   ->  Sort  (cost=2627.94..2768.90 rows=56382 width=640) (actual rows=20.00 loops=1)
+         Sort Key: _m.revenue DESC
+         Sort Method: top-N heapsort  Memory: 34kB
+         Buffers: shared hit=258521
+         ->  CTE Scan on _m  (cost=0.00..1127.64 rows=56382 width=640) (actual rows=37967.00 loops=1)
+               Storage: Memory  Maximum Storage: 8221kB
+               Buffers: shared hit=258518
+ Planning:
+   Buffers: shared hit=569
+ Planning Time: 1.763 ms
+ JIT:
+   Functions: 89
+   Options: Inlining false, Optimization false, Expressions true, Deforming true
+ Execution Time: 321.042 ms
+(59 rows)
+

@@ -1,0 +1,63 @@
+                                                                                                    QUERY PLAN                                                                                                     
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Finalize Aggregate  (cost=446966.85..446966.86 rows=1 width=32) (actual rows=1.00 loops=1)
+   Buffers: shared hit=350184
+   ->  Gather  (cost=446966.42..446966.83 rows=4 width=32) (actual rows=5.00 loops=1)
+         Workers Planned: 4
+         Workers Launched: 4
+         Buffers: shared hit=350184
+         ->  Partial Aggregate  (cost=445966.42..445966.43 rows=1 width=32) (actual rows=1.00 loops=5)
+               Buffers: shared hit=350184
+               ->  Parallel Append  (cost=6003.41..445966.34 rows=30 width=32) (actual rows=24.20 loops=5)
+                     Buffers: shared hit=350184
+                     ->  Parallel Hash Join  (cost=6004.34..148656.35 rows=16 width=32) (actual rows=28.00 loops=2)
+                           Hash Cond: (lineitem.l_partkey = part.p_partkey)
+                           Buffers: shared hit=116728
+                           ->  Parallel Seq Scan on lineitem  (cost=0.00..142606.08 rows=12210 width=16) (actual rows=23633.50 loops=2)
+                                 Filter: ((l_quantity >= '20'::numeric) AND (l_quantity <= '30'::numeric) AND (l_shipmode = ANY ('{AIR,"AIR REG"}'::bpchar[])) AND (l_shipinstruct = 'DELIVER IN PERSON'::bpchar))
+                                 Rows Removed by Filter: 2976974
+                                 Buffers: shared hit=112600
+                           ->  Parallel Hash  (cost=6003.00..6003.00 rows=107 width=4) (actual rows=119.00 loops=2)
+                                 Buckets: 1024  Batches: 1  Memory Usage: 40kB
+                                 Buffers: shared hit=4128
+                                 ->  Parallel Seq Scan on part  (cost=0.00..6003.00 rows=107 width=4) (actual rows=119.00 loops=2)
+                                       Filter: ((p_size >= 1) AND (p_size <= 15) AND (p_brand = 'Brand#34'::bpchar) AND (p_container = ANY ('{"LG CASE","LG BOX","LG PACK","LG PKG"}'::bpchar[])))
+                                       Rows Removed by Filter: 99881
+                                       Buffers: shared hit=4128
+                     ->  Parallel Hash Join  (cost=6003.77..148656.20 rows=9 width=32) (actual rows=8.00 loops=5)
+                           Hash Cond: (lineitem_1.l_partkey = part_1.p_partkey)
+                           Buffers: shared hit=116728
+                           ->  Parallel Seq Scan on lineitem lineitem_1  (cost=0.00..142606.08 rows=12336 width=16) (actual rows=9356.40 loops=5)
+                                 Filter: ((l_quantity >= '10'::numeric) AND (l_quantity <= '20'::numeric) AND (l_shipmode = ANY ('{AIR,"AIR REG"}'::bpchar[])) AND (l_shipinstruct = 'DELIVER IN PERSON'::bpchar))
+                                 Rows Removed by Filter: 1190887
+                                 Buffers: shared hit=112600
+                           ->  Parallel Hash  (cost=6003.00..6003.00 rows=62 width=4) (actual rows=31.80 loops=5)
+                                 Buckets: 1024  Batches: 1  Memory Usage: 40kB
+                                 Buffers: shared hit=4128
+                                 ->  Parallel Seq Scan on part part_1  (cost=0.00..6003.00 rows=62 width=4) (actual rows=159.00 loops=1)
+                                       Filter: ((p_size >= 1) AND (p_size <= 10) AND (p_brand = 'Brand#23'::bpchar) AND (p_container = ANY ('{"MED BAG","MED BOX","MED PKG","MED PACK"}'::bpchar[])))
+                                       Rows Removed by Filter: 199841
+                                       Buffers: shared hit=4128
+                     ->  Parallel Hash Join  (cost=6003.41..148653.65 rows=5 width=32) (actual rows=8.33 loops=3)
+                           Hash Cond: (lineitem_2.l_partkey = part_2.p_partkey)
+                           Buffers: shared hit=116728
+                           ->  Parallel Seq Scan on lineitem lineitem_2  (cost=0.00..142606.08 rows=11764 width=16) (actual rows=15748.00 loops=3)
+                                 Filter: ((l_quantity >= '1'::numeric) AND (l_quantity <= '11'::numeric) AND (l_shipmode = ANY ('{AIR,"AIR REG"}'::bpchar[])) AND (l_shipinstruct = 'DELIVER IN PERSON'::bpchar))
+                                 Rows Removed by Filter: 1984657
+                                 Buffers: shared hit=112600
+                           ->  Parallel Hash  (cost=6003.00..6003.00 rows=33 width=4) (actual rows=29.33 loops=3)
+                                 Buckets: 1024  Batches: 1  Memory Usage: 72kB
+                                 Buffers: shared hit=4128
+                                 ->  Parallel Seq Scan on part part_2  (cost=0.00..6003.00 rows=33 width=4) (actual rows=44.00 loops=2)
+                                       Filter: ((p_size >= 1) AND (p_size <= 5) AND (p_brand = 'Brand#12'::bpchar) AND (p_container = ANY ('{"SM CASE","SM BOX","SM PACK","SM PKG"}'::bpchar[])))
+                                       Rows Removed by Filter: 99956
+                                       Buffers: shared hit=4128
+ Planning:
+   Buffers: shared hit=243
+ Planning Time: 0.913 ms
+ JIT:
+   Functions: 222
+   Options: Inlining false, Optimization false, Expressions true, Deforming true
+ Execution Time: 1082.532 ms
+(59 rows)
+

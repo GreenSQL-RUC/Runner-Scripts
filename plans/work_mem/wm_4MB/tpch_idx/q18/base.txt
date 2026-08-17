@@ -1,0 +1,65 @@
+                                                                                              QUERY PLAN                                                                                              
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=314234.09..314283.30 rows=100 width=71) (actual rows=57.00 loops=1)
+   Buffers: shared hit=516366
+   ->  GroupAggregate  (cost=314234.09..561773.73 rows=503039 width=71) (actual rows=57.00 loops=1)
+         Group Key: orders.o_totalprice, orders.o_orderdate, customer.c_name, customer.c_custkey, orders.o_orderkey
+         Buffers: shared hit=516366
+         ->  Incremental Sort  (cost=314234.09..547940.16 rows=503039 width=44) (actual rows=399.00 loops=1)
+               Sort Key: orders.o_totalprice DESC, orders.o_orderdate, customer.c_name, customer.c_custkey, orders.o_orderkey
+               Presorted Key: orders.o_totalprice, orders.o_orderdate
+               Full-sort Groups: 12  Sort Method: quicksort  Average Memory: 27kB  Peak Memory: 27kB
+               Buffers: shared hit=516366
+               ->  Nested Loop  (cost=314233.66..525303.41 rows=503039 width=44) (actual rows=399.00 loops=1)
+                     Buffers: shared hit=516360
+                     ->  Nested Loop  (cost=314233.23..374650.43 rows=125741 width=43) (actual rows=57.00 loops=1)
+                           Buffers: shared hit=516128
+                           ->  Gather Merge  (cost=314232.80..329108.77 rows=125741 width=24) (actual rows=57.00 loops=1)
+                                 Workers Planned: 3
+                                 Workers Launched: 3
+                                 Buffers: shared hit=515900
+                                 ->  Sort  (cost=313232.76..313334.16 rows=40562 width=24) (actual rows=14.25 loops=4)
+                                       Sort Key: orders.o_totalprice DESC, orders.o_orderdate
+                                       Sort Method: quicksort  Memory: 26kB
+                                       Buffers: shared hit=515900
+                                       Worker 0:  Sort Method: quicksort  Memory: 25kB
+                                       Worker 1:  Sort Method: quicksort  Memory: 25kB
+                                       Worker 2:  Sort Method: quicksort  Memory: 26kB
+                                       ->  Hash Join  (cost=277883.30..310128.18 rows=40562 width=24) (actual rows=14.25 loops=4)
+                                             Hash Cond: (orders.o_orderkey = lineitem_1.l_orderkey)
+                                             Buffers: shared hit=515855
+                                             ->  Parallel Seq Scan on orders  (cost=0.00..30974.71 rows=483871 width=20) (actual rows=375000.00 loops=4)
+                                                   Buffers: shared hit=26136
+                                             ->  Hash  (cost=276311.54..276311.54 rows=125741 width=4) (actual rows=57.00 loops=4)
+                                                   Buckets: 131072  Batches: 1  Memory Usage: 1027kB
+                                                   Buffers: shared hit=489719
+                                                   ->  GroupAggregate  (cost=0.43..276311.54 rows=125741 width=4) (actual rows=57.00 loops=4)
+                                                         Group Key: lineitem_1.l_orderkey
+                                                         Filter: (sum(lineitem_1.l_quantity) > '300'::numeric)
+                                                         Rows Removed by Filter: 1499943
+                                                         Buffers: shared hit=489719
+                                                         ->  Index Scan using idx_lineitem_order on lineitem lineitem_1  (cost=0.43..240648.77 rows=6000889 width=9) (actual rows=6001215.00 loops=4)
+                                                               Index Searches: 4
+                                                               Buffers: shared hit=489719
+                           ->  Memoize  (cost=0.43..0.46 rows=1 width=23) (actual rows=1.00 loops=57)
+                                 Cache Key: orders.o_custkey
+                                 Cache Mode: logical
+                                 Hits: 0  Misses: 57  Evictions: 0  Overflows: 0  Memory Usage: 7kB
+                                 Buffers: shared hit=228
+                                 ->  Index Scan using ixtest_customer_custkey on customer  (cost=0.42..0.45 rows=1 width=23) (actual rows=1.00 loops=57)
+                                       Index Cond: (c_custkey = orders.o_custkey)
+                                       Index Searches: 57
+                                       Buffers: shared hit=228
+                     ->  Index Scan using idx_lineitem_order on lineitem  (cost=0.43..1.04 rows=16 width=9) (actual rows=7.00 loops=57)
+                           Index Cond: (l_orderkey = orders.o_orderkey)
+                           Index Searches: 57
+                           Buffers: shared hit=232
+ Planning:
+   Buffers: shared hit=463
+ Planning Time: 1.876 ms
+ JIT:
+   Functions: 81
+   Options: Inlining false, Optimization false, Expressions true, Deforming true
+ Execution Time: 2098.477 ms
+(61 rows)
+

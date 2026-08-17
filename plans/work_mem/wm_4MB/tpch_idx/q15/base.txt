@@ -1,0 +1,60 @@
+                                                                        QUERY PLAN                                                                        
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=138781.31..138781.43 rows=50 width=103) (actual rows=1.00 loops=1)
+   Sort Key: supplier.s_suppkey
+   Sort Method: quicksort  Memory: 25kB
+   Buffers: shared hit=66895 read=197
+   CTE revenue
+     ->  Finalize HashAggregate  (cost=137897.15..138022.17 rows=10002 width=36) (actual rows=10000.00 loops=1)
+           Group Key: lineitem.l_suppkey
+           Batches: 1  Memory Usage: 5905kB
+           Buffers: shared hit=66889 read=197
+           ->  Gather  (cost=133471.26..137597.09 rows=40008 width=36) (actual rows=48969.00 loops=1)
+                 Workers Planned: 4
+                 Workers Launched: 4
+                 Buffers: shared hit=66889 read=197
+                 ->  Partial HashAggregate  (cost=132471.26..132596.29 rows=10002 width=36) (actual rows=9793.80 loops=5)
+                       Group Key: lineitem.l_suppkey
+                       Batches: 1  Memory Usage: 3857kB
+                       Buffers: shared hit=66889 read=197
+                       Worker 0:  Batches: 1  Memory Usage: 3857kB
+                       Worker 1:  Batches: 1  Memory Usage: 3857kB
+                       Worker 2:  Batches: 1  Memory Usage: 3857kB
+                       Worker 3:  Batches: 1  Memory Usage: 3857kB
+                       ->  Parallel Bitmap Heap Scan on lineitem  (cost=3105.01..131906.24 rows=56502 width=16) (actual rows=45190.80 loops=5)
+                             Recheck Cond: ((l_shipdate >= '1996-01-01'::date) AND (l_shipdate < '1996-04-01 00:00:00'::timestamp without time zone))
+                             Rows Removed by Index Recheck: 331517
+                             Heap Blocks: exact=4338 lossy=4428
+                             Buffers: shared hit=66889 read=197
+                             Worker 0:  Heap Blocks: exact=4832 lossy=4697
+                             Worker 1:  Heap Blocks: exact=7714 lossy=7527
+                             Worker 2:  Heap Blocks: exact=7709 lossy=7526
+                             Worker 3:  Heap Blocks: exact=9000 lossy=9037
+                             ->  Bitmap Index Scan on ixtest_lineitem_shipdate  (cost=0.00..3048.51 rows=226008 width=0) (actual rows=225954.00 loops=1)
+                                   Index Cond: ((l_shipdate >= '1996-01-01'::date) AND (l_shipdate < '1996-04-01 00:00:00'::timestamp without time zone))
+                                   Index Searches: 1
+                                   Buffers: shared hit=1 read=197
+   InitPlan 2
+     ->  Aggregate  (cost=225.04..225.05 rows=1 width=32) (actual rows=1.00 loops=1)
+           ->  CTE Scan on revenue revenue_1  (cost=0.00..200.04 rows=10002 width=32) (actual rows=10000.00 loops=1)
+                 Storage: Memory  Maximum Storage: 519kB
+   ->  Nested Loop  (cost=0.29..532.67 rows=50 width=103) (actual rows=1.00 loops=1)
+         Buffers: shared hit=66892 read=197
+         ->  CTE Scan on revenue  (cost=0.00..225.04 rows=50 width=36) (actual rows=1.00 loops=1)
+               Filter: (total_revenue = (InitPlan 2).col1)
+               Rows Removed by Filter: 9999
+               Storage: Memory  Maximum Storage: 519kB
+               Buffers: shared hit=66889 read=197
+         ->  Index Scan using ixtest_supplier_suppkey on supplier  (cost=0.29..6.14 rows=1 width=71) (actual rows=1.00 loops=1)
+               Index Cond: (s_suppkey = revenue.supplier_no)
+               Index Searches: 1
+               Buffers: shared hit=3
+ Planning:
+   Buffers: shared hit=362
+ Planning Time: 0.981 ms
+ JIT:
+   Functions: 73
+   Options: Inlining false, Optimization false, Expressions true, Deforming true
+ Execution Time: 268.174 ms
+(56 rows)
+

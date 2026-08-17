@@ -45,7 +45,7 @@ size_mb(){ local s="${1^^}"; case "$s" in *GB) echo $(( ${s%GB} * 1024 ));; *MB)
 
 # Whatever happens, put shared_buffers back to the default on every version we
 # touched (delegates to the standalone reset script).
-cleanup(){ [ "$DRYRUN" = 1 ] && return; echo; echo "==> resetting shared_buffers to default"; bash "$HERE/reset_shared_buffer.sh" $PGVERS; }
+cleanup(){ [ "$DRYRUN" = 1 ] && return; echo; echo "==> resetting shared_buffers to default"; bash "$HERE/reset_all_parameters.sh" $PGVERS; }
 trap cleanup EXIT INT TERM
 
 echo "shared_buffers sweep: sizes='${SIZES[*]}'  DBS='$DBS'  PGVERS='$PGVERS'  DIR='$DIR'"
@@ -76,7 +76,7 @@ for ver in $PGVERS; do
         pgq "$port" "ALTER SYSTEM SET shared_buffers = '$size';" >/dev/null
         if ! pg_ctlcluster "$ver" main restart 2>/dev/null; then
             echo "  !! PG$ver failed to restart at shared_buffers=$size; resetting and skipping"
-            bash "$HERE/reset_shared_buffer.sh" "$ver"
+            bash "$HERE/reset_all_parameters.sh" "$ver"
             continue
         fi
         echo "  applied: shared_buffers=$(pgq "$port" "SHOW shared_buffers;")"

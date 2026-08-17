@@ -1,0 +1,60 @@
+                                                                            QUERY PLAN                                                                            
+------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Aggregate  (cost=511881.63..511881.64 rows=1 width=32) (actual rows=1.00 loops=1)
+   Buffers: shared hit=229349, temp read=34983 written=57020
+   ->  Hash Join  (cost=376447.99..511876.86 rows=1907 width=8) (actual rows=587.00 loops=1)
+         Hash Cond: (part.p_partkey = lineitem_1.l_partkey)
+         Join Filter: (lineitem.l_quantity < ((0.2 * avg(lineitem_1.l_quantity))))
+         Rows Removed by Join Filter: 5501
+         Buffers: shared hit=229349, temp read=34983 written=57020
+         ->  Gather  (cost=6379.02..140202.45 rows=5881 width=21) (actual rows=6088.00 loops=1)
+               Workers Planned: 4
+               Workers Launched: 4
+               Buffers: shared hit=116728
+               ->  Parallel Hash Join  (cost=5379.02..138614.35 rows=1470 width=21) (actual rows=1217.60 loops=5)
+                     Hash Cond: (lineitem.l_partkey = part.p_partkey)
+                     Buffers: shared hit=116728
+                     ->  Parallel Seq Scan on lineitem  (cost=0.00..127603.04 rows=1500304 width=17) (actual rows=1200243.00 loops=5)
+                           Buffers: shared hit=112600
+                     ->  Parallel Hash  (cost=5378.00..5378.00 rows=82 width=4) (actual rows=40.80 loops=5)
+                           Buckets: 1024  Batches: 1  Memory Usage: 40kB
+                           Buffers: shared hit=4128
+                           ->  Parallel Seq Scan on part  (cost=0.00..5378.00 rows=82 width=4) (actual rows=40.80 loops=5)
+                                 Filter: ((p_brand = 'Brand#23'::bpchar) AND (p_container = 'MED BOX'::bpchar))
+                                 Rows Removed by Filter: 39959
+                                 Buffers: shared hit=4128
+         ->  Hash  (cost=366117.59..366117.59 rows=194510 width=36) (actual rows=200000.00 loops=1)
+               Buckets: 131072  Batches: 2  Memory Usage: 5815kB
+               Buffers: shared hit=112621, temp read=34514 written=57002
+               ->  Finalize GroupAggregate  (cost=264206.30..366117.59 rows=194510 width=36) (actual rows=200000.00 loops=1)
+                     Group Key: lineitem_1.l_partkey
+                     Buffers: shared hit=112621, temp read=34514 written=56551
+                     ->  Gather Merge  (cost=264206.30..357364.64 rows=778040 width=36) (actual rows=799495.00 loops=1)
+                           Workers Planned: 4
+                           Workers Launched: 3
+                           Buffers: shared hit=112621, temp read=34514 written=56551
+                           ->  Sort  (cost=263206.25..263692.52 rows=194510 width=36) (actual rows=199873.75 loops=4)
+                                 Sort Key: lineitem_1.l_partkey
+                                 Sort Method: external merge  Disk: 15088kB
+                                 Buffers: shared hit=112621, temp read=34514 written=56551
+                                 Worker 0:  Sort Method: external merge  Disk: 15080kB
+                                 Worker 1:  Sort Method: external merge  Disk: 15080kB
+                                 Worker 2:  Sort Method: external merge  Disk: 15080kB
+                                 ->  Partial HashAggregate  (cost=223716.26..240799.04 rows=194510 width=36) (actual rows=199873.75 loops=4)
+                                       Group Key: lineitem_1.l_partkey
+                                       Planned Partitions: 8  Batches: 41  Memory Usage: 8273kB  Disk Usage: 56480kB
+                                       Buffers: shared hit=112600, temp read=26973 written=48990
+                                       Worker 0:  Batches: 41  Memory Usage: 8273kB  Disk Usage: 48120kB
+                                       Worker 1:  Batches: 53  Memory Usage: 8273kB  Disk Usage: 48152kB
+                                       Worker 2:  Batches: 37  Memory Usage: 8273kB  Disk Usage: 48200kB
+                                       ->  Parallel Seq Scan on lineitem lineitem_1  (cost=0.00..127603.04 rows=1500304 width=9) (actual rows=1500303.75 loops=4)
+                                             Buffers: shared hit=112600
+ Planning:
+   Buffers: shared hit=227
+ Planning Time: 0.654 ms
+ JIT:
+   Functions: 129
+   Options: Inlining true, Optimization true, Expressions true, Deforming true
+ Execution Time: 2484.185 ms
+(56 rows)
+

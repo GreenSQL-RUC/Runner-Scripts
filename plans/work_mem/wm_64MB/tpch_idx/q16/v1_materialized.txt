@@ -1,0 +1,62 @@
+                                                                                 QUERY PLAN                                                                                 
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=32213.39..32252.93 rows=15815 width=124) (actual rows=18314.00 loops=1)
+   Sort Key: _m.supplier_cnt DESC, _m.p_brand, _m.p_type, _m.p_size
+   Sort Method: quicksort  Memory: 1912kB
+   Buffers: shared hit=7625
+   CTE _m
+     ->  GroupAggregate  (cost=23137.13..30794.07 rows=15815 width=44) (actual rows=18314.00 loops=1)
+           Group Key: part.p_brand, part.p_type, part.p_size
+           Buffers: shared hit=7622
+           ->  Gather Merge  (cost=23137.13..30057.91 rows=57801 width=40) (actual rows=118274.00 loops=1)
+                 Workers Planned: 4
+                 Workers Launched: 4
+                 Buffers: shared hit=7622
+                 ->  Sort  (cost=22137.07..22173.20 rows=14450 width=40) (actual rows=23654.80 loops=5)
+                       Sort Key: part.p_brand, part.p_type, part.p_size, partsupp.ps_suppkey
+                       Sort Method: quicksort  Memory: 2471kB
+                       Buffers: shared hit=7622
+                       Worker 0:  Sort Method: quicksort  Memory: 1296kB
+                       Worker 1:  Sort Method: quicksort  Memory: 2487kB
+                       Worker 2:  Sort Method: quicksort  Memory: 2482kB
+                       Worker 3:  Sort Method: quicksort  Memory: 1291kB
+                       ->  Parallel Hash Join  (cost=5313.70..21138.67 rows=14450 width=40) (actual rows=23654.80 loops=5)
+                             Hash Cond: (partsupp.ps_partkey = part.p_partkey)
+                             Buffers: shared hit=7534
+                             ->  Parallel Index Only Scan using ixtest_partsupp_pk on partsupp  (cost=348.43..15738.18 rows=100000 width=8) (actual rows=159936.00 loops=5)
+                                   Filter: (NOT (ANY (ps_suppkey = (hashed SubPlan 1).col1)))
+                                   Rows Removed by Filter: 64
+                                   Heap Fetches: 0
+                                   Index Searches: 1
+                                   Buffers: shared hit=3308
+                                   SubPlan 1
+                                     ->  Seq Scan on supplier  (cost=0.00..348.00 rows=1 width=4) (actual rows=4.00 loops=5)
+                                           Filter: ((s_comment)::text ~~ '%Customer%Complaints%'::text)
+                                           Rows Removed by Filter: 9996
+                                           Buffers: shared hit=1115
+                             ->  Parallel Hash  (cost=4814.45..4814.45 rows=12066 width=40) (actual rows=5916.20 loops=5)
+                                   Buckets: 32768  Batches: 1  Memory Usage: 2560kB
+                                   Buffers: shared hit=4226
+                                   ->  Parallel Bitmap Heap Scan on part  (cost=362.70..4814.45 rows=12066 width=40) (actual rows=5916.20 loops=5)
+                                         Recheck Cond: (p_size = ANY ('{49,14,23,45,19,3,36,9}'::integer[]))
+                                         Filter: ((p_brand <> 'Brand#45'::bpchar) AND ((p_type)::text !~~ 'MEDIUM POLISHED%'::text))
+                                         Rows Removed by Filter: 449
+                                         Heap Blocks: exact=1194
+                                         Buffers: shared hit=4226
+                                         Worker 0:  Heap Blocks: exact=415
+                                         Worker 1:  Heap Blocks: exact=994
+                                         Worker 2:  Heap Blocks: exact=1002
+                                         Worker 3:  Heap Blocks: exact=490
+                                         ->  Bitmap Index Scan on ixtest_part_size  (cost=0.00..355.46 rows=31080 width=0) (actual rows=31826.00 loops=1)
+                                               Index Cond: (p_size = ANY ('{49,14,23,45,19,3,36,9}'::integer[]))
+                                               Index Searches: 8
+                                               Buffers: shared hit=51
+   ->  CTE Scan on _m  (cost=0.00..316.30 rows=15815 width=124) (actual rows=18314.00 loops=1)
+         Storage: Memory  Maximum Storage: 1543kB
+         Buffers: shared hit=2005
+ Planning:
+   Buffers: shared hit=324
+ Planning Time: 1.142 ms
+ Execution Time: 230.369 ms
+(58 rows)
+

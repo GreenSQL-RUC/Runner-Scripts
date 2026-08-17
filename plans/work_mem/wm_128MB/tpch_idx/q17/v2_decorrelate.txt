@@ -1,0 +1,48 @@
+                                                                     QUERY PLAN                                                                     
+----------------------------------------------------------------------------------------------------------------------------------------------------
+ Aggregate  (cost=207763.97..207763.99 rows=1 width=32) (actual rows=1.00 loops=1)
+   Buffers: shared hit=119512
+   ->  Nested Loop  (cost=203452.46..207758.99 rows=1994 width=8) (actual rows=587.00 loops=1)
+         Join Filter: (lineitem.l_partkey = part.p_partkey)
+         Buffers: shared hit=119512
+         ->  Hash Join  (cost=203452.02..207032.02 rows=199 width=40) (actual rows=204.00 loops=1)
+               Hash Cond: (lineitem_1.l_partkey = part.p_partkey)
+               Buffers: shared hit=112814
+               ->  HashAggregate  (cost=202613.34..205475.74 rows=190827 width=36) (actual rows=200000.00 loops=1)
+                     Group Key: lineitem_1.l_partkey
+                     Batches: 1  Memory Usage: 81937kB
+                     Buffers: shared hit=112600
+                     ->  Seq Scan on lineitem lineitem_1  (cost=0.00..172608.89 rows=6000889 width=9) (actual rows=6001215.00 loops=1)
+                           Buffers: shared hit=112600
+               ->  Hash  (cost=836.08..836.08 rows=209 width=4) (actual rows=204.00 loops=1)
+                     Buckets: 1024  Batches: 1  Memory Usage: 16kB
+                     Buffers: shared hit=214
+                     ->  Bitmap Heap Scan on part  (cost=152.99..836.08 rows=209 width=4) (actual rows=204.00 loops=1)
+                           Recheck Cond: ((p_container = 'MED BOX'::bpchar) AND (p_brand = 'Brand#23'::bpchar))
+                           Heap Blocks: exact=198
+                           Buffers: shared hit=214
+                           ->  BitmapAnd  (cost=152.99..152.99 rows=209 width=0) (actual rows=0.00 loops=1)
+                                 Buffers: shared hit=16
+                                 ->  Bitmap Index Scan on ixtest_part_container  (cost=0.00..58.62 rows=5093 width=0) (actual rows=5043.00 loops=1)
+                                       Index Cond: (p_container = 'MED BOX'::bpchar)
+                                       Index Searches: 1
+                                       Buffers: shared hit=7
+                                 ->  Bitmap Index Scan on ixtest_part_brand  (cost=0.00..94.02 rows=8213 width=0) (actual rows=7870.00 loops=1)
+                                       Index Cond: (p_brand = 'Brand#23'::bpchar)
+                                       Index Searches: 1
+                                       Buffers: shared hit=9
+         ->  Index Scan using ixtest_lineitem_partkey on lineitem  (cost=0.43..3.53 rows=10 width=17) (actual rows=2.88 loops=204)
+               Index Cond: (l_partkey = lineitem_1.l_partkey)
+               Filter: (l_quantity < ((0.2 * avg(lineitem_1.l_quantity))))
+               Rows Removed by Filter: 27
+               Index Searches: 204
+               Buffers: shared hit=6698
+ Planning:
+   Buffers: shared hit=437
+ Planning Time: 1.241 ms
+ JIT:
+   Functions: 30
+   Options: Inlining false, Optimization false, Expressions true, Deforming true
+ Execution Time: 3956.220 ms
+(44 rows)
+

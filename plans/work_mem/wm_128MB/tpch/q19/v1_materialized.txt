@@ -1,0 +1,39 @@
+                                                                                                                                                                                                                                                                                                                                                                               QUERY PLAN                                                                                                                                                                                                                                                                                                                                                                               
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ CTE Scan on _m  (cost=166391.73..166391.75 rows=1 width=32) (actual rows=1.00 loops=1)
+   Storage: Memory  Maximum Storage: 17kB
+   Buffers: shared hit=116728
+   CTE _m
+     ->  Finalize Aggregate  (cost=166391.72..166391.73 rows=1 width=32) (actual rows=1.00 loops=1)
+           Buffers: shared hit=116728
+           ->  Gather  (cost=166391.28..166391.69 rows=4 width=32) (actual rows=5.00 loops=1)
+                 Workers Planned: 4
+                 Workers Launched: 4
+                 Buffers: shared hit=116728
+                 ->  Partial Aggregate  (cost=165391.28..165391.29 rows=1 width=32) (actual rows=1.00 loops=5)
+                       Buffers: shared hit=116728
+                       ->  Parallel Hash Join  (cost=7672.19..165391.06 rows=30 width=12) (actual rows=24.20 loops=5)
+                             Hash Cond: (lineitem.l_partkey = part.p_partkey)
+                             Join Filter: (((part.p_brand = 'Brand#12'::bpchar) AND (part.p_container = ANY ('{"SM CASE","SM BOX","SM PACK","SM PKG"}'::bpchar[])) AND (lineitem.l_quantity >= '1'::numeric) AND (lineitem.l_quantity <= '11'::numeric) AND (part.p_size <= 5)) OR ((part.p_brand = 'Brand#23'::bpchar) AND (part.p_container = ANY ('{"MED BAG","MED BOX","MED PKG","MED PACK"}'::bpchar[])) AND (lineitem.l_quantity >= '10'::numeric) AND (lineitem.l_quantity <= '20'::numeric) AND (part.p_size <= 10)) OR ((part.p_brand = 'Brand#34'::bpchar) AND (part.p_container = ANY ('{"LG CASE","LG BOX","LG PACK","LG PKG"}'::bpchar[])) AND (lineitem.l_quantity >= '20'::numeric) AND (lineitem.l_quantity <= '30'::numeric) AND (part.p_size <= 15)))
+                             Rows Removed by Join Filter: 40
+                             Buffers: shared hit=116728
+                             ->  Parallel Seq Scan on lineitem  (cost=0.00..157609.11 rows=28842 width=21) (actual rows=25674.20 loops=5)
+                                   Filter: ((l_shipmode = ANY ('{AIR,"AIR REG"}'::bpchar[])) AND (l_shipinstruct = 'DELIVER IN PERSON'::bpchar) AND (((l_quantity >= '1'::numeric) AND (l_quantity <= '11'::numeric)) OR ((l_quantity >= '10'::numeric) AND (l_quantity <= '20'::numeric)) OR ((l_quantity >= '20'::numeric) AND (l_quantity <= '30'::numeric))))
+                                   Rows Removed by Filter: 1174569
+                                   Buffers: shared hit=112600
+                             ->  Parallel Hash  (cost=7669.67..7669.67 rows=202 width=30) (actual rows=97.00 loops=5)
+                                   Buckets: 1024  Batches: 1  Memory Usage: 136kB
+                                   Buffers: shared hit=4128
+                                   ->  Parallel Seq Scan on part  (cost=0.00..7669.67 rows=202 width=30) (actual rows=97.00 loops=5)
+                                         Filter: ((p_size >= 1) AND (((p_brand = 'Brand#12'::bpchar) AND (p_container = ANY ('{"SM CASE","SM BOX","SM PACK","SM PKG"}'::bpchar[])) AND (p_size <= 5)) OR ((p_brand = 'Brand#23'::bpchar) AND (p_container = ANY ('{"MED BAG","MED BOX","MED PKG","MED PACK"}'::bpchar[])) AND (p_size <= 10)) OR ((p_brand = 'Brand#34'::bpchar) AND (p_container = ANY ('{"LG CASE","LG BOX","LG PACK","LG PKG"}'::bpchar[])) AND (p_size <= 15))))
+                                         Rows Removed by Filter: 39903
+                                         Buffers: shared hit=4128
+ Planning:
+   Buffers: shared hit=243
+ Planning Time: 0.781 ms
+ JIT:
+   Functions: 97
+   Options: Inlining false, Optimization false, Expressions true, Deforming true
+ Execution Time: 389.091 ms
+(35 rows)
+

@@ -1,0 +1,57 @@
+                                                                          QUERY PLAN                                                                          
+--------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=136652.77..136652.82 rows=20 width=640) (actual rows=20.00 loops=1)
+   Buffers: shared hit=261304
+   CTE _m
+     ->  HashAggregate  (cost=133269.34..133984.84 rows=57240 width=202) (actual rows=37967.00 loops=1)
+           Group Key: customer.c_custkey, customer.c_name, customer.c_acctbal, customer.c_phone, nation.n_name, customer.c_address, customer.c_comment
+           Batches: 1  Memory Usage: 21529kB
+           Buffers: shared hit=261301
+           ->  Gather  (cost=6008.24..131838.34 rows=57240 width=182) (actual rows=114705.00 loops=1)
+                 Workers Planned: 3
+                 Workers Launched: 3
+                 Buffers: shared hit=261301
+                 ->  Hash Join  (cost=5008.24..125114.34 rows=18465 width=182) (actual rows=28676.25 loops=4)
+                       Hash Cond: (customer.c_nationkey = nation.n_nationkey)
+                       Buffers: shared hit=261301
+                       ->  Parallel Hash Join  (cost=5006.68..124858.88 rows=18465 width=160) (actual rows=28676.25 loops=4)
+                             Hash Cond: (orders.o_custkey = customer.c_custkey)
+                             Buffers: shared hit=261297
+                             ->  Nested Loop  (cost=0.43..119706.45 rows=18465 width=16) (actual rows=28676.25 loops=4)
+                                   Buffers: shared hit=257697
+                                   ->  Parallel Seq Scan on orders  (cost=0.00..33392.59 rows=18734 width=8) (actual rows=14267.25 loops=4)
+                                         Filter: ((o_orderdate >= '1993-10-01'::date) AND (o_orderdate < '1994-01-01 00:00:00'::timestamp without time zone))
+                                         Rows Removed by Filter: 360733
+                                         Buffers: shared hit=26136
+                                   ->  Index Scan using idx_lineitem_order on lineitem  (cost=0.43..4.57 rows=4 width=16) (actual rows=2.01 loops=57069)
+                                         Index Cond: (l_orderkey = orders.o_orderkey)
+                                         Filter: (l_returnflag = 'R'::bpchar)
+                                         Rows Removed by Filter: 2
+                                         Index Searches: 57069
+                                         Buffers: shared hit=231561
+                             ->  Parallel Hash  (cost=4225.00..4225.00 rows=62500 width=148) (actual rows=37500.00 loops=4)
+                                   Buckets: 262144  Batches: 1  Memory Usage: 29312kB
+                                   Buffers: shared hit=3600
+                                   ->  Parallel Seq Scan on customer  (cost=0.00..4225.00 rows=62500 width=148) (actual rows=37500.00 loops=4)
+                                         Buffers: shared hit=3600
+                       ->  Hash  (cost=1.25..1.25 rows=25 width=30) (actual rows=25.00 loops=4)
+                             Buckets: 1024  Batches: 1  Memory Usage: 10kB
+                             Buffers: shared hit=4
+                             ->  Seq Scan on nation  (cost=0.00..1.25 rows=25 width=30) (actual rows=25.00 loops=4)
+                                   Buffers: shared hit=4
+   ->  Sort  (cost=2667.94..2811.04 rows=57240 width=640) (actual rows=20.00 loops=1)
+         Sort Key: _m.revenue DESC
+         Sort Method: top-N heapsort  Memory: 34kB
+         Buffers: shared hit=261304
+         ->  CTE Scan on _m  (cost=0.00..1144.80 rows=57240 width=640) (actual rows=37967.00 loops=1)
+               Storage: Memory  Maximum Storage: 8221kB
+               Buffers: shared hit=261301
+ Planning:
+   Buffers: shared hit=306
+ Planning Time: 1.089 ms
+ JIT:
+   Functions: 112
+   Options: Inlining false, Optimization false, Expressions true, Deforming true
+ Execution Time: 268.247 ms
+(53 rows)
+

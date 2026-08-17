@@ -1,0 +1,43 @@
+                                                                           QUERY PLAN                                                                           
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+ CTE Scan on _m  (cost=115813.87..115813.89 rows=1 width=32) (actual rows=1.00 loops=1)
+   Storage: Memory  Maximum Storage: 17kB
+   Buffers: shared hit=45667
+   CTE _m
+     ->  Finalize Aggregate  (cost=115813.85..115813.87 rows=1 width=32) (actual rows=1.00 loops=1)
+           Buffers: shared hit=45667
+           ->  Gather  (cost=115813.40..115813.81 rows=4 width=64) (actual rows=5.00 loops=1)
+                 Workers Planned: 4
+                 Workers Launched: 4
+                 Buffers: shared hit=45667
+                 ->  Partial Aggregate  (cost=114813.40..114813.41 rows=1 width=64) (actual rows=1.00 loops=5)
+                       Buffers: shared hit=45667
+                       ->  Parallel Hash Join  (cost=7072.21..114473.30 rows=19434 width=33) (actual rows=15196.60 loops=5)
+                             Hash Cond: (lineitem.l_partkey = part.p_partkey)
+                             Buffers: shared hit=45667
+                             ->  Parallel Bitmap Heap Scan on lineitem  (cost=1069.22..108316.45 rows=19434 width=16) (actual rows=15196.60 loops=5)
+                                   Recheck Cond: ((l_shipdate >= '1995-09-01'::date) AND (l_shipdate < '1995-10-01 00:00:00'::timestamp without time zone))
+                                   Heap Blocks: exact=6044
+                                   Buffers: shared hit=41539
+                                   Worker 0:  Heap Blocks: exact=5998
+                                   Worker 1:  Heap Blocks: exact=9705
+                                   Worker 2:  Heap Blocks: exact=9896
+                                   Worker 3:  Heap Blocks: exact=9827
+                                   ->  Bitmap Index Scan on ixtest_lineitem_shipdate  (cost=0.00..1049.78 rows=77735 width=0) (actual rows=75983.00 loops=1)
+                                         Index Cond: ((l_shipdate >= '1995-09-01'::date) AND (l_shipdate < '1995-10-01 00:00:00'::timestamp without time zone))
+                                         Index Searches: 1
+                                         Buffers: shared hit=69
+                             ->  Parallel Hash  (cost=4961.33..4961.33 rows=83333 width=25) (actual rows=40000.00 loops=5)
+                                   Buckets: 262144  Batches: 1  Memory Usage: 14240kB
+                                   Buffers: shared hit=4128
+                                   ->  Parallel Seq Scan on part  (cost=0.00..4961.33 rows=83333 width=25) (actual rows=40000.00 loops=5)
+                                         Buffers: shared hit=4128
+ Planning:
+   Buffers: shared hit=431
+ Planning Time: 1.161 ms
+ JIT:
+   Functions: 77
+   Options: Inlining false, Optimization false, Expressions true, Deforming true
+ Execution Time: 143.094 ms
+(39 rows)
+

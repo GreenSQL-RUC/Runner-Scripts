@@ -1,0 +1,68 @@
+                                                                                QUERY PLAN                                                                                 
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=246194.21..246242.78 rows=100 width=71) (actual rows=57.00 loops=1)
+   Buffers: shared hit=477047, temp read=57344 written=101028
+   ->  GroupAggregate  (cost=246194.21..490538.91 rows=503039 width=71) (actual rows=57.00 loops=1)
+         Group Key: orders.o_totalprice, orders.o_orderdate, customer.c_name, customer.c_custkey, orders.o_orderkey
+         Buffers: shared hit=477047, temp read=57344 written=101028
+         ->  Incremental Sort  (cost=246194.21..476705.34 rows=503039 width=44) (actual rows=399.00 loops=1)
+               Sort Key: orders.o_totalprice DESC, orders.o_orderdate, customer.c_name, customer.c_custkey, orders.o_orderkey
+               Presorted Key: orders.o_totalprice, orders.o_orderdate
+               Full-sort Groups: 12  Sort Method: quicksort  Average Memory: 27kB  Peak Memory: 27kB
+               Buffers: shared hit=477047, temp read=57344 written=101028
+               ->  Nested Loop  (cost=246193.78..454068.58 rows=503039 width=44) (actual rows=399.00 loops=1)
+                     Buffers: shared hit=477041, temp read=57344 written=101028
+                     ->  Nested Loop  (cost=246193.35..303415.61 rows=125741 width=43) (actual rows=57.00 loops=1)
+                           Buffers: shared hit=476809, temp read=57344 written=101028
+                           ->  Gather Merge  (cost=246192.92..261068.89 rows=125741 width=24) (actual rows=57.00 loops=1)
+                                 Workers Planned: 3
+                                 Workers Launched: 3
+                                 Buffers: shared hit=476581, temp read=57344 written=101028
+                                 ->  Sort  (cost=245192.88..245294.29 rows=40562 width=24) (actual rows=14.25 loops=4)
+                                       Sort Key: orders.o_totalprice DESC, orders.o_orderdate
+                                       Sort Method: quicksort  Memory: 26kB
+                                       Buffers: shared hit=476581, temp read=57344 written=101028
+                                       Worker 0:  Sort Method: quicksort  Memory: 25kB
+                                       Worker 1:  Sort Method: quicksort  Memory: 25kB
+                                       Worker 2:  Sort Method: quicksort  Memory: 25kB
+                                       ->  Hash Join  (cost=209843.43..242088.30 rows=40562 width=24) (actual rows=14.25 loops=4)
+                                             Hash Cond: (orders.o_orderkey = lineitem_1.l_orderkey)
+                                             Buffers: shared hit=476536, temp read=57344 written=101028
+                                             ->  Parallel Seq Scan on orders  (cost=0.00..30974.71 rows=483871 width=20) (actual rows=375000.00 loops=4)
+                                                   Buffers: shared hit=26136
+                                             ->  Hash  (cost=208271.67..208271.67 rows=125741 width=4) (actual rows=57.00 loops=4)
+                                                   Buckets: 131072  Batches: 1  Memory Usage: 1027kB
+                                                   Buffers: shared hit=450400, temp read=57344 written=101028
+                                                   ->  HashAggregate  (cost=202613.34..208271.67 rows=125741 width=4) (actual rows=57.00 loops=4)
+                                                         Group Key: lineitem_1.l_orderkey
+                                                         Filter: (sum(lineitem_1.l_quantity) > '300'::numeric)
+                                                         Batches: 5  Memory Usage: 262193kB  Disk Usage: 116496kB
+                                                         Rows Removed by Filter: 1499943
+                                                         Buffers: shared hit=450400, temp read=57344 written=101028
+                                                         Worker 0:  Batches: 5  Memory Usage: 262193kB  Disk Usage: 116496kB
+                                                         Worker 1:  Batches: 5  Memory Usage: 262193kB  Disk Usage: 116496kB
+                                                         Worker 2:  Batches: 5  Memory Usage: 262193kB  Disk Usage: 116496kB
+                                                         ->  Seq Scan on lineitem lineitem_1  (cost=0.00..172608.89 rows=6000889 width=9) (actual rows=6001215.00 loops=4)
+                                                               Buffers: shared hit=450400
+                           ->  Memoize  (cost=0.43..0.46 rows=1 width=23) (actual rows=1.00 loops=57)
+                                 Cache Key: orders.o_custkey
+                                 Cache Mode: logical
+                                 Hits: 0  Misses: 57  Evictions: 0  Overflows: 0  Memory Usage: 7kB
+                                 Buffers: shared hit=228
+                                 ->  Index Scan using ixtest_customer_custkey on customer  (cost=0.42..0.45 rows=1 width=23) (actual rows=1.00 loops=57)
+                                       Index Cond: (c_custkey = orders.o_custkey)
+                                       Index Searches: 57
+                                       Buffers: shared hit=228
+                     ->  Index Scan using idx_lineitem_order on lineitem  (cost=0.43..1.04 rows=16 width=9) (actual rows=7.00 loops=57)
+                           Index Cond: (l_orderkey = orders.o_orderkey)
+                           Index Searches: 57
+                           Buffers: shared hit=232
+ Planning:
+   Buffers: shared hit=463
+ Planning Time: 1.836 ms
+ JIT:
+   Functions: 113
+   Options: Inlining false, Optimization false, Expressions true, Deforming true
+ Execution Time: 3821.448 ms
+(64 rows)
+

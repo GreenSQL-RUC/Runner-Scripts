@@ -1,0 +1,68 @@
+make: Entering directory '/home/user01/GreenSQL'
+plan_builder configuration:
+  PGPORT    = 5434
+  QUERY_DIR = queries/tpch/tpch-queries
+  PLANS_DIR = plans/work_mem/wm_128MB
+  DB_NAME   = tpch_idx
+  plans ->    plans/work_mem/wm_128MB/tpch_idx/
+  DB_USER   = postgres
+  WORKERS   = (planner default)
+
+Found 53 queries under queries/tpch/tpch-queries
+
+  [1/53] q01/base.sql -> plans/work_mem/wm_128MB/tpch_idx/q01/base.txt  (explain analyze present)
+  [2/53] q01/v1_materialized.sql -> plans/work_mem/wm_128MB/tpch_idx/q01/v1_materialized.txt  (explain analyze present)
+  [3/53] q02/base.sql -> plans/work_mem/wm_128MB/tpch_idx/q02/base.txt  (explain analyze present)
+  [4/53] q02/v1_materialized.sql -> plans/work_mem/wm_128MB/tpch_idx/q02/v1_materialized.txt  (explain analyze present)
+  [5/53] q02/v2_decorrelate.sql -> plans/work_mem/wm_128MB/tpch_idx/q02/v2_decorrelate.txt  (explain analyze present)
+  [6/53] q03/base.sql -> plans/work_mem/wm_128MB/tpch_idx/q03/base.txt  (explain analyze present)
+  [7/53] q03/v1_materialized.sql -> plans/work_mem/wm_128MB/tpch_idx/q03/v1_materialized.txt  (explain analyze present)
+  [8/53] q04/base.sql -> plans/work_mem/wm_128MB/tpch_idx/q04/base.txt  (explain analyze present)
+  [9/53] q04/v1_materialized.sql -> plans/work_mem/wm_128MB/tpch_idx/q04/v1_materialized.txt  (explain analyze present)
+  [10/53] q04/v2_in.sql -> plans/work_mem/wm_128MB/tpch_idx/q04/v2_in.txt  (explain analyze present)
+  [11/53] q05/base.sql -> plans/work_mem/wm_128MB/tpch_idx/q05/base.txt  (explain analyze present)
+  [12/53] q05/v1_materialized.sql -> plans/work_mem/wm_128MB/tpch_idx/q05/v1_materialized.txt  (explain analyze present)
+  [13/53] q06/base.sql -> plans/work_mem/wm_128MB/tpch_idx/q06/base.txt  (explain analyze present)
+  [14/53] q06/v1_materialized.sql -> plans/work_mem/wm_128MB/tpch_idx/q06/v1_materialized.txt  (explain analyze present)
+  [15/53] q07/base.sql -> plans/work_mem/wm_128MB/tpch_idx/q07/base.txt  (explain analyze present)
+  [16/53] q07/v1_materialized.sql -> plans/work_mem/wm_128MB/tpch_idx/q07/v1_materialized.txt  (explain analyze present)
+  [17/53] q07/v2_union_all.sql -> plans/work_mem/wm_128MB/tpch_idx/q07/v2_union_all.txt  (explain analyze present)
+  [18/53] q08/base.sql -> plans/work_mem/wm_128MB/tpch_idx/q08/base.txt  (explain analyze present)
+  [19/53] q08/v1_materialized.sql -> plans/work_mem/wm_128MB/tpch_idx/q08/v1_materialized.txt  (explain analyze present)
+  [20/53] q08/v2_filter.sql -> plans/work_mem/wm_128MB/tpch_idx/q08/v2_filter.txt  (explain analyze present)
+  [21/53] q09/base.sql -> plans/work_mem/wm_128MB/tpch_idx/q09/base.txt  (explain analyze present)
+  [22/53] q09/v1_materialized.sql -> plans/work_mem/wm_128MB/tpch_idx/q09/v1_materialized.txt  (explain analyze present)
+  [23/53] q10/base.sql -> plans/work_mem/wm_128MB/tpch_idx/q10/base.txt  (explain analyze present)
+  [24/53] q10/v1_materialized.sql -> plans/work_mem/wm_128MB/tpch_idx/q10/v1_materialized.txt  (explain analyze present)
+  [25/53] q11/base.sql -> plans/work_mem/wm_128MB/tpch_idx/q11/base.txt  (explain analyze present)
+  [26/53] q11/v1_materialized.sql -> plans/work_mem/wm_128MB/tpch_idx/q11/v1_materialized.txt  (explain analyze present)
+  [27/53] q11/v2_cte_threshold.sql -> plans/work_mem/wm_128MB/tpch_idx/q11/v2_cte_threshold.txt  (explain analyze present)
+  [28/53] q12/base.sql -> plans/work_mem/wm_128MB/tpch_idx/q12/base.txt  (explain analyze present)
+  [29/53] q12/v1_materialized.sql -> plans/work_mem/wm_128MB/tpch_idx/q12/v1_materialized.txt  (explain analyze present)
+  [30/53] q12/v2_filter.sql -> plans/work_mem/wm_128MB/tpch_idx/q12/v2_filter.txt  (explain analyze present)
+  [31/53] q13/base.sql -> plans/work_mem/wm_128MB/tpch_idx/q13/base.txt  (explain analyze present)
+  [32/53] q13/v1_materialized.sql -> plans/work_mem/wm_128MB/tpch_idx/q13/v1_materialized.txt  (explain analyze present)
+  [33/53] q13/v2_correlated.sql -> plans/work_mem/wm_128MB/tpch_idx/q13/v2_correlated.txt  (explain analyze present)
+  [34/53] q14/base.sql -> plans/work_mem/wm_128MB/tpch_idx/q14/base.txt  (explain analyze present)
+  [35/53] q14/v1_materialized.sql -> plans/work_mem/wm_128MB/tpch_idx/q14/v1_materialized.txt  (explain analyze present)
+  [36/53] q14/v2_filter.sql -> plans/work_mem/wm_128MB/tpch_idx/q14/v2_filter.txt  (explain analyze present)
+  [37/53] q15/base.sql -> plans/work_mem/wm_128MB/tpch_idx/q15/base.txt  (explain analyze present)
+  [38/53] q15/v1_materialized.sql -> plans/work_mem/wm_128MB/tpch_idx/q15/v1_materialized.txt  (explain analyze present)
+  [39/53] q16/base.sql -> plans/work_mem/wm_128MB/tpch_idx/q16/base.txt  (explain analyze present)
+  [40/53] q16/v1_materialized.sql -> plans/work_mem/wm_128MB/tpch_idx/q16/v1_materialized.txt  (explain analyze present)
+  [41/53] q16/v2_not_exists.sql -> plans/work_mem/wm_128MB/tpch_idx/q16/v2_not_exists.txt  (explain analyze present)
+  [42/53] q17/v2_decorrelate.sql -> plans/work_mem/wm_128MB/tpch_idx/q17/v2_decorrelate.txt  (explain analyze present)
+  [43/53] q18/base.sql -> plans/work_mem/wm_128MB/tpch_idx/q18/base.txt  (explain analyze present)
+  [44/53] q18/v1_materialized.sql -> plans/work_mem/wm_128MB/tpch_idx/q18/v1_materialized.txt  (explain analyze present)
+  [45/53] q18/v2_join.sql -> plans/work_mem/wm_128MB/tpch_idx/q18/v2_join.txt  (explain analyze present)
+  [46/53] q19/base.sql -> plans/work_mem/wm_128MB/tpch_idx/q19/base.txt  (explain analyze present)
+  [47/53] q19/v1_materialized.sql -> plans/work_mem/wm_128MB/tpch_idx/q19/v1_materialized.txt  (explain analyze present)
+  [48/53] q19/v2_union_all.sql -> plans/work_mem/wm_128MB/tpch_idx/q19/v2_union_all.txt  (explain analyze present)
+  [49/53] q21/base.sql -> plans/work_mem/wm_128MB/tpch_idx/q21/base.txt  (explain analyze present)
+  [50/53] q21/v1_materialized.sql -> plans/work_mem/wm_128MB/tpch_idx/q21/v1_materialized.txt  (explain analyze present)
+  [51/53] q22/base.sql -> plans/work_mem/wm_128MB/tpch_idx/q22/base.txt  (explain analyze present)
+  [52/53] q22/v1_materialized.sql -> plans/work_mem/wm_128MB/tpch_idx/q22/v1_materialized.txt  (explain analyze present)
+  [53/53] q22/v2_anti_join.sql -> plans/work_mem/wm_128MB/tpch_idx/q22/v2_anti_join.txt  (explain analyze present)
+
+Done. 53 plans written to plans/work_mem/wm_128MB (0 wrapped, 0 EXPLAIN-only, 0 failed)
+make: Leaving directory '/home/user01/GreenSQL'

@@ -1,0 +1,44 @@
+                                                                                                                                         QUERY PLAN                                                                                                                                         
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ CTE Scan on _m  (cost=182853.94..182854.08 rows=7 width=60) (actual rows=2.00 loops=1)
+   Storage: Memory  Maximum Storage: 17kB
+   Buffers: shared hit=138757
+   CTE _m
+     ->  Finalize GroupAggregate  (cost=182668.89..182853.94 rows=7 width=27) (actual rows=2.00 loops=1)
+           Group Key: lineitem.l_shipmode
+           Buffers: shared hit=138757
+           ->  Gather Merge  (cost=182668.89..182853.71 rows=22 width=27) (actual rows=8.00 loops=1)
+                 Workers Planned: 3
+                 Workers Launched: 3
+                 Buffers: shared hit=138757
+                 ->  Partial GroupAggregate  (cost=181668.85..181851.08 rows=7 width=27) (actual rows=2.00 loops=4)
+                       Group Key: lineitem.l_shipmode
+                       Buffers: shared hit=138757
+                       ->  Sort  (cost=181668.85..181691.62 rows=9108 width=27) (actual rows=7747.00 loops=4)
+                             Sort Key: lineitem.l_shipmode
+                             Sort Method: quicksort  Memory: 556kB
+                             Buffers: shared hit=138757
+                             Worker 0:  Sort Method: quicksort  Memory: 559kB
+                             Worker 1:  Sort Method: quicksort  Memory: 556kB
+                             Worker 2:  Sort Method: quicksort  Memory: 552kB
+                             ->  Parallel Hash Join  (cost=146445.07..181069.87 rows=9108 width=27) (actual rows=7747.00 loops=4)
+                                   Hash Cond: (orders.o_orderkey = lineitem.l_orderkey)
+                                   Buffers: shared hit=138736
+                                   ->  Parallel Seq Scan on orders  (cost=0.00..30973.73 rows=483773 width=20) (actual rows=375000.00 loops=4)
+                                         Buffers: shared hit=26136
+                                   ->  Parallel Hash  (cost=146356.83..146356.83 rows=7059 width=15) (actual rows=7747.00 loops=4)
+                                         Buckets: 32768  Batches: 1  Memory Usage: 1792kB
+                                         Buffers: shared hit=112600
+                                         ->  Parallel Seq Scan on lineitem  (cost=0.00..146356.83 rows=7059 width=15) (actual rows=7747.00 loops=4)
+                                               Filter: ((l_shipmode = ANY ('{MAIL,SHIP}'::bpchar[])) AND (l_commitdate < l_receiptdate) AND (l_shipdate < l_commitdate) AND (l_receiptdate >= '1994-01-01'::date) AND (l_receiptdate < '1995-01-01 00:00:00'::timestamp without time zone))
+                                               Rows Removed by Filter: 1492557
+                                               Buffers: shared hit=112600
+ Planning:
+   Buffers: shared hit=246
+ Planning Time: 0.727 ms
+ JIT:
+   Functions: 75
+   Options: Inlining false, Optimization false, Expressions true, Deforming true
+ Execution Time: 396.258 ms
+(40 rows)
+

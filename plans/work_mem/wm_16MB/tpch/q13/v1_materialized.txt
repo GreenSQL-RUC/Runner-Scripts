@@ -1,0 +1,36 @@
+                                                           QUERY PLAN                                                           
+--------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=83737.33..83737.83 rows=200 width=16) (actual rows=42.00 loops=1)
+   Sort Key: _m.custdist DESC, _m.c_count DESC
+   Sort Method: quicksort  Memory: 26kB
+   Buffers: shared hit=29739
+   CTE _m
+     ->  HashAggregate  (cost=83723.69..83725.69 rows=200 width=16) (actual rows=42.00 loops=1)
+           Group Key: count(orders.o_orderkey)
+           Batches: 1  Memory Usage: 32kB
+           Buffers: shared hit=29736
+           ->  HashAggregate  (cost=79973.69..81473.69 rows=150000 width=12) (actual rows=150000.00 loops=1)
+                 Group Key: customer.c_custkey
+                 Batches: 1  Memory Usage: 10265kB
+                 Buffers: shared hit=29736
+                 ->  Hash Right Join  (cost=6975.00..72475.96 rows=1499546 width=8) (actual rows=1533923.00 loops=1)
+                       Hash Cond: (orders.o_custkey = customer.c_custkey)
+                       Buffers: shared hit=29736
+                       ->  Seq Scan on orders  (cost=0.00..44882.20 rows=1499546 width=8) (actual rows=1483918.00 loops=1)
+                             Filter: ((o_comment)::text !~~ '%special%requests%'::text)
+                             Rows Removed by Filter: 16082
+                             Buffers: shared hit=26136
+                       ->  Hash  (cost=5100.00..5100.00 rows=150000 width=4) (actual rows=150000.00 loops=1)
+                             Buckets: 262144  Batches: 1  Memory Usage: 7322kB
+                             Buffers: shared hit=3600
+                             ->  Seq Scan on customer  (cost=0.00..5100.00 rows=150000 width=4) (actual rows=150000.00 loops=1)
+                                   Buffers: shared hit=3600
+   ->  CTE Scan on _m  (cost=0.00..4.00 rows=200 width=16) (actual rows=42.00 loops=1)
+         Storage: Memory  Maximum Storage: 18kB
+         Buffers: shared hit=29736
+ Planning:
+   Buffers: shared hit=189
+ Planning Time: 0.742 ms
+ Execution Time: 1486.152 ms
+(32 rows)
+

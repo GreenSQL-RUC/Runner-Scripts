@@ -1,0 +1,42 @@
+                                                                  QUERY PLAN                                                                  
+----------------------------------------------------------------------------------------------------------------------------------------------
+ CTE Scan on _m  (cost=184144.80..184144.92 rows=6 width=248) (actual rows=4.00 loops=1)
+   Storage: Memory  Maximum Storage: 17kB
+   Buffers: shared hit=112628
+   CTE _m
+     ->  Finalize GroupAggregate  (cost=184140.98..184144.80 rows=6 width=236) (actual rows=4.00 loops=1)
+           Group Key: lineitem.l_returnflag, lineitem.l_linestatus
+           Buffers: shared hit=112628
+           ->  Gather Merge  (cost=184140.98..184143.85 rows=24 width=236) (actual rows=20.00 loops=1)
+                 Workers Planned: 4
+                 Workers Launched: 4
+                 Buffers: shared hit=112628
+                 ->  Sort  (cost=183140.92..183140.93 rows=6 width=236) (actual rows=4.00 loops=5)
+                       Sort Key: lineitem.l_returnflag, lineitem.l_linestatus
+                       Sort Method: quicksort  Memory: 26kB
+                       Buffers: shared hit=112628
+                       Worker 0:  Sort Method: quicksort  Memory: 26kB
+                       Worker 1:  Sort Method: quicksort  Memory: 26kB
+                       Worker 2:  Sort Method: quicksort  Memory: 26kB
+                       Worker 3:  Sort Method: quicksort  Memory: 26kB
+                       ->  Partial HashAggregate  (cost=183140.71..183140.84 rows=6 width=236) (actual rows=4.00 loops=5)
+                             Group Key: lineitem.l_returnflag, lineitem.l_linestatus
+                             Batches: 1  Memory Usage: 32kB
+                             Buffers: shared hit=112600
+                             Worker 0:  Batches: 1  Memory Usage: 32kB
+                             Worker 1:  Batches: 1  Memory Usage: 32kB
+                             Worker 2:  Batches: 1  Memory Usage: 32kB
+                             Worker 3:  Batches: 1  Memory Usage: 32kB
+                             ->  Parallel Seq Scan on lineitem  (cost=0.00..131353.80 rows=1479626 width=25) (actual rows=1183318.20 loops=5)
+                                   Filter: (l_shipdate <= '1998-09-02 00:00:00'::timestamp without time zone)
+                                   Rows Removed by Filter: 16925
+                                   Buffers: shared hit=112600
+ Planning:
+   Buffers: shared hit=157
+ Planning Time: 0.601 ms
+ JIT:
+   Functions: 58
+   Options: Inlining false, Optimization false, Expressions true, Deforming true
+ Execution Time: 1699.696 ms
+(38 rows)
+
