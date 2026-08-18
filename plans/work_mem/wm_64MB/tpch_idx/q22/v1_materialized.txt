@@ -1,0 +1,49 @@
+                                                                         QUERY PLAN                                                                         
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+ CTE Scan on _m  (cost=13109.08..13123.68 rows=730 width=72) (actual rows=7.00 loops=1)
+   Storage: Memory  Maximum Storage: 17kB
+   Buffers: shared hit=64227
+   CTE _m
+     ->  GroupAggregate  (cost=13005.81..13109.08 rows=730 width=72) (actual rows=7.00 loops=1)
+           Group Key: (SUBSTRING(customer_1.c_phone FROM 1 FOR 2))
+           Buffers: shared hit=64227
+           InitPlan 1
+             ->  Finalize Aggregate  (cost=6245.82..6245.83 rows=1 width=32) (actual rows=1.00 loops=1)
+                   Buffers: shared hit=3606
+                   ->  Gather  (cost=6245.59..6245.80 rows=2 width=32) (actual rows=3.00 loops=1)
+                         Workers Planned: 2
+                         Workers Launched: 2
+                         Buffers: shared hit=3606
+                         ->  Partial Aggregate  (cost=5245.59..5245.60 rows=1 width=32) (actual rows=1.00 loops=3)
+                               Buffers: shared hit=3606
+                               ->  Parallel Seq Scan on customer  (cost=0.00..5240.62 rows=1987 width=6) (actual rows=12706.67 loops=3)
+                                     Filter: ((c_acctbal > 0.00) AND (SUBSTRING(c_phone FROM 1 FOR 2) = ANY ('{13,31,23,29,30,18,17}'::text[])))
+                                     Rows Removed by Filter: 37293
+                                     Buffers: shared hit=3606
+           ->  Gather Merge  (cost=6759.98..6845.00 rows=730 width=38) (actual rows=6384.00 loops=1)
+                 Workers Planned: 2
+                 Workers Launched: 2
+                 Buffers: shared hit=64227
+                 ->  Sort  (cost=5759.96..5760.72 rows=304 width=38) (actual rows=2128.00 loops=3)
+                       Sort Key: (SUBSTRING(customer_1.c_phone FROM 1 FOR 2))
+                       Sort Method: quicksort  Memory: 175kB
+                       Buffers: shared hit=60621
+                       Worker 0:  Sort Method: quicksort  Memory: 108kB
+                       Worker 1:  Sort Method: quicksort  Memory: 109kB
+                       ->  Nested Loop Anti Join  (cost=0.43..5747.42 rows=304 width=38) (actual rows=2128.00 loops=3)
+                             Buffers: shared hit=60605
+                             ->  Parallel Seq Scan on customer customer_1  (cost=0.00..5240.62 rows=729 width=26) (actual rows=6333.33 loops=3)
+                                   Filter: ((c_acctbal > (InitPlan 1).col1) AND (SUBSTRING(c_phone FROM 1 FOR 2) = ANY ('{13,31,23,29,30,18,17}'::text[])))
+                                   Rows Removed by Filter: 43667
+                                   Buffers: shared hit=3600
+                             ->  Index Only Scan using idx_orders_cust on orders  (cost=0.43..3.30 rows=17 width=4) (actual rows=0.66 loops=19000)
+                                   Index Cond: (o_custkey = customer_1.c_custkey)
+                                   Heap Fetches: 0
+                                   Index Searches: 19000
+                                   Buffers: shared hit=57005
+ Planning:
+   Buffers: shared hit=382
+ Planning Time: 1.214 ms
+ Execution Time: 58.180 ms
+(45 rows)
+

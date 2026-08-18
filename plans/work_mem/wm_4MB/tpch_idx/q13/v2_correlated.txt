@@ -1,0 +1,39 @@
+                                                                        QUERY PLAN                                                                         
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=21506766.69..21507141.69 rows=150000 width=16) (actual rows=42.00 loops=1)
+   Sort Key: (count(*)) DESC, ((SubPlan 1)) DESC
+   Sort Method: quicksort  Memory: 26kB
+   Buffers: shared hit=1949947
+   ->  GroupAggregate  (cost=10753771.81..21491305.24 rows=150000 width=16) (actual rows=42.00 loops=1)
+         Group Key: ((SubPlan 1))
+         Buffers: shared hit=1949944
+         ->  Sort  (cost=10753771.81..10754146.81 rows=150000 width=8) (actual rows=150000.00 loops=1)
+               Sort Key: ((SubPlan 1)) DESC
+               Sort Method: quicksort  Memory: 4096kB
+               Buffers: shared hit=1949944
+               ->  Index Only Scan using ixtest_customer_custkey on customer  (cost=0.42..10738824.86 rows=150000 width=8) (actual rows=150000.00 loops=1)
+                     Heap Fetches: 0
+                     Index Searches: 1
+                     Buffers: shared hit=1949944
+                     SubPlan 1
+                       ->  Aggregate  (cost=71.56..71.57 rows=1 width=8) (actual rows=1.00 loops=150000)
+                             Buffers: shared hit=1949531
+                             ->  Bitmap Heap Scan on orders  (cost=4.56..71.51 rows=17 width=0) (actual rows=9.89 loops=150000)
+                                   Recheck Cond: (o_custkey = customer.c_custkey)
+                                   Filter: ((o_comment)::text !~~ '%special%requests%'::text)
+                                   Rows Removed by Filter: 0
+                                   Heap Blocks: exact=1499531
+                                   Buffers: shared hit=1949531
+                                   ->  Bitmap Index Scan on idx_orders_cust  (cost=0.00..4.56 rows=17 width=0) (actual rows=10.00 loops=150000)
+                                         Index Cond: (o_custkey = customer.c_custkey)
+                                         Index Searches: 150000
+                                         Buffers: shared hit=450000
+ Planning:
+   Buffers: shared hit=261
+ Planning Time: 0.841 ms
+ JIT:
+   Functions: 13
+   Options: Inlining true, Optimization true, Expressions true, Deforming true
+ Execution Time: 2079.147 ms
+(35 rows)
+

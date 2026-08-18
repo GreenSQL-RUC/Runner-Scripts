@@ -1,0 +1,47 @@
+                                                                      QUERY PLAN                                                                      
+------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=122240.38..122240.50 rows=50 width=302) (actual rows=1.00 loops=1)
+   Sort Key: _m.s_suppkey
+   Sort Method: quicksort  Memory: 25kB
+   Buffers: shared hit=67012
+   CTE _m
+     ->  Nested Loop  (cost=121705.58..122237.96 rows=50 width=103) (actual rows=1.00 loops=1)
+           Buffers: shared hit=67009
+           CTE revenue
+             ->  HashAggregate  (cost=121355.21..121480.24 rows=10002 width=36) (actual rows=10000.00 loops=1)
+                   Group Key: lineitem.l_suppkey
+                   Batches: 1  Memory Usage: 3857kB
+                   Buffers: shared hit=67006
+                   ->  Bitmap Heap Scan on lineitem  (cost=3105.01..119095.13 rows=226008 width=16) (actual rows=225954.00 loops=1)
+                         Recheck Cond: ((l_shipdate >= '1996-01-01'::date) AND (l_shipdate < '1996-04-01 00:00:00'::timestamp without time zone))
+                         Heap Blocks: exact=66808
+                         Buffers: shared hit=67006
+                         ->  Bitmap Index Scan on ixtest_lineitem_shipdate  (cost=0.00..3048.51 rows=226008 width=0) (actual rows=225954.00 loops=1)
+                               Index Cond: ((l_shipdate >= '1996-01-01'::date) AND (l_shipdate < '1996-04-01 00:00:00'::timestamp without time zone))
+                               Index Searches: 1
+                               Buffers: shared hit=198
+           InitPlan 2
+             ->  Aggregate  (cost=225.04..225.05 rows=1 width=32) (actual rows=1.00 loops=1)
+                   ->  CTE Scan on revenue  (cost=0.00..200.04 rows=10002 width=32) (actual rows=10000.00 loops=1)
+                         Storage: Memory  Maximum Storage: 519kB
+           ->  CTE Scan on revenue revenue_1  (cost=0.00..225.04 rows=50 width=36) (actual rows=1.00 loops=1)
+                 Filter: (total_revenue = (InitPlan 2).col1)
+                 Rows Removed by Filter: 9999
+                 Storage: Memory  Maximum Storage: 519kB
+                 Buffers: shared hit=67006
+           ->  Index Scan using ixtest_supplier_suppkey on supplier  (cost=0.29..6.14 rows=1 width=71) (actual rows=1.00 loops=1)
+                 Index Cond: (s_suppkey = revenue_1.supplier_no)
+                 Index Searches: 1
+                 Buffers: shared hit=3
+   ->  CTE Scan on _m  (cost=0.00..1.00 rows=50 width=302) (actual rows=1.00 loops=1)
+         Storage: Memory  Maximum Storage: 17kB
+         Buffers: shared hit=67009
+ Planning:
+   Buffers: shared hit=368
+ Planning Time: 1.015 ms
+ JIT:
+   Functions: 22
+   Options: Inlining false, Optimization false, Expressions true, Deforming true
+ Execution Time: 269.755 ms
+(43 rows)
+

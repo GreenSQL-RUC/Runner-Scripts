@@ -1,0 +1,81 @@
+                                                                                       QUERY PLAN                                                                                        
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ CTE Scan on _m  (cost=87256.82..87304.94 rows=2406 width=64) (actual rows=2.00 loops=1)
+   Storage: Memory  Maximum Storage: 17kB
+   Buffers: shared hit=288340
+   CTE _m
+     ->  GroupAggregate  (cost=86829.32..87256.82 rows=2406 width=64) (actual rows=2.00 loops=1)
+           Group Key: (EXTRACT(year FROM orders.o_orderdate))
+           Buffers: shared hit=288340
+           ->  Gather Merge  (cost=86829.32..87153.10 rows=2780 width=70) (actual rows=2603.00 loops=1)
+                 Workers Planned: 2
+                 Workers Launched: 2
+                 Buffers: shared hit=288340
+                 ->  Sort  (cost=85829.30..85832.19 rows=1158 width=70) (actual rows=867.67 loops=3)
+                       Sort Key: (EXTRACT(year FROM orders.o_orderdate))
+                       Sort Method: quicksort  Memory: 80kB
+                       Buffers: shared hit=288340
+                       Worker 0:  Sort Method: quicksort  Memory: 77kB
+                       Worker 1:  Sort Method: quicksort  Memory: 79kB
+                       ->  Hash Join  (cost=5.66..85770.37 rows=1158 width=70) (actual rows=867.67 loops=3)
+                             Hash Cond: (supplier.s_nationkey = n2.n_nationkey)
+                             Buffers: shared hit=288326
+                             ->  Nested Loop  (cost=4.10..85749.99 rows=1158 width=20) (actual rows=867.67 loops=3)
+                                   Buffers: shared hit=288323
+                                   ->  Hash Join  (cost=3.81..85387.61 rows=1159 width=20) (actual rows=867.67 loops=3)
+                                         Hash Cond: (customer.c_nationkey = n1.n_nationkey)
+                                         Buffers: shared hit=280512
+                                         ->  Nested Loop  (cost=1.28..85351.76 rows=5793 width=24) (actual rows=4463.00 loops=3)
+                                               Buffers: shared hit=280506
+                                               ->  Nested Loop  (cost=0.86..82555.07 rows=5793 width=24) (actual rows=4463.00 loops=3)
+                                                     Buffers: shared hit=226948
+                                                     ->  Nested Loop  (cost=0.43..73388.72 rows=19090 width=20) (actual rows=14564.33 loops=3)
+                                                           Buffers: shared hit=52174
+                                                           ->  Parallel Seq Scan on part  (cost=0.00..5169.67 rows=636 width=4) (actual rows=483.67 loops=3)
+                                                                 Filter: ((p_type)::text = 'ECONOMY ANODIZED STEEL'::text)
+                                                                 Rows Removed by Filter: 66183
+                                                                 Buffers: shared hit=4128
+                                                           ->  Index Scan using ixtest_lineitem_partkey on lineitem  (cost=0.43..106.95 rows=31 width=24) (actual rows=30.11 loops=1451)
+                                                                 Index Cond: (l_partkey = part.p_partkey)
+                                                                 Index Searches: 1451
+                                                                 Buffers: shared hit=48046
+                                                     ->  Index Scan using ixtest_orders_orderkey on orders  (cost=0.43..0.47 rows=1 width=12) (actual rows=0.31 loops=43693)
+                                                           Index Cond: (o_orderkey = lineitem.l_orderkey)
+                                                           Filter: ((o_orderdate >= '1995-01-01'::date) AND (o_orderdate <= '1996-12-31'::date))
+                                                           Rows Removed by Filter: 1
+                                                           Index Searches: 43693
+                                                           Buffers: shared hit=174774
+                                               ->  Index Scan using ixtest_customer_custkey on customer  (cost=0.42..0.47 rows=1 width=8) (actual rows=1.00 loops=13389)
+                                                     Index Cond: (c_custkey = orders.o_custkey)
+                                                     Index Searches: 13389
+                                                     Buffers: shared hit=53558
+                                         ->  Hash  (cost=2.47..2.47 rows=5 width=4) (actual rows=5.00 loops=3)
+                                               Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                                               Buffers: shared hit=6
+                                               ->  Hash Join  (cost=1.07..2.47 rows=5 width=4) (actual rows=5.00 loops=3)
+                                                     Hash Cond: (n1.n_regionkey = region.r_regionkey)
+                                                     Buffers: shared hit=6
+                                                     ->  Seq Scan on nation n1  (cost=0.00..1.25 rows=25 width=8) (actual rows=25.00 loops=3)
+                                                           Buffers: shared hit=3
+                                                     ->  Hash  (cost=1.06..1.06 rows=1 width=4) (actual rows=1.00 loops=3)
+                                                           Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                                                           Buffers: shared hit=3
+                                                           ->  Seq Scan on region  (cost=0.00..1.06 rows=1 width=4) (actual rows=1.00 loops=3)
+                                                                 Filter: (r_name = 'AMERICA'::bpchar)
+                                                                 Rows Removed by Filter: 4
+                                                                 Buffers: shared hit=3
+                                   ->  Index Scan using ixtest_supplier_suppkey on supplier  (cost=0.29..0.30 rows=1 width=8) (actual rows=1.00 loops=2603)
+                                         Index Cond: (s_suppkey = lineitem.l_suppkey)
+                                         Index Searches: 2603
+                                         Buffers: shared hit=7811
+                             ->  Hash  (cost=1.25..1.25 rows=25 width=30) (actual rows=25.00 loops=3)
+                                   Buckets: 1024  Batches: 1  Memory Usage: 10kB
+                                   Buffers: shared hit=3
+                                   ->  Seq Scan on nation n2  (cost=0.00..1.25 rows=25 width=30) (actual rows=25.00 loops=3)
+                                         Buffers: shared hit=3
+ Planning:
+   Buffers: shared hit=739
+ Planning Time: 3.486 ms
+ Execution Time: 144.433 ms
+(77 rows)
+

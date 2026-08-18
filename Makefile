@@ -152,7 +152,7 @@ COLD_ENV = QUERY_DIR="$(DIR)" DB_NAME="$(DB_NAME)" DB_USER="$(DB_USER)" \
 
 # `all` (build) is the default even though it is not the first rule in the file.
 .DEFAULT_GOAL := all
-.PHONY: all run cold plans outputs write write-db clean pg-info check-pg matrix matrix-plan partial-archive index-build index-verify index-drop-db test-shared-buffer
+.PHONY: all run cold plans outputs write write-db clean pg-info check-pg matrix matrix-plan partial-archive index-build index-verify index-drop-db test-shared-buffer test-work-mem test-effective-cache-size test-max-parallel-workers plans-work-mem
 
 # Move a query's - or a whole run's - rows out of the live result CSVs into
 # archive/partial/ (e.g. to pull a bad measurement without re-running the whole
@@ -160,11 +160,15 @@ COLD_ENV = QUERY_DIR="$(DIR)" DB_NAME="$(DB_NAME)" DB_USER="$(DB_USER)" \
 # any CSV a running sweep has open is skipped. QUERY is a substring of the query
 # column; RUNID is an exact run_id (col 2); VER/DB are optional filters (DB empty
 # = every database's files). At least one of QUERY/RUNID is required; given both,
-# they AND. DRYRUN=1 previews, changes nothing.
+# they AND. DRYRUN=1 previews, changes nothing. LOGS_DIR is searched RECURSIVELY,
+# so the sweep subfolders (logs/shared_buffers/sb_*, logs/work_mem/wm_*, ...) are
+# covered by default and archived to a mirrored path under archive/partial/;
+# narrow it (LOGS_DIR=logs/shared_buffers) to scope one sweep.
 #   make partial-archive QUERY=scan_orders
 #   make partial-archive RUNID=D989360CB80E6EEE           # every row of that run
 #   make partial-archive RUNID=D989360CB80E6EEE QUERY=scan_orders
 #   make partial-archive QUERY=log10_numeric VER=18 DB=tpch5
+#   make partial-archive QUERY=q05 LOGS_DIR=logs/shared_buffers  # just that sweep
 #   make partial-archive QUERY=scan_orders DRYRUN=1
 QUERY  ?=
 RUNID  ?=
@@ -340,7 +344,7 @@ index-drop-db:
 # on SB_DBS across PGVERS, writing each size's results to its own dir under
 # SB_LOGS/sb_<size>/. It sets shared_buffers via ALTER SYSTEM + a cluster restart
 # and resets to the default when done; if it is interrupted, reset it by hand
-# with:  sudo bash reset_shared_buffer.sh [version...]
+# with:  sudo bash reset_all_parameters.sh [version...]
 # Everything except the buffer SIZES is configured here (DIR, RUNS, WARMUP,
 # BATCHNUM, WORKERS, STATEMENT_TIMEOUT, PGVERS). NOTE: DIR defaults to the whole
 # tpch corpus - scope it (e.g. DIR=queries/tpch/tpch-queries) unless you want a
@@ -358,6 +362,126 @@ test-shared-buffer:
 	    RUNS="$(RUNS)" WARMUP="$(WARMUP)" BATCHNUM="$(BATCHNUM)" WORKERS="$(WORKERS)" \
 	    STATEMENT_TIMEOUT="$(STATEMENT_TIMEOUT)" LOGS_ROOT="$(SB_LOGS)" DRYRUN="$(DRYRUN)" \
 	    bash test_shared_buffer.sh
+
+# ----- work_mem sweep (warm-cache runs at several work_mem sizes) --------------
+# test_work_mem.sh sweeps work_mem (4MB default, 16MB, 32MB, 64MB, 128MB - the
+# SIZES live in the script) with shared_buffers, effective_cache_size and
+# max_parallel_workers_per_gather PINNED (4GB / 12GB / 4 - overridable below), so
+# work_mem is the only variable. It runs the warm-cache benchmark at each value
+# on WM_DBS across PGVERS, writing each value's results to its own dir under
+# WM_LOGS/wm_<size>/. The fixed knobs are applied via ALTER SYSTEM (+ one restart
+# for shared_buffers); work_mem changes only reload the config. All four GUCs are
+# reset to their defaults when done; if it is interrupted, reset by hand with:
+#   sudo bash reset_all_parameters.sh [version...]
+# Everything except the work_mem SIZES is configured here (DIR, RUNS, WARMUP,
+# BATCHNUM, STATEMENT_TIMEOUT, PGVERS, and the three fixed knobs). NOTE: DIR
+# defaults to the whole tpch corpus - scope it (e.g. DIR=queries/tpch/tpch-queries)
+# unless you want a very long sweep, since it runs per size x version x database.
+#   make test-work-mem                                    # tpch+tpch_idx, all versions
+#   make test-work-mem PGVERS=18 DIR=queries/tpch/tpch-queries
+#   make test-work-mem DRYRUN=1                            # print the plan only
+WM_DBS  ?= tpch tpch_idx
+WM_LOGS ?= logs/work_mem
+WM_SHARED_BUFFERS                  ?= 4GB
+WM_EFFECTIVE_CACHE_SIZE            ?= 12GB
+WM_MAX_PARALLEL_WORKERS_PER_GATHER ?= 4
+test-work-mem:
+	@$(SUDO_PRIME) \
+	    || { echo "sudo authentication failed (override with: make test-work-mem SUDO_PASSWORD=...)"; exit 1; }; \
+	  sudo -n modprobe msr 2>/dev/null || true; \
+	  sudo -n env DBS="$(WM_DBS)" PGVERS="$(PGVERS)" DIR="$(DIR)" \
+	    RUNS="$(RUNS)" WARMUP="$(WARMUP)" BATCHNUM="$(BATCHNUM)" \
+	    SHARED_BUFFERS="$(WM_SHARED_BUFFERS)" EFFECTIVE_CACHE_SIZE="$(WM_EFFECTIVE_CACHE_SIZE)" \
+	    MAX_PARALLEL_WORKERS_PER_GATHER="$(WM_MAX_PARALLEL_WORKERS_PER_GATHER)" \
+	    STATEMENT_TIMEOUT="$(STATEMENT_TIMEOUT)" LOGS_ROOT="$(WM_LOGS)" DRYRUN="$(DRYRUN)" \
+	    bash test_work_mem.sh
+
+# ----- effective_cache_size sweep (warm-cache runs at several ECS values) ------
+# test_effective_cache_size.sh sweeps effective_cache_size (4GB, 8GB, 12GB - the
+# VALUES live in the script) with shared_buffers, work_mem and
+# max_parallel_workers_per_gather PINNED (4GB / 64MB / 4 - overridable below), so
+# effective_cache_size is the only variable. effective_cache_size is a planner
+# hint only (no allocation); this measures how the plans it steers move timing.
+# Results go to ECS_LOGS/ecs_<size>/. All four GUCs reset to their defaults when
+# done; if interrupted, reset by hand with:
+#   sudo bash reset_all_parameters.sh [version...]
+# NOTE: DIR defaults to the whole tpch corpus - scope it unless you want a very
+# long sweep (runs per size x version x database).
+#   make test-effective-cache-size                        # tpch+tpch_idx, all versions
+#   make test-effective-cache-size PGVERS=18 DIR=queries/tpch/tpch-queries
+#   make test-effective-cache-size DRYRUN=1               # print the plan only
+ECS_DBS  ?= tpch tpch_idx
+ECS_LOGS ?= logs/effective_cache_size
+ECS_SHARED_BUFFERS                  ?= 4GB
+ECS_WORK_MEM                        ?= 64MB
+ECS_MAX_PARALLEL_WORKERS_PER_GATHER ?= 4
+test-effective-cache-size:
+	@$(SUDO_PRIME) \
+	    || { echo "sudo authentication failed (override with: make test-effective-cache-size SUDO_PASSWORD=...)"; exit 1; }; \
+	  sudo -n modprobe msr 2>/dev/null || true; \
+	  sudo -n env DBS="$(ECS_DBS)" PGVERS="$(PGVERS)" DIR="$(DIR)" \
+	    RUNS="$(RUNS)" WARMUP="$(WARMUP)" BATCHNUM="$(BATCHNUM)" \
+	    SHARED_BUFFERS="$(ECS_SHARED_BUFFERS)" WORK_MEM="$(ECS_WORK_MEM)" \
+	    MAX_PARALLEL_WORKERS_PER_GATHER="$(ECS_MAX_PARALLEL_WORKERS_PER_GATHER)" \
+	    STATEMENT_TIMEOUT="$(STATEMENT_TIMEOUT)" LOGS_ROOT="$(ECS_LOGS)" DRYRUN="$(DRYRUN)" \
+	    bash test_effective_cache_size.sh
+
+# ----- max_parallel_workers_per_gather sweep (warm-cache runs at 2/4/6) --------
+# test_max_parallel_workers_per_gather.sh sweeps max_parallel_workers_per_gather
+# (2, 4, 6 - the VALUES live in the script) with shared_buffers,
+# effective_cache_size and work_mem PINNED (4GB / 12GB / 64MB - overridable
+# below), so parallelism is the only variable. Values above the cluster's
+# max_parallel_workers / max_worker_processes (default 8) are clamped by PG.
+# Results go to MPW_LOGS/mpw_<n>/. All four GUCs reset to their defaults when
+# done; if interrupted, reset by hand with:
+#   sudo bash reset_all_parameters.sh [version...]
+# NOTE: DIR defaults to the whole tpch corpus - scope it unless you want a very
+# long sweep (runs per value x version x database).
+#   make test-max-parallel-workers                        # tpch+tpch_idx, all versions
+#   make test-max-parallel-workers PGVERS=18 DIR=queries/tpch/tpch-queries
+#   make test-max-parallel-workers DRYRUN=1               # print the plan only
+MPW_DBS  ?= tpch tpch_idx
+MPW_LOGS ?= logs/max_parallel_workers
+MPW_SHARED_BUFFERS       ?= 4GB
+MPW_EFFECTIVE_CACHE_SIZE ?= 12GB
+MPW_WORK_MEM             ?= 64MB
+test-max-parallel-workers:
+	@$(SUDO_PRIME) \
+	    || { echo "sudo authentication failed (override with: make test-max-parallel-workers SUDO_PASSWORD=...)"; exit 1; }; \
+	  sudo -n modprobe msr 2>/dev/null || true; \
+	  sudo -n env DBS="$(MPW_DBS)" PGVERS="$(PGVERS)" DIR="$(DIR)" \
+	    RUNS="$(RUNS)" WARMUP="$(WARMUP)" BATCHNUM="$(BATCHNUM)" \
+	    SHARED_BUFFERS="$(MPW_SHARED_BUFFERS)" EFFECTIVE_CACHE_SIZE="$(MPW_EFFECTIVE_CACHE_SIZE)" \
+	    WORK_MEM="$(MPW_WORK_MEM)" \
+	    STATEMENT_TIMEOUT="$(STATEMENT_TIMEOUT)" LOGS_ROOT="$(MPW_LOGS)" DRYRUN="$(DRYRUN)" \
+	    bash test_max_parallel_workers_per_gather.sh
+
+# ----- work_mem PLAN sweep (save query plans at each work_mem value) -----------
+# work_mem_plans.sh mirrors test-work-mem but saves PLANS (plan_builder /
+# `make plans`, i.e. EXPLAIN ANALYZE) instead of timings, sweeping work_mem (4MB,
+# 16MB, 32MB, 64MB, 128MB - the SIZES live in the script) with shared_buffers,
+# effective_cache_size and max_parallel_workers_per_gather PINNED (4GB / 12GB / 4
+# - overridable below). Each value's plans land in their OWN root,
+# PWM_PLANS/wm_<size>/<db>/, so nothing already in plans/ (plans/tpch,
+# plans/tpch_idx) is overwritten. Both base (tpch) and indexed (tpch_idx) run.
+# All four GUCs reset to their defaults when done; if interrupted, reset by hand:
+#   sudo bash reset_all_parameters.sh [version...]
+#   make plans-work-mem                                   # tpch+tpch_idx, all versions
+#   make plans-work-mem PGVERS=18 DIR=queries/tpch/tpch-queries
+#   make plans-work-mem DRYRUN=1                           # print the plan only
+PWM_DBS   ?= tpch tpch_idx
+PWM_PLANS ?= plans/work_mem
+PWM_SHARED_BUFFERS                  ?= 4GB
+PWM_EFFECTIVE_CACHE_SIZE            ?= 12GB
+PWM_MAX_PARALLEL_WORKERS_PER_GATHER ?= 4
+plans-work-mem:
+	@$(SUDO_PRIME) \
+	    || { echo "sudo authentication failed (override with: make plans-work-mem SUDO_PASSWORD=...)"; exit 1; }; \
+	  sudo -n env DBS="$(PWM_DBS)" PGVERS="$(PGVERS)" DIR="$(DIR)" \
+	    SHARED_BUFFERS="$(PWM_SHARED_BUFFERS)" EFFECTIVE_CACHE_SIZE="$(PWM_EFFECTIVE_CACHE_SIZE)" \
+	    MAX_PARALLEL_WORKERS_PER_GATHER="$(PWM_MAX_PARALLEL_WORKERS_PER_GATHER)" \
+	    PLANS_ROOT="$(PWM_PLANS)" DRYRUN="$(DRYRUN)" \
+	    bash work_mem_plans.sh
 
 clean:
 	rm -f $(TARGET) $(PLAN_TARGET) $(OUTPUT_TARGET) $(WRITE_TARGET) $(COLD_TARGET)

@@ -1,0 +1,53 @@
+                                                                                 QUERY PLAN                                                                                 
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ CTE Scan on _m  (cost=157000.31..157000.45 rows=7 width=60) (actual rows=2.00 loops=1)
+   Storage: Memory  Maximum Storage: 17kB
+   Buffers: shared hit=229757
+   CTE _m
+     ->  Finalize GroupAggregate  (cost=156855.88..157000.31 rows=7 width=27) (actual rows=2.00 loops=1)
+           Group Key: lineitem.l_shipmode
+           Buffers: shared hit=229757
+           ->  Gather Merge  (cost=156855.88..157000.03 rows=28 width=27) (actual rows=10.00 loops=1)
+                 Workers Planned: 4
+                 Workers Launched: 4
+                 Buffers: shared hit=229757
+                 ->  Partial GroupAggregate  (cost=155855.82..155996.63 rows=7 width=27) (actual rows=2.00 loops=5)
+                       Group Key: lineitem.l_shipmode
+                       Buffers: shared hit=229757
+                       ->  Sort  (cost=155855.82..155873.41 rows=7037 width=27) (actual rows=6197.60 loops=5)
+                             Sort Key: lineitem.l_shipmode
+                             Sort Method: quicksort  Memory: 572kB
+                             Buffers: shared hit=229757
+                             Worker 0:  Sort Method: quicksort  Memory: 386kB
+                             Worker 1:  Sort Method: quicksort  Memory: 535kB
+                             Worker 2:  Sort Method: quicksort  Memory: 538kB
+                             Worker 3:  Sort Method: quicksort  Memory: 288kB
+                             ->  Nested Loop  (cost=12131.76..155406.13 rows=7037 width=27) (actual rows=6197.60 loops=5)
+                                   Buffers: shared hit=229729
+                                   ->  Parallel Bitmap Heap Scan on lineitem  (cost=12131.33..129791.50 rows=7037 width=15) (actual rows=6197.60 loops=5)
+                                         Recheck Cond: ((l_receiptdate >= '1994-01-01'::date) AND (l_receiptdate < '1995-01-01 00:00:00'::timestamp without time zone))
+                                         Filter: ((l_shipmode = ANY ('{MAIL,SHIP}'::bpchar[])) AND (l_commitdate < l_receiptdate) AND (l_shipdate < l_commitdate))
+                                         Rows Removed by Filter: 175771
+                                         Heap Blocks: exact=27150
+                                         Buffers: shared hit=105773
+                                         Worker 0:  Heap Blocks: exact=14011
+                                         Worker 1:  Heap Blocks: exact=24963
+                                         Worker 2:  Heap Blocks: exact=24621
+                                         Worker 3:  Heap Blocks: exact=14159
+                                         ->  Bitmap Index Scan on ixtest_lineitem_receiptdate  (cost=0.00..12124.29 rows=899586 width=0) (actual rows=909844.00 loops=1)
+                                               Index Cond: ((l_receiptdate >= '1994-01-01'::date) AND (l_receiptdate < '1995-01-01 00:00:00'::timestamp without time zone))
+                                               Index Searches: 1
+                                               Buffers: shared hit=789
+                                   ->  Index Scan using ixtest_orders_orderkey on orders  (cost=0.43..3.63 rows=1 width=20) (actual rows=1.00 loops=30988)
+                                         Index Cond: (o_orderkey = lineitem.l_orderkey)
+                                         Index Searches: 30988
+                                         Buffers: shared hit=123956
+ Planning:
+   Buffers: shared hit=445
+ Planning Time: 1.171 ms
+ JIT:
+   Functions: 78
+   Options: Inlining false, Optimization false, Expressions true, Deforming true
+ Execution Time: 297.952 ms
+(49 rows)
+

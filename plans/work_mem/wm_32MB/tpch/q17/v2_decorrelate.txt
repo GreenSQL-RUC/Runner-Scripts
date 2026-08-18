@@ -1,0 +1,49 @@
+                                                                          QUERY PLAN                                                                           
+---------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Finalize Aggregate  (cost=347584.77..347584.78 rows=1 width=32) (actual rows=1.00 loops=1)
+   Buffers: shared hit=679728, temp read=14435 written=25715
+   ->  Gather  (cost=347584.34..347584.75 rows=4 width=32) (actual rows=5.00 loops=1)
+         Workers Planned: 4
+         Workers Launched: 4
+         Buffers: shared hit=679728, temp read=14435 written=25715
+         ->  Partial Aggregate  (cost=346584.34..346584.35 rows=1 width=32) (actual rows=1.00 loops=5)
+               Buffers: shared hit=679728, temp read=14435 written=25715
+               ->  Parallel Hash Join  (cost=213346.47..346583.14 rows=477 width=8) (actual rows=117.40 loops=5)
+                     Hash Cond: (lineitem.l_partkey = part.p_partkey)
+                     Join Filter: (lineitem.l_quantity < ((0.2 * avg(lineitem_1.l_quantity))))
+                     Rows Removed by Join Filter: 1100
+                     Buffers: shared hit=679728, temp read=14435 written=25715
+                     ->  Parallel Seq Scan on lineitem  (cost=0.00..127603.04 rows=1500304 width=17) (actual rows=1200243.00 loops=5)
+                           Buffers: shared hit=112600
+                     ->  Parallel Hash  (cost=213345.47..213345.47 rows=80 width=40) (actual rows=40.80 loops=5)
+                           Buckets: 1024  Batches: 1  Memory Usage: 168kB
+                           Buffers: shared hit=567128, temp read=14435 written=25715
+                           ->  Hash Join  (cost=207967.25..213345.47 rows=80 width=40) (actual rows=40.80 loops=5)
+                                 Hash Cond: (part.p_partkey = lineitem_1.l_partkey)
+                                 Buffers: shared hit=567128, temp read=14435 written=25715
+                                 ->  Parallel Seq Scan on part  (cost=0.00..5378.00 rows=82 width=4) (actual rows=40.80 loops=5)
+                                       Filter: ((p_brand = 'Brand#23'::bpchar) AND (p_container = 'MED BOX'::bpchar))
+                                       Rows Removed by Filter: 39959
+                                       Buffers: shared hit=4128
+                                 ->  Hash  (cost=205535.88..205535.88 rows=194510 width=36) (actual rows=200000.00 loops=5)
+                                       Buckets: 262144  Batches: 1  Memory Usage: 11623kB
+                                       Buffers: shared hit=563000, temp read=14435 written=25715
+                                       ->  HashAggregate  (cost=202618.23..205535.88 rows=194510 width=36) (actual rows=200000.00 loops=5)
+                                             Group Key: lineitem_1.l_partkey
+                                             Batches: 5  Memory Usage: 65585kB  Disk Usage: 23848kB
+                                             Buffers: shared hit=563000, temp read=14435 written=25715
+                                             Worker 0:  Batches: 5  Memory Usage: 65585kB  Disk Usage: 23848kB
+                                             Worker 1:  Batches: 5  Memory Usage: 65585kB  Disk Usage: 23848kB
+                                             Worker 2:  Batches: 5  Memory Usage: 65585kB  Disk Usage: 23848kB
+                                             Worker 3:  Batches: 5  Memory Usage: 65585kB  Disk Usage: 23848kB
+                                             ->  Seq Scan on lineitem lineitem_1  (cost=0.00..172612.15 rows=6001215 width=9) (actual rows=6001215.00 loops=5)
+                                                   Buffers: shared hit=563000
+ Planning:
+   Buffers: shared hit=227
+ Planning Time: 0.638 ms
+ JIT:
+   Functions: 187
+   Options: Inlining false, Optimization false, Expressions true, Deforming true
+ Execution Time: 5697.783 ms
+(45 rows)
+

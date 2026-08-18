@@ -1,0 +1,66 @@
+                                                                                   QUERY PLAN                                                                                   
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Incremental Sort  (cost=22283.88..22286.97 rows=48 width=168) (actual rows=175.00 loops=1)
+   Sort Key: _m.nation, _m.o_year DESC
+   Presorted Key: _m.nation
+   Full-sort Groups: 5  Sort Method: quicksort  Average Memory: 26kB  Peak Memory: 26kB
+   Buffers: shared hit=2730705
+   CTE _m
+     ->  GroupAggregate  (cost=22276.70..22283.85 rows=48 width=90) (actual rows=175.00 loops=1)
+           Group Key: nation.n_name, (EXTRACT(year FROM orders.o_orderdate))
+           Buffers: shared hit=2730705
+           ->  Gather Merge  (cost=22276.70..22282.29 rows=48 width=81) (actual rows=319404.00 loops=1)
+                 Workers Planned: 2
+                 Workers Launched: 2
+                 Buffers: shared hit=2730705
+                 ->  Sort  (cost=21276.67..21276.72 rows=20 width=81) (actual rows=106468.00 loops=3)
+                       Sort Key: nation.n_name, (EXTRACT(year FROM orders.o_orderdate))
+                       Sort Method: quicksort  Memory: 11246kB
+                       Buffers: shared hit=2730705
+                       Worker 0:  Sort Method: quicksort  Memory: 11145kB
+                       Worker 1:  Sort Method: quicksort  Memory: 11148kB
+                       ->  Hash Join  (cost=3.13..21276.24 rows=20 width=81) (actual rows=106468.00 loops=3)
+                             Hash Cond: (supplier.s_nationkey = nation.n_nationkey)
+                             Buffers: shared hit=2730677
+                             ->  Nested Loop  (cost=1.57..21274.35 rows=20 width=31) (actual rows=106468.00 loops=3)
+                                   Buffers: shared hit=2730674
+                                   ->  Nested Loop  (cost=1.14..21264.85 rows=20 width=31) (actual rows=106468.00 loops=3)
+                                         Buffers: shared hit=1453056
+                                         ->  Nested Loop  (cost=0.86..21258.60 rows=20 width=35) (actual rows=106468.00 loops=3)
+                                               Buffers: shared hit=494842
+                                               ->  Nested Loop  (cost=0.42..14117.42 rows=6720 width=18) (actual rows=14218.67 loops=3)
+                                                     Buffers: shared hit=47481
+                                                     ->  Parallel Seq Scan on part  (cost=0.00..5169.67 rows=1683 width=4) (actual rows=3554.67 loops=3)
+                                                           Filter: ((p_name)::text ~~ '%green%'::text)
+                                                           Rows Removed by Filter: 63112
+                                                           Buffers: shared hit=4128
+                                                     ->  Index Scan using ixtest_partsupp_partkey on partsupp  (cost=0.42..5.28 rows=4 width=14) (actual rows=4.00 loops=10664)
+                                                           Index Cond: (ps_partkey = part.p_partkey)
+                                                           Index Searches: 10664
+                                                           Buffers: shared hit=43353
+                                               ->  Index Scan using ixtest_lineitem_partsupp on lineitem  (cost=0.43..1.05 rows=1 width=29) (actual rows=7.49 loops=42656)
+                                                     Index Cond: ((l_partkey = partsupp.ps_partkey) AND (l_suppkey = partsupp.ps_suppkey))
+                                                     Index Searches: 42656
+                                                     Buffers: shared hit=447361
+                                         ->  Index Scan using ixtest_supplier_suppkey on supplier  (cost=0.29..0.30 rows=1 width=8) (actual rows=1.00 loops=319404)
+                                               Index Cond: (s_suppkey = lineitem.l_suppkey)
+                                               Index Searches: 319404
+                                               Buffers: shared hit=958214
+                                   ->  Index Scan using ixtest_orders_orderkey on orders  (cost=0.43..0.47 rows=1 width=8) (actual rows=1.00 loops=319404)
+                                         Index Cond: (o_orderkey = lineitem.l_orderkey)
+                                         Index Searches: 319404
+                                         Buffers: shared hit=1277618
+                             ->  Hash  (cost=1.25..1.25 rows=25 width=30) (actual rows=25.00 loops=3)
+                                   Buckets: 1024  Batches: 1  Memory Usage: 10kB
+                                   Buffers: shared hit=3
+                                   ->  Seq Scan on nation  (cost=0.00..1.25 rows=25 width=30) (actual rows=25.00 loops=3)
+                                         Buffers: shared hit=3
+   ->  CTE Scan on _m  (cost=0.00..0.96 rows=48 width=168) (actual rows=175.00 loops=1)
+         Storage: Memory  Maximum Storage: 27kB
+         Buffers: shared hit=917538
+ Planning:
+   Buffers: shared hit=737
+ Planning Time: 4.227 ms
+ Execution Time: 1023.180 ms
+(62 rows)
+

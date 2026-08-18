@@ -1,0 +1,77 @@
+                                                                                       QUERY PLAN                                                                                        
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ CTE Scan on _m  (cost=67860.34..67982.26 rows=6096 width=272) (actual rows=4.00 loops=1)
+   Storage: Memory  Maximum Storage: 17kB
+   Buffers: shared hit=1602006
+   CTE _m
+     ->  GroupAggregate  (cost=66967.48..67860.34 rows=6096 width=116) (actual rows=4.00 loops=1)
+           Group Key: n1.n_name, n2.n_name, (EXTRACT(year FROM lineitem.l_shipdate))
+           Buffers: shared hit=1602006
+           ->  Gather Merge  (cost=66967.48..67677.46 rows=6096 width=96) (actual rows=5924.00 loops=1)
+                 Workers Planned: 2
+                 Workers Launched: 2
+                 Buffers: shared hit=1602006
+                 ->  Sort  (cost=65967.45..65973.80 rows=2540 width=96) (actual rows=1974.67 loops=3)
+                       Sort Key: n1.n_name, n2.n_name, (EXTRACT(year FROM lineitem.l_shipdate))
+                       Sort Method: quicksort  Memory: 294kB
+                       Buffers: shared hit=1602006
+                       Worker 0:  Sort Method: quicksort  Memory: 221kB
+                       Worker 1:  Sort Method: quicksort  Memory: 187kB
+                       ->  Hash Join  (cost=52857.95..65823.81 rows=2540 width=96) (actual rows=1974.67 loops=3)
+                             Hash Cond: (orders.o_orderkey = lineitem.l_orderkey)
+                             Join Filter: (((n1.n_name = 'FRANCE'::bpchar) AND (n2.n_name = 'GERMANY'::bpchar)) OR ((n1.n_name = 'GERMANY'::bpchar) AND (n2.n_name = 'FRANCE'::bpchar)))
+                             Rows Removed by Join Filter: 1933
+                             Buffers: shared hit=1601978
+                             ->  Nested Loop  (cost=1.83..12676.17 rows=50000 width=30) (actual rows=40441.33 loops=3)
+                                   Buffers: shared hit=160922
+                                   ->  Hash Join  (cost=1.40..4510.77 rows=5000 width=30) (actual rows=4002.67 loops=3)
+                                         Hash Cond: (customer.c_nationkey = n2.n_nationkey)
+                                         Buffers: shared hit=3603
+                                         ->  Parallel Seq Scan on customer  (cost=0.00..4225.00 rows=62500 width=8) (actual rows=50000.00 loops=3)
+                                               Buffers: shared hit=3600
+                                         ->  Hash  (cost=1.38..1.38 rows=2 width=30) (actual rows=2.00 loops=3)
+                                               Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                                               Buffers: shared hit=3
+                                               ->  Seq Scan on nation n2  (cost=0.00..1.38 rows=2 width=30) (actual rows=2.00 loops=3)
+                                                     Filter: ((n_name = 'GERMANY'::bpchar) OR (n_name = 'FRANCE'::bpchar))
+                                                     Rows Removed by Filter: 23
+                                                     Buffers: shared hit=3
+                                   ->  Index Scan using idx_orders_cust on orders  (cost=0.43..1.46 rows=17 width=8) (actual rows=10.10 loops=12008)
+                                         Index Cond: (o_custkey = customer.c_custkey)
+                                         Index Searches: 12008
+                                         Buffers: shared hit=157319
+                             ->  Hash  (cost=51024.96..51024.96 rows=146493 width=46) (actual rows=145703.00 loops=3)
+                                   Buckets: 262144  Batches: 1  Memory Usage: 13577kB
+                                   Buffers: shared hit=1441056
+                                   ->  Nested Loop  (cost=0.86..51024.96 rows=146493 width=46) (actual rows=145703.00 loops=3)
+                                         Buffers: shared hit=1441056
+                                         ->  Nested Loop  (cost=0.43..750.96 rows=800 width=30) (actual rows=798.00 loops=3)
+                                               Buffers: shared hit=934
+                                               ->  Index Scan using ixtest_supplier_suppkey on supplier  (cost=0.29..496.78 rows=10000 width=8) (actual rows=10000.00 loops=3)
+                                                     Index Searches: 3
+                                                     Buffers: shared hit=782
+                                               ->  Memoize  (cost=0.15..0.17 rows=1 width=30) (actual rows=0.08 loops=30000)
+                                                     Cache Key: supplier.s_nationkey
+                                                     Cache Mode: logical
+                                                     Hits: 9975  Misses: 25  Evictions: 0  Overflows: 0  Memory Usage: 2kB
+                                                     Buffers: shared hit=152
+                                                     Worker 0:  Hits: 9975  Misses: 25  Evictions: 0  Overflows: 0  Memory Usage: 2kB
+                                                     Worker 1:  Hits: 9975  Misses: 25  Evictions: 0  Overflows: 0  Memory Usage: 2kB
+                                                     ->  Index Scan using ixtest_nation_nationkey on nation n1  (cost=0.14..0.16 rows=1 width=30) (actual rows=0.08 loops=75)
+                                                           Index Cond: (n_nationkey = supplier.s_nationkey)
+                                                           Filter: ((n_name = 'FRANCE'::bpchar) OR (n_name = 'GERMANY'::bpchar))
+                                                           Rows Removed by Filter: 1
+                                                           Index Searches: 75
+                                                           Buffers: shared hit=152
+                                         ->  Index Scan using ixtest_lineitem_suppkey on lineitem  (cost=0.43..61.01 rows=183 width=24) (actual rows=182.59 loops=2394)
+                                               Index Cond: (l_suppkey = supplier.s_suppkey)
+                                               Filter: ((l_shipdate >= '1995-01-01'::date) AND (l_shipdate <= '1996-12-31'::date))
+                                               Rows Removed by Filter: 417
+                                               Index Searches: 2394
+                                               Buffers: shared hit=1440122
+ Planning:
+   Buffers: shared hit=630
+ Planning Time: 2.566 ms
+ Execution Time: 652.170 ms
+(73 rows)
+

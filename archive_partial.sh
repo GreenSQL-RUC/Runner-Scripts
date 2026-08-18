@@ -13,9 +13,12 @@
 #           id. RUNID=<id> alone pulls every row of that run; empty = any run
 #   VER     (optional) pg_version filter (col 3): "16" matches 16.x, "16.14"
 #           matches exactly; empty = every version
-#   DB      (optional) database suffix: only <LOGS_DIR>/query_*_<DB>.csv are
-#           touched; empty = every database's files
-#   LOGS_DIR(optional) directory holding the live result CSVs (default: logs)
+#   DB      (optional) database suffix: only query_*_<DB>.csv are touched;
+#           empty = every database's files
+#   LOGS_DIR(optional) root holding the live result CSVs, searched RECURSIVELY
+#           (default: logs) so the per-variant sweep subfolders are covered too
+#           - e.g. logs/shared_buffers/sb_128MB/, logs/work_mem/wm_64MB/. Point
+#           it at a subtree (LOGS_DIR=logs/shared_buffers) to scope one sweep.
 #   DRYRUN  (optional) 1 = report what WOULD move and change nothing
 #
 # At least one of QUERY / RUNID is required. When both are given they AND
@@ -25,6 +28,12 @@
 # AND cold rows, and indexed databases too (their CSVs are just query_*_<db>_idx,
 # e.g. DB=tpch_idx, matched like any other DB). query_catalog is left alone (it
 # is per-relation, not per-query).
+#
+# Files found in a subfolder are archived to the MIRRORED path under
+# archive/partial/ (e.g. logs/shared_buffers/sb_128MB/query_timing_tpch.csv ->
+# archive/partial/shared_buffers/sb_128MB/query_timing_tpch.csv), so the same
+# query_*.csv name in different sweep variants never collides and each stays
+# reversible. Top-level logs/ files keep their old flat archive path.
 #
 # SAFETY (this is what makes it safe to run alongside a sweep): any CSV that a
 # running query_runner OR cold_runner currently holds open - i.e. the sweep's
@@ -37,7 +46,8 @@ RUNID="${RUNID:-}"
 VER="${VER:-}"
 DB="${DB:-}"
 DRYRUN="${DRYRUN:-0}"
-LOGS_DIR="${LOGS_DIR:-logs}"     # where the live result CSVs are kept
+LOGS_DIR="${LOGS_DIR:-logs}"     # root of the live result CSVs (searched recursively)
+LOGS_DIR="${LOGS_DIR%/}"         # drop any trailing slash so relpath stripping is clean
 
 if [ -z "$QUERY" ] && [ -z "$RUNID" ]; then
     echo "usage: { QUERY=<name> | RUNID=<id> } [VER=<pgver>] [DB=<db>] [DRYRUN=1] bash archive_partial.sh" >&2
@@ -63,10 +73,12 @@ busy() {
     return 1
 }
 
+# Search LOGS_DIR recursively so both the top-level CSVs and the per-variant
+# sweep subfolders (logs/shared_buffers/sb_*, logs/work_mem/wm_*, ...) are found.
 if [ -n "$DB" ]; then
-    FILES="$LOGS_DIR/query_timing_${DB}.csv $LOGS_DIR/query_samples_${DB}.csv $LOGS_DIR/query_slope_${DB}.csv $LOGS_DIR/query_cold_${DB}.csv"
+    FILES="$(find "$LOGS_DIR" -type f \( -name "query_timing_${DB}.csv" -o -name "query_samples_${DB}.csv" -o -name "query_slope_${DB}.csv" -o -name "query_cold_${DB}.csv" \) 2>/dev/null | sort)"
 else
-    FILES="$(ls "$LOGS_DIR"/query_timing_*.csv "$LOGS_DIR"/query_samples_*.csv "$LOGS_DIR"/query_slope_*.csv "$LOGS_DIR"/query_cold_*.csv 2>/dev/null)"
+    FILES="$(find "$LOGS_DIR" -type f \( -name 'query_timing_*.csv' -o -name 'query_samples_*.csv' -o -name 'query_slope_*.csv' -o -name 'query_cold_*.csv' \) 2>/dev/null | sort)"
 fi
 
 echo "partial-archive: QUERY~='${QUERY:-any}'  RUNID='${RUNID:-any}'  VER='${VER:-any}'  DB='${DB:-all}'$([ "$DRYRUN" = 1 ] && echo '   [DRY RUN]')"
@@ -114,7 +126,12 @@ for f in $FILES; do
         continue
     fi
 
-    arch="$ARCHDIR/$(basename "$f")"
+    # Mirror the file's path relative to LOGS_DIR under the archive, so the same
+    # query_*.csv name in different sweep subfolders stays separate (and each
+    # reversible). Top-level files (rel == basename) keep the old flat path.
+    rel="${f#"$LOGS_DIR"/}"
+    arch="$ARCHDIR/$rel"
+    mkdir -p "$(dirname "$arch")"
     [ -s "$arch" ] || cat "$TMP/hdr" > "$arch"      # header once
     cat "$TMP/match" >> "$arch"
     cat "$TMP/hdr" "$TMP/keep" > "$TMP/newsrc"

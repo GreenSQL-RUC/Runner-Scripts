@@ -1,0 +1,28 @@
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              QUERY PLAN                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Finalize Aggregate  (cost=33763.91..33763.92 rows=1 width=32) (actual rows=1.00 loops=1)
+   Buffers: shared hit=19882
+   ->  Gather  (cost=33763.69..33763.90 rows=2 width=32) (actual rows=3.00 loops=1)
+         Workers Planned: 2
+         Workers Launched: 2
+         Buffers: shared hit=19882
+         ->  Partial Aggregate  (cost=32763.69..32763.70 rows=1 width=32) (actual rows=1.00 loops=3)
+               Buffers: shared hit=19882
+               ->  Nested Loop  (cost=0.43..32763.31 rows=50 width=12) (actual rows=40.33 loops=3)
+                     Buffers: shared hit=19882
+                     ->  Parallel Seq Scan on part  (cost=0.00..7669.67 rows=204 width=30) (actual rows=161.67 loops=3)
+                           Filter: ((p_size >= 1) AND (((p_brand = 'Brand#12'::bpchar) AND (p_container = ANY ('{"SM CASE","SM BOX","SM PACK","SM PKG"}'::bpchar[])) AND (p_size <= 5)) OR ((p_brand = 'Brand#23'::bpchar) AND (p_container = ANY ('{"MED BAG","MED BOX","MED PKG","MED PACK"}'::bpchar[])) AND (p_size <= 10)) OR ((p_brand = 'Brand#34'::bpchar) AND (p_container = ANY ('{"LG CASE","LG BOX","LG PACK","LG PKG"}'::bpchar[])) AND (p_size <= 15))))
+                           Rows Removed by Filter: 66505
+                           Buffers: shared hit=4128
+                     ->  Index Scan using ixtest_lineitem_partkey on lineitem  (cost=0.43..123.00 rows=1 width=21) (actual rows=0.25 loops=485)
+                           Index Cond: (l_partkey = part.p_partkey)
+                           Filter: ((l_shipmode = ANY ('{AIR,"AIR REG"}'::bpchar[])) AND (l_shipinstruct = 'DELIVER IN PERSON'::bpchar) AND (((l_quantity >= '1'::numeric) AND (l_quantity <= '11'::numeric)) OR ((l_quantity >= '10'::numeric) AND (l_quantity <= '20'::numeric)) OR ((l_quantity >= '20'::numeric) AND (l_quantity <= '30'::numeric))) AND (((part.p_brand = 'Brand#12'::bpchar) AND (part.p_container = ANY ('{"SM CASE","SM BOX","SM PACK","SM PKG"}'::bpchar[])) AND (l_quantity >= '1'::numeric) AND (l_quantity <= '11'::numeric) AND (part.p_size <= 5)) OR ((part.p_brand = 'Brand#23'::bpchar) AND (part.p_container = ANY ('{"MED BAG","MED BOX","MED PKG","MED PACK"}'::bpchar[])) AND (l_quantity >= '10'::numeric) AND (l_quantity <= '20'::numeric) AND (part.p_size <= 10)) OR ((part.p_brand = 'Brand#34'::bpchar) AND (part.p_container = ANY ('{"LG CASE","LG BOX","LG PACK","LG PKG"}'::bpchar[])) AND (l_quantity >= '20'::numeric) AND (l_quantity <= '30'::numeric) AND (part.p_size <= 15))))
+                           Rows Removed by Filter: 29
+                           Index Searches: 485
+                           Buffers: shared hit=15754
+ Planning:
+   Buffers: shared hit=453
+ Planning Time: 1.367 ms
+ Execution Time: 39.641 ms
+(24 rows)
+

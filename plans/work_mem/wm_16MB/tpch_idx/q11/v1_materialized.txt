@@ -1,0 +1,65 @@
+                                                                       QUERY PLAN                                                                        
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=10384.11..10410.66 rows=10620 width=36) (actual rows=1048.00 loops=1)
+   Sort Key: _m.value DESC
+   Sort Method: quicksort  Memory: 81kB
+   Buffers: shared hit=66121
+   CTE _m
+     ->  HashAggregate  (cost=8983.62..9461.52 rows=10620 width=36) (actual rows=1048.00 loops=1)
+           Group Key: partsupp_1.ps_partkey
+           Filter: (sum((partsupp_1.ps_supplycost * (partsupp_1.ps_availqty)::numeric)) > (InitPlan 1).col1)
+           Batches: 1  Memory Usage: 12305kB
+           Rows Removed by Filter: 28770
+           Buffers: shared hit=66118
+           InitPlan 1
+             ->  Aggregate  (cost=4451.98..4451.99 rows=1 width=32) (actual rows=1.00 loops=1)
+                   Buffers: shared hit=33059
+                   ->  Nested Loop  (cost=7.81..4213.03 rows=31860 width=10) (actual rows=31680.00 loops=1)
+                         Buffers: shared hit=33059
+                         ->  Nested Loop  (cost=7.38..245.96 rows=400 width=4) (actual rows=396.00 loops=1)
+                               Buffers: shared hit=191
+                               ->  Seq Scan on nation  (cost=0.00..1.31 rows=1 width=4) (actual rows=1.00 loops=1)
+                                     Filter: (n_name = 'GERMANY'::bpchar)
+                                     Rows Removed by Filter: 24
+                                     Buffers: shared hit=1
+                               ->  Bitmap Heap Scan on supplier  (cost=7.38..240.65 rows=400 width=8) (actual rows=396.00 loops=1)
+                                     Recheck Cond: (s_nationkey = nation.n_nationkey)
+                                     Heap Blocks: exact=188
+                                     Buffers: shared hit=190
+                                     ->  Bitmap Index Scan on ixtest_supplier_nationkey  (cost=0.00..7.29 rows=400 width=0) (actual rows=396.00 loops=1)
+                                           Index Cond: (s_nationkey = nation.n_nationkey)
+                                           Index Searches: 1
+                                           Buffers: shared hit=2
+                         ->  Index Scan using ixtest_partsupp_suppkey on partsupp  (cost=0.42..9.12 rows=80 width=14) (actual rows=80.00 loops=396)
+                               Index Cond: (ps_suppkey = supplier.s_suppkey)
+                               Index Searches: 396
+                               Buffers: shared hit=32868
+           ->  Nested Loop  (cost=7.81..4213.03 rows=31860 width=14) (actual rows=31680.00 loops=1)
+                 Buffers: shared hit=33059
+                 ->  Nested Loop  (cost=7.38..245.96 rows=400 width=4) (actual rows=396.00 loops=1)
+                       Buffers: shared hit=191
+                       ->  Seq Scan on nation nation_1  (cost=0.00..1.31 rows=1 width=4) (actual rows=1.00 loops=1)
+                             Filter: (n_name = 'GERMANY'::bpchar)
+                             Rows Removed by Filter: 24
+                             Buffers: shared hit=1
+                       ->  Bitmap Heap Scan on supplier supplier_1  (cost=7.38..240.65 rows=400 width=8) (actual rows=396.00 loops=1)
+                             Recheck Cond: (s_nationkey = nation_1.n_nationkey)
+                             Heap Blocks: exact=188
+                             Buffers: shared hit=190
+                             ->  Bitmap Index Scan on ixtest_supplier_nationkey  (cost=0.00..7.29 rows=400 width=0) (actual rows=396.00 loops=1)
+                                   Index Cond: (s_nationkey = nation_1.n_nationkey)
+                                   Index Searches: 1
+                                   Buffers: shared hit=2
+                 ->  Index Scan using ixtest_partsupp_suppkey on partsupp partsupp_1  (cost=0.42..9.12 rows=80 width=18) (actual rows=80.00 loops=396)
+                       Index Cond: (ps_suppkey = supplier_1.s_suppkey)
+                       Index Searches: 396
+                       Buffers: shared hit=32868
+   ->  CTE Scan on _m  (cost=0.00..212.40 rows=10620 width=36) (actual rows=1048.00 loops=1)
+         Storage: Memory  Maximum Storage: 57kB
+         Buffers: shared hit=66118
+ Planning:
+   Buffers: shared hit=285
+ Planning Time: 1.127 ms
+ Execution Time: 81.181 ms
+(61 rows)
+

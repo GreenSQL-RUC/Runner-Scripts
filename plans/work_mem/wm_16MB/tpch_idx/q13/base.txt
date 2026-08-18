@@ -1,0 +1,34 @@
+                                                                            QUERY PLAN                                                                             
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=82559.26..82559.76 rows=200 width=16) (actual rows=42.00 loops=1)
+   Sort Key: (count(*)) DESC, (count(orders.o_orderkey)) DESC
+   Sort Method: quicksort  Memory: 26kB
+   Buffers: shared hit=26552
+   ->  HashAggregate  (cost=82549.62..82551.62 rows=200 width=16) (actual rows=42.00 loops=1)
+         Group Key: count(orders.o_orderkey)
+         Batches: 1  Memory Usage: 32kB
+         Buffers: shared hit=26549
+         ->  HashAggregate  (cost=78799.62..80299.62 rows=150000 width=12) (actual rows=150000.00 loops=1)
+               Group Key: customer.c_custkey
+               Batches: 1  Memory Usage: 10265kB
+               Buffers: shared hit=26549
+               ->  Hash Right Join  (cost=5791.43..71300.37 rows=1499850 width=8) (actual rows=1533923.00 loops=1)
+                     Hash Cond: (orders.o_custkey = customer.c_custkey)
+                     Buffers: shared hit=26549
+                     ->  Seq Scan on orders  (cost=0.00..44886.00 rows=1499850 width=8) (actual rows=1483918.00 loops=1)
+                           Filter: ((o_comment)::text !~~ '%special%requests%'::text)
+                           Rows Removed by Filter: 16082
+                           Buffers: shared hit=26136
+                     ->  Hash  (cost=3916.43..3916.43 rows=150000 width=4) (actual rows=150000.00 loops=1)
+                           Buckets: 262144  Batches: 1  Memory Usage: 7322kB
+                           Buffers: shared hit=413
+                           ->  Index Only Scan using ixtest_customer_custkey on customer  (cost=0.42..3916.43 rows=150000 width=4) (actual rows=150000.00 loops=1)
+                                 Heap Fetches: 0
+                                 Index Searches: 1
+                                 Buffers: shared hit=413
+ Planning:
+   Buffers: shared hit=309
+ Planning Time: 1.032 ms
+ Execution Time: 1481.166 ms
+(30 rows)
+
