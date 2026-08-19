@@ -1,0 +1,97 @@
+                                                                                                         QUERY PLAN                                                                                                          
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Incremental Sort  (cost=12514936.99..638486467.47 rows=17979839 width=360) (actual rows=17976372 loops=1)
+   Sort Key: f.year, ((SubPlan 1)), ((SubPlan 2)), ((SubPlan 3)), ((SubPlan 4)), ((SubPlan 5))
+   Presorted Key: f.year
+   Full-sort Groups: 51  Sort Method: quicksort  Average Memory: 28kB  Peak Memory: 28kB
+   Pre-sorted Groups: 51  Sort Methods: quicksort, external merge  Average Memory: 205kB  Peak Memory: 3538kB  Average Disk: 16708kB  Peak Disk: 26160kB
+   Buffers: shared hit=161950614 read=18369261, temp read=102309 written=102678
+   ->  Nested Loop  (cost=1.36..630705323.42 rows=17979839 width=360) (actual rows=17976372 loops=1)
+         Buffers: shared hit=161950605 read=18369261
+         ->  Nested Loop  (cost=1.20..3254254.39 rows=17979839 width=30) (actual rows=17976372 loops=1)
+               Buffers: shared hit=163247 read=18369261
+               ->  Nested Loop  (cost=1.04..2805118.70 rows=17979839 width=30) (actual rows=17976372 loops=1)
+                     Buffers: shared hit=163211 read=18369261
+                     ->  Nested Loop  (cost=0.89..2358358.66 rows=17979839 width=30) (actual rows=17976372 loops=1)
+                           Buffers: shared hit=163019 read=18369261
+                           ->  Nested Loop  (cost=0.72..1909221.97 rows=17979839 width=30) (actual rows=17976372 loops=1)
+                                 Buffers: shared hit=162971 read=18369261
+                                 ->  Index Scan using fact_capital_stock_year_geo_id_unit_id_nace_id_asset_id_na__key on fact_capital_stock f  (cost=0.56..1459951.47 rows=17979839 width=30) (actual rows=17976372 loops=1)
+                                       Filter: (value IS NOT NULL)
+                                       Rows Removed by Filter: 432381
+                                       Buffers: shared hit=162895 read=18369261
+                                 ->  Memoize  (cost=0.16..0.18 rows=1 width=4) (actual rows=1 loops=17976372)
+                                       Cache Key: f.geo_id
+                                       Cache Mode: logical
+                                       Hits: 17976334  Misses: 38  Evictions: 0  Overflows: 0  Memory Usage: 4kB
+                                       Buffers: shared hit=76
+                                       ->  Index Only Scan using dim_geo_pkey on dim_geo g  (cost=0.15..0.17 rows=1 width=4) (actual rows=1 loops=38)
+                                             Index Cond: (geo_id = f.geo_id)
+                                             Heap Fetches: 38
+                                             Buffers: shared hit=76
+                           ->  Memoize  (cost=0.16..0.18 rows=1 width=4) (actual rows=1 loops=17976372)
+                                 Cache Key: f.unit_id
+                                 Cache Mode: logical
+                                 Hits: 17976348  Misses: 24  Evictions: 0  Overflows: 0  Memory Usage: 3kB
+                                 Buffers: shared hit=48
+                                 ->  Index Only Scan using dim_unit_pkey on dim_unit u  (cost=0.15..0.17 rows=1 width=4) (actual rows=1 loops=24)
+                                       Index Cond: (unit_id = f.unit_id)
+                                       Heap Fetches: 24
+                                       Buffers: shared hit=48
+                     ->  Memoize  (cost=0.15..0.17 rows=1 width=4) (actual rows=1 loops=17976372)
+                           Cache Key: f.nace_id
+                           Cache Mode: logical
+                           Hits: 17976276  Misses: 96  Evictions: 0  Overflows: 0  Memory Usage: 10kB
+                           Buffers: shared hit=192
+                           ->  Index Only Scan using dim_nace_pkey on dim_nace n  (cost=0.14..0.16 rows=1 width=4) (actual rows=1 loops=96)
+                                 Index Cond: (nace_id = f.nace_id)
+                                 Heap Fetches: 96
+                                 Buffers: shared hit=192
+               ->  Memoize  (cost=0.16..0.18 rows=1 width=4) (actual rows=1 loops=17976372)
+                     Cache Key: f.asset_id
+                     Cache Mode: logical
+                     Hits: 17976354  Misses: 18  Evictions: 0  Overflows: 0  Memory Usage: 2kB
+                     Buffers: shared hit=36
+                     ->  Index Only Scan using dim_asset_pkey on dim_asset a  (cost=0.15..0.17 rows=1 width=4) (actual rows=1 loops=18)
+                           Index Cond: (asset_id = f.asset_id)
+                           Heap Fetches: 18
+                           Buffers: shared hit=36
+         ->  Memoize  (cost=0.16..0.18 rows=1 width=4) (actual rows=1 loops=17976372)
+               Cache Key: f.na_item_id
+               Cache Mode: logical
+               Hits: 17976367  Misses: 5  Evictions: 0  Overflows: 0  Memory Usage: 1kB
+               Buffers: shared hit=10
+               ->  Index Only Scan using dim_na_item_pkey on dim_na_item ni  (cost=0.15..0.17 rows=1 width=4) (actual rows=1 loops=5)
+                     Index Cond: (na_item_id = f.na_item_id)
+                     Heap Fetches: 5
+                     Buffers: shared hit=10
+         SubPlan 1
+           ->  Index Scan using dim_geo_pkey on dim_geo g_1  (cost=0.15..8.17 rows=1 width=38) (actual rows=1 loops=17976372)
+                 Index Cond: (geo_id = f.geo_id)
+                 Buffers: shared hit=35952744
+         SubPlan 2
+           ->  Index Scan using dim_unit_pkey on dim_unit u_1  (cost=0.15..8.17 rows=1 width=78) (actual rows=1 loops=17976372)
+                 Index Cond: (unit_id = f.unit_id)
+                 Buffers: shared hit=35952744
+         SubPlan 3
+           ->  Seq Scan on dim_nace n_1  (cost=0.00..2.20 rows=1 width=4) (actual rows=1 loops=17976372)
+                 Filter: (nace_id = f.nace_id)
+                 Rows Removed by Filter: 95
+                 Buffers: shared hit=17976372
+         SubPlan 4
+           ->  Index Scan using dim_asset_pkey on dim_asset a_1  (cost=0.15..8.17 rows=1 width=78) (actual rows=1 loops=17976372)
+                 Index Cond: (asset_id = f.asset_id)
+                 Buffers: shared hit=35952744
+         SubPlan 5
+           ->  Index Scan using dim_na_item_pkey on dim_na_item ni_1  (cost=0.15..8.17 rows=1 width=78) (actual rows=1 loops=17976372)
+                 Index Cond: (na_item_id = f.na_item_id)
+                 Buffers: shared hit=35952744
+ Planning:
+   Buffers: shared hit=380 read=43
+ Planning Time: 3.142 ms
+ JIT:
+   Functions: 62
+   Options: Inlining true, Optimization true, Expressions true, Deforming true
+ Execution Time: 295164.564 ms
+(93 rows)
+

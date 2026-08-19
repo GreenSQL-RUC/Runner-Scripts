@@ -18,7 +18,7 @@
 #
 # NOTE: max_parallel_workers_per_gather is capped by the cluster's
 # max_parallel_workers / max_worker_processes (both default 8), so values above
-# that are silently clamped by PostgreSQL - the sweep values here (2/4/6) are
+# that are silently clamped by PostgreSQL - the sweep values here (0/2/4/6) are
 # under the default cap.
 #
 # The VALUES and the three fixed values are configured HERE (overridable from the
@@ -33,7 +33,7 @@
 set -uo pipefail
 
 # ---- max_parallel_workers_per_gather values to sweep (2 is the PG default) -----
-SIZES=(2 4 6)
+SIZES=(0 2 4 6)
 
 # ---- fixed GUCs held constant across the whole sweep --------------------------
 SHARED_BUFFERS="${SHARED_BUFFERS:-4GB}"

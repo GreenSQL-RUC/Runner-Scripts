@@ -152,7 +152,7 @@ COLD_ENV = QUERY_DIR="$(DIR)" DB_NAME="$(DB_NAME)" DB_USER="$(DB_USER)" \
 
 # `all` (build) is the default even though it is not the first rule in the file.
 .DEFAULT_GOAL := all
-.PHONY: all run cold plans outputs write write-db clean pg-info check-pg matrix matrix-plan partial-archive index-build index-verify index-drop-db test-shared-buffer test-work-mem test-effective-cache-size test-max-parallel-workers plans-work-mem
+.PHONY: all run cold plans outputs write write-db clean pg-info check-pg matrix matrix-plan partial-archive index-build index-verify index-drop-db test-shared-buffer test-work-mem test-effective-cache-size test-max-parallel-workers plans-work-mem test-hash-mem-multiplier test-parallel-leader-participation test-effective-io-concurrency test-io-combine-limit test-io-method
 
 # Move a query's - or a whole run's - rows out of the live result CSVs into
 # archive/partial/ (e.g. to pull a bad measurement without re-running the whole
@@ -482,6 +482,126 @@ plans-work-mem:
 	    MAX_PARALLEL_WORKERS_PER_GATHER="$(PWM_MAX_PARALLEL_WORKERS_PER_GATHER)" \
 	    PLANS_ROOT="$(PWM_PLANS)" DRYRUN="$(DRYRUN)" \
 	    bash work_mem_plans.sh
+
+# ----- hash_mem_multiplier sweep (warm-cache runs at several multipliers) ------
+# test_hash_mem_multiplier.sh sweeps hash_mem_multiplier (2, 4, 8 - the VALUES
+# live in the script) with the four established knobs PINNED (shared_buffers 4GB,
+# effective_cache_size 12GB, work_mem 64MB, max_parallel_workers_per_gather 4 -
+# overridable below), so the multiplier is the only variable. Results go to
+# HMM_LOGS/hmm_<n>/. Resets all five GUCs when done; if interrupted:
+#   sudo bash reset_all_parameters.sh [version...]
+#   make test-hash-mem-multiplier                         # tpch+tpch_idx, all versions
+#   make test-hash-mem-multiplier PGVERS=18 DIR=queries/tpch/tpch-queries
+#   make test-hash-mem-multiplier DRYRUN=1                # print the plan only
+HMM_DBS  ?= tpch tpch_idx
+HMM_LOGS ?= logs/hash_mem_multiplier
+HMM_SHARED_BUFFERS                  ?= 4GB
+HMM_EFFECTIVE_CACHE_SIZE            ?= 12GB
+HMM_WORK_MEM                        ?= 64MB
+HMM_MAX_PARALLEL_WORKERS_PER_GATHER ?= 4
+test-hash-mem-multiplier:
+	@$(SUDO_PRIME) \
+	    || { echo "sudo authentication failed (override with: make test-hash-mem-multiplier SUDO_PASSWORD=...)"; exit 1; }; \
+	  sudo -n modprobe msr 2>/dev/null || true; \
+	  sudo -n env DBS="$(HMM_DBS)" PGVERS="$(PGVERS)" DIR="$(DIR)" \
+	    RUNS="$(RUNS)" WARMUP="$(WARMUP)" BATCHNUM="$(BATCHNUM)" \
+	    SHARED_BUFFERS="$(HMM_SHARED_BUFFERS)" EFFECTIVE_CACHE_SIZE="$(HMM_EFFECTIVE_CACHE_SIZE)" \
+	    WORK_MEM="$(HMM_WORK_MEM)" MAX_PARALLEL_WORKERS_PER_GATHER="$(HMM_MAX_PARALLEL_WORKERS_PER_GATHER)" \
+	    STATEMENT_TIMEOUT="$(STATEMENT_TIMEOUT)" LOGS_ROOT="$(HMM_LOGS)" DRYRUN="$(DRYRUN)" \
+	    bash test_hash_mem_multiplier.sh
+
+# ----- parallel_leader_participation sweep (warm-cache runs at on vs off) ------
+# test_parallel_leader_participation.sh runs the warm benchmark with
+# parallel_leader_participation on and off, four knobs PINNED as above. Results
+# go to PLP_LOGS/plp_<on|off>/. Resets all five GUCs when done.
+#   make test-parallel-leader-participation
+#   make test-parallel-leader-participation PGVERS=18 DIR=queries/tpch/tpch-queries
+#   make test-parallel-leader-participation DRYRUN=1
+PLP_DBS  ?= tpch tpch_idx
+PLP_LOGS ?= logs/parallel_leader_participation
+PLP_SHARED_BUFFERS                  ?= 4GB
+PLP_EFFECTIVE_CACHE_SIZE            ?= 12GB
+PLP_WORK_MEM                        ?= 64MB
+PLP_MAX_PARALLEL_WORKERS_PER_GATHER ?= 4
+test-parallel-leader-participation:
+	@$(SUDO_PRIME) \
+	    || { echo "sudo authentication failed (override with: make test-parallel-leader-participation SUDO_PASSWORD=...)"; exit 1; }; \
+	  sudo -n modprobe msr 2>/dev/null || true; \
+	  sudo -n env DBS="$(PLP_DBS)" PGVERS="$(PGVERS)" DIR="$(DIR)" \
+	    RUNS="$(RUNS)" WARMUP="$(WARMUP)" BATCHNUM="$(BATCHNUM)" \
+	    SHARED_BUFFERS="$(PLP_SHARED_BUFFERS)" EFFECTIVE_CACHE_SIZE="$(PLP_EFFECTIVE_CACHE_SIZE)" \
+	    WORK_MEM="$(PLP_WORK_MEM)" MAX_PARALLEL_WORKERS_PER_GATHER="$(PLP_MAX_PARALLEL_WORKERS_PER_GATHER)" \
+	    STATEMENT_TIMEOUT="$(STATEMENT_TIMEOUT)" LOGS_ROOT="$(PLP_LOGS)" DRYRUN="$(DRYRUN)" \
+	    bash test_parallel_leader_participation.sh
+
+# ----- effective_io_concurrency sweep (COLD-cache runs) -----------------------
+# test_effective_io_concurrency.sh is a COLD sweep (OS cache dropped + cluster
+# restarted before every query) across effective_io_concurrency (0, 16, 64, 256),
+# four knobs PINNED as above. Results (query_cold_<db>.csv) go to EIC_LOGS/eic_<n>/.
+# COLD runs are SLOW - scope DIR and keep RUNS small. Resets all five GUCs when done.
+#   make test-effective-io-concurrency PGVERS=18 DIR=queries/tpch/tpch-queries
+#   make test-effective-io-concurrency DRYRUN=1
+EIC_DBS  ?= tpch tpch_idx
+EIC_LOGS ?= logs/effective_io_concurrency
+EIC_SHARED_BUFFERS                  ?= 4GB
+EIC_EFFECTIVE_CACHE_SIZE            ?= 12GB
+EIC_WORK_MEM                        ?= 64MB
+EIC_MAX_PARALLEL_WORKERS_PER_GATHER ?= 4
+test-effective-io-concurrency:
+	@$(SUDO_PRIME) \
+	    || { echo "sudo authentication failed (override with: make test-effective-io-concurrency SUDO_PASSWORD=...)"; exit 1; }; \
+	  sudo -n modprobe msr 2>/dev/null || true; \
+	  sudo -n env DBS="$(EIC_DBS)" PGVERS="$(PGVERS)" DIR="$(DIR)" RUNS="$(RUNS)" \
+	    SHARED_BUFFERS="$(EIC_SHARED_BUFFERS)" EFFECTIVE_CACHE_SIZE="$(EIC_EFFECTIVE_CACHE_SIZE)" \
+	    WORK_MEM="$(EIC_WORK_MEM)" MAX_PARALLEL_WORKERS_PER_GATHER="$(EIC_MAX_PARALLEL_WORKERS_PER_GATHER)" \
+	    STATEMENT_TIMEOUT="$(STATEMENT_TIMEOUT)" LOGS_ROOT="$(EIC_LOGS)" DRYRUN="$(DRYRUN)" \
+	    bash test_effective_io_concurrency.sh
+
+# ----- io_combine_limit sweep (COLD-cache runs, PG18+) ------------------------
+# test_io_combine_limit.sh is a COLD sweep across the I/O combine limit (128kB,
+# 256kB, 1MB), setting BOTH io_max_combine_limit (POSTMASTER) and io_combine_limit,
+# four knobs PINNED as above. PG18+ only (older versions are skipped). Results go
+# to IOCL_LOGS/iocl_<size>/. COLD runs are SLOW. Resets all GUCs when done.
+#   make test-io-combine-limit PGVERS=18 DIR=queries/tpch/tpch-queries
+#   make test-io-combine-limit DRYRUN=1
+IOCL_DBS  ?= tpch tpch_idx
+IOCL_LOGS ?= logs/io_combine_limit
+IOCL_SHARED_BUFFERS                  ?= 4GB
+IOCL_EFFECTIVE_CACHE_SIZE            ?= 12GB
+IOCL_WORK_MEM                        ?= 64MB
+IOCL_MAX_PARALLEL_WORKERS_PER_GATHER ?= 4
+test-io-combine-limit:
+	@$(SUDO_PRIME) \
+	    || { echo "sudo authentication failed (override with: make test-io-combine-limit SUDO_PASSWORD=...)"; exit 1; }; \
+	  sudo -n modprobe msr 2>/dev/null || true; \
+	  sudo -n env DBS="$(IOCL_DBS)" PGVERS="$(PGVERS)" DIR="$(DIR)" RUNS="$(RUNS)" \
+	    SHARED_BUFFERS="$(IOCL_SHARED_BUFFERS)" EFFECTIVE_CACHE_SIZE="$(IOCL_EFFECTIVE_CACHE_SIZE)" \
+	    WORK_MEM="$(IOCL_WORK_MEM)" MAX_PARALLEL_WORKERS_PER_GATHER="$(IOCL_MAX_PARALLEL_WORKERS_PER_GATHER)" \
+	    STATEMENT_TIMEOUT="$(STATEMENT_TIMEOUT)" LOGS_ROOT="$(IOCL_LOGS)" DRYRUN="$(DRYRUN)" \
+	    bash test_io_combine_limit.sh
+
+# ----- io_method sweep (COLD-cache runs, PG18+) -------------------------------
+# test_io_method.sh is a COLD sweep across the PG18 I/O method: worker with
+# io_workers 1/3/6, io_uring, and sync; four knobs PINNED as above. PG18+ only
+# (older versions are skipped; io_uring needs a liburing build or it is skipped).
+# Results go to IOM_LOGS/iom_<config>/. COLD runs are SLOW. Resets all GUCs when done.
+#   make test-io-method PGVERS=18 DIR=queries/tpch/tpch-queries
+#   make test-io-method DRYRUN=1
+IOM_DBS  ?= tpch tpch_idx
+IOM_LOGS ?= logs/io_method
+IOM_SHARED_BUFFERS                  ?= 4GB
+IOM_EFFECTIVE_CACHE_SIZE            ?= 12GB
+IOM_WORK_MEM                        ?= 64MB
+IOM_MAX_PARALLEL_WORKERS_PER_GATHER ?= 4
+test-io-method:
+	@$(SUDO_PRIME) \
+	    || { echo "sudo authentication failed (override with: make test-io-method SUDO_PASSWORD=...)"; exit 1; }; \
+	  sudo -n modprobe msr 2>/dev/null || true; \
+	  sudo -n env DBS="$(IOM_DBS)" PGVERS="$(PGVERS)" DIR="$(DIR)" RUNS="$(RUNS)" \
+	    SHARED_BUFFERS="$(IOM_SHARED_BUFFERS)" EFFECTIVE_CACHE_SIZE="$(IOM_EFFECTIVE_CACHE_SIZE)" \
+	    WORK_MEM="$(IOM_WORK_MEM)" MAX_PARALLEL_WORKERS_PER_GATHER="$(IOM_MAX_PARALLEL_WORKERS_PER_GATHER)" \
+	    STATEMENT_TIMEOUT="$(STATEMENT_TIMEOUT)" LOGS_ROOT="$(IOM_LOGS)" DRYRUN="$(DRYRUN)" \
+	    bash test_io_method.sh
 
 clean:
 	rm -f $(TARGET) $(PLAN_TARGET) $(OUTPUT_TARGET) $(WRITE_TARGET) $(COLD_TARGET)

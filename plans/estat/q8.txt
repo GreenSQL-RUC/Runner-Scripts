@@ -1,0 +1,95 @@
+                                                                                                                      QUERY PLAN                                                                                                                      
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=16134496.27..16179445.87 rows=17979839 width=294) (actual rows=17976372 loops=1)
+   Sort Key: (row_number() OVER (?))
+   Sort Method: external merge  Disk: 1166776kB
+   Buffers: shared hit=167328 read=18366013, temp read=536710 written=537529
+   ->  WindowAgg  (cost=78040.11..6593387.75 rows=17979839 width=294) (actual rows=17976372 loops=1)
+         Buffers: shared hit=167325 read=18366013, temp read=99177 written=99532
+         ->  Gather Merge  (cost=78040.11..6098942.18 rows=17979839 width=286) (actual rows=17976372 loops=1)
+               Workers Planned: 2
+               Workers Launched: 2
+               Buffers: shared hit=167325 read=18366013, temp read=99177 written=99532
+               ->  Incremental Sort  (cost=77040.09..4022622.61 rows=7491600 width=286) (actual rows=5992124 loops=3)
+                     Sort Key: f.year, g.geo_code, u.unit_code, n.nace_code, a.asset_code, ni.na_item_code
+                     Presorted Key: f.year
+                     Full-sort Groups: 51  Sort Method: quicksort  Average Memory: 28kB  Peak Memory: 28kB
+                     Pre-sorted Groups: 51  Sort Methods: quicksort, external merge  Average Memory: 54kB  Peak Memory: 1120kB  Average Disk: 16325kB  Peak Disk: 26144kB
+                     Buffers: shared hit=167325 read=18366013, temp read=99177 written=99532
+                     Worker 0:  Full-sort Groups: 51  Sort Method: quicksort  Average Memory: 28kB  Peak Memory: 28kB
+                       Pre-sorted Groups: 51  Sort Methods: quicksort, external merge  Average Memory: 1093kB  Peak Memory: 3737kB  Average Disk: 7822kB  Peak Disk: 13160kB
+                     Worker 1:  Full-sort Groups: 51  Sort Method: quicksort  Average Memory: 28kB  Peak Memory: 28kB
+                       Pre-sorted Groups: 51  Sort Methods: quicksort, external merge  Average Memory: 1081kB  Peak Memory: 3677kB  Average Disk: 7769kB  Peak Disk: 13032kB
+                     ->  Nested Loop  (cost=1.36..2287324.35 rows=7491600 width=286) (actual rows=5992124 loops=3)
+                           Buffers: shared hit=167241 read=18366013
+                           ->  Nested Loop  (cost=1.20..2100184.80 rows=7491600 width=212) (actual rows=5992124 loops=3)
+                                 Buffers: shared hit=167210 read=18366012
+                                 ->  Nested Loop  (cost=1.04..1913043.08 rows=7491600 width=138) (actual rows=5992124 loops=3)
+                                       Buffers: shared hit=167101 read=18366011
+                                       ->  Nested Loop  (cost=0.89..1726884.01 rows=7491600 width=138) (actual rows=5992124 loops=3)
+                                             Buffers: shared hit=166527 read=18366007
+                                             ->  Nested Loop  (cost=0.72..1539741.28 rows=7491600 width=64) (actual rows=5992124 loops=3)
+                                                   Buffers: shared hit=166382 read=18366006
+                                                   ->  Parallel Index Scan using fact_capital_stock_year_geo_id_unit_id_nace_id_asset_id_na__key on fact_capital_stock f  (cost=0.56..1352541.36 rows=7491600 width=30) (actual rows=5992124 loops=3)
+                                                         Filter: (value IS NOT NULL)
+                                                         Rows Removed by Filter: 144127
+                                                         Buffers: shared hit=166186 read=18365972
+                                                   ->  Memoize  (cost=0.16..0.18 rows=1 width=42) (actual rows=1 loops=17976372)
+                                                         Cache Key: f.geo_id
+                                                         Cache Mode: logical
+                                                         Hits: 8949191  Misses: 38  Evictions: 0  Overflows: 0  Memory Usage: 5kB
+                                                         Buffers: shared hit=196 read=34
+                                                         Worker 0:  Hits: 4528561  Misses: 38  Evictions: 0  Overflows: 0  Memory Usage: 5kB
+                                                         Worker 1:  Hits: 4498506  Misses: 38  Evictions: 0  Overflows: 0  Memory Usage: 5kB
+                                                         ->  Index Scan using dim_geo_pkey on dim_geo g  (cost=0.15..0.17 rows=1 width=42) (actual rows=1 loops=114)
+                                                               Index Cond: (geo_id = f.geo_id)
+                                                               Buffers: shared hit=196 read=34
+                                             ->  Memoize  (cost=0.16..0.18 rows=1 width=82) (actual rows=1 loops=17976372)
+                                                   Cache Key: f.unit_id
+                                                   Cache Mode: logical
+                                                   Hits: 8949205  Misses: 24  Evictions: 0  Overflows: 0  Memory Usage: 3kB
+                                                   Buffers: shared hit=145 read=1
+                                                   Worker 0:  Hits: 4528575  Misses: 24  Evictions: 0  Overflows: 0  Memory Usage: 3kB
+                                                   Worker 1:  Hits: 4498520  Misses: 24  Evictions: 0  Overflows: 0  Memory Usage: 3kB
+                                                   ->  Index Scan using dim_unit_pkey on dim_unit u  (cost=0.15..0.17 rows=1 width=82) (actual rows=1 loops=72)
+                                                         Index Cond: (unit_id = f.unit_id)
+                                                         Buffers: shared hit=145 read=1
+                                       ->  Memoize  (cost=0.15..0.17 rows=1 width=8) (actual rows=1 loops=17976372)
+                                             Cache Key: f.nace_id
+                                             Cache Mode: logical
+                                             Hits: 8949133  Misses: 96  Evictions: 0  Overflows: 0  Memory Usage: 11kB
+                                             Buffers: shared hit=574 read=4
+                                             Worker 0:  Hits: 4528503  Misses: 96  Evictions: 0  Overflows: 0  Memory Usage: 11kB
+                                             Worker 1:  Hits: 4498448  Misses: 96  Evictions: 0  Overflows: 0  Memory Usage: 11kB
+                                             ->  Index Scan using dim_nace_pkey on dim_nace n  (cost=0.14..0.16 rows=1 width=8) (actual rows=1 loops=288)
+                                                   Index Cond: (nace_id = f.nace_id)
+                                                   Buffers: shared hit=574 read=4
+                                 ->  Memoize  (cost=0.16..0.18 rows=1 width=82) (actual rows=1 loops=17976372)
+                                       Cache Key: f.asset_id
+                                       Cache Mode: logical
+                                       Hits: 8949211  Misses: 18  Evictions: 0  Overflows: 0  Memory Usage: 2kB
+                                       Buffers: shared hit=109 read=1
+                                       Worker 0:  Hits: 4528581  Misses: 18  Evictions: 0  Overflows: 0  Memory Usage: 2kB
+                                       Worker 1:  Hits: 4498526  Misses: 18  Evictions: 0  Overflows: 0  Memory Usage: 2kB
+                                       ->  Index Scan using dim_asset_pkey on dim_asset a  (cost=0.15..0.17 rows=1 width=82) (actual rows=1 loops=54)
+                                             Index Cond: (asset_id = f.asset_id)
+                                             Buffers: shared hit=109 read=1
+                           ->  Memoize  (cost=0.16..0.18 rows=1 width=82) (actual rows=1 loops=17976372)
+                                 Cache Key: f.na_item_id
+                                 Cache Mode: logical
+                                 Hits: 8949224  Misses: 5  Evictions: 0  Overflows: 0  Memory Usage: 1kB
+                                 Buffers: shared hit=31 read=1
+                                 Worker 0:  Hits: 4528594  Misses: 5  Evictions: 0  Overflows: 0  Memory Usage: 1kB
+                                 Worker 1:  Hits: 4498539  Misses: 5  Evictions: 0  Overflows: 0  Memory Usage: 1kB
+                                 ->  Index Scan using dim_na_item_pkey on dim_na_item ni  (cost=0.15..0.17 rows=1 width=82) (actual rows=1 loops=15)
+                                       Index Cond: (na_item_id = f.na_item_id)
+                                       Buffers: shared hit=31 read=1
+ Planning:
+   Buffers: shared hit=392 read=42
+ Planning Time: 3.363 ms
+ JIT:
+   Functions: 162
+   Options: Inlining true, Optimization true, Expressions true, Deforming true
+ Execution Time: 108843.369 ms
+(91 rows)
+
