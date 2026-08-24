@@ -1,0 +1,13 @@
+Total rows: 319028
+Columns: ['YEAR', 'MONTH', 'SUPPLIER', 'ITEM CODE', 'ITEM DESCRIPTION', 'ITEM TYPE', 'RETAIL SALES', 'RETAIL TRANSFERS', 'WAREHOUSE SALES']
+YEAR: 5 distinct values(0.00% of rows)
+MONTH: 12 distinct values(0.00% of rows)
+SUPPLIER: 532 distinct values(0.17% of rows)
+ITEM CODE: 39514 distinct values(12.39% of rows)
+ITEM DESCRIPTION: 40944 distinct values(12.83% of rows)
+ITEM TYPE: 9 distinct values(0.00% of rows)
+RETAIL SALES: 10789 distinct values(3.38% of rows)
+RETAIL TRANSFERS: 2523 distinct values(0.79% of rows)
+WAREHOUSE SALES: 5071 distinct values(1.59% of rows)
+Item codes with inconsistent desc/type: 1695
+{'YEAR': 4, 'MONTH': 2, 'SUPPLIER': 40, 'ITEM CODE': 7, 'ITEM DESCRIPTION': 102, 'ITEM TYPE': 12, 'RETAIL SALES': 8, 'RETAIL TRANSFERS': 8, 'WAREHOUSE SALES': 10}
