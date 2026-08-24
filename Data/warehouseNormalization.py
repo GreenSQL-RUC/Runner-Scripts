@@ -34,3 +34,14 @@ with open('out.txt', 'w') as out:
 #max field lengths
         maxlen = [max(len(row[i]) for row in rows) for i in range(len(header))]
         print(dict(zip(header, maxlen)))
+
+        #investigating high value of item description in comparison to item code and type
+        item_code_idx = header.index('ITEM CODE')
+        desc_idx = header.index('ITEM DESCRIPTION')
+        type_idx = header.index('ITEM TYPE')
+        month_idx = header.index('MONTH')
+        print("ITEM CODE values:")
+        print(sorted(set(row[item_code_idx] for row in rows)))
+
+        print("MONTH values:")
+        print(sorted(set(row[month_idx] for row in rows)))
