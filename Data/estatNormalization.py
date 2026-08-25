@@ -18,7 +18,7 @@ with open('estat_out.txt', 'w') as estat_out:
             ratio = distinct/len(rows)
 # a low ration indicated heavy repitition (aka a storng normalization candidate), while high ratios close to 100% indicate
 # the column belongs to the table itself rather than a dimension.
-        print(f"{col}: {distinct} distinct values" f"({ratio:.2%} of rows)")
+            print(f"{col}: {distinct} distinct values" f"({ratio:.2%} of rows)")
 
 # checking if a candidate key maps consistently to other columns
 # point to diff descriptions (a data-quality issue we need to design around)
