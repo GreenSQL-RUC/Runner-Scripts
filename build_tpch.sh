@@ -17,6 +17,12 @@
 # create lineitem2_unindexed or CLUSTER lineitem (unused by the runner queries
 # and very disk/time heavy at large scale factors).
 #
+# FRESH UBUNTU (24.04): works out of the box. The build toolchain (git +
+# build-essential, needed to compile tpch-dbgen) is installed automatically if
+# missing, and if the target version's cluster does not exist yet it is
+# provisioned via bootstrap_ubuntu.sh. Set SKIP_BOOTSTRAP=1 to turn the cluster
+# provisioning off (error instead) on a box you manage yourself.
+#
 # Run it as root so the inner "sudo -u postgres" needs no password:
 #   sudo bash build_tpch.sh 5 tpch5        # on the default (16) cluster
 #   sudo bash build_tpch.sh 5 tpch5 18     # on the PostgreSQL 18 cluster
@@ -41,15 +47,48 @@ DBGEN_COMMIT="${DBGEN_COMMIT:-32f1c1b92d1664dba542e927d23d86ffa57aa253}"
 
 # Look the port up rather than hard-coding it: pg_createcluster hands out the
 # next free port, so which version got which port depends on install order.
-PORT="$(pg_lsclusters -h | awk -v v="$PGVER" '$1 == v && $2 == "main" { print $3 }')"
+# find_port stays quiet (empty result, no error) when PostgreSQL is not even
+# installed, so a fresh box reaches the bootstrap branch below instead of aborting.
+find_port() {
+    command -v pg_lsclusters >/dev/null 2>&1 || return 0
+    pg_lsclusters -h | awk -v v="$1" '$1 == v && $2 == "main" { print $3 }'
+}
+PORT="$(find_port "$PGVER")"
+if [ -z "$PORT" ] && [ "${SKIP_BOOTSTRAP:-0}" != "1" ] \
+   && [ "$(id -u)" = 0 ] && [ -f "$HERE/bootstrap_ubuntu.sh" ]; then
+    echo "==> no PostgreSQL $PGVER 'main' cluster - provisioning it (bootstrap_ubuntu.sh $PGVER)"
+    bash "$HERE/bootstrap_ubuntu.sh" "$PGVER"
+    PORT="$(find_port "$PGVER")"
+fi
 if [ -z "$PORT" ]; then
-    echo "No 'main' cluster for PostgreSQL $PGVER. Installed clusters:" >&2
-    pg_lsclusters >&2
+    echo "No 'main' cluster for PostgreSQL $PGVER." >&2
+    if command -v pg_lsclusters >/dev/null 2>&1; then
+        echo "Installed clusters:" >&2; pg_lsclusters >&2
+    else
+        echo "PostgreSQL is not installed. Run: sudo bash bootstrap_ubuntu.sh $PGVER" >&2
+    fi
     exit 1
 fi
 echo "==> [$DB] target: PostgreSQL $PGVER on port $PORT"
 
 pg() { sudo -u "$PGUSER" psql -p "$PORT" -v ON_ERROR_STOP=1 "$@"; }
+
+# Fresh boxes have no C toolchain or git; dbgen needs both to build. Install them
+# only if missing (the command -v checks are cheap, so build_all's repeated calls
+# never re-run apt once they are present).
+ensure_build_tools() {
+    local need=()
+    command -v git >/dev/null 2>&1 || need+=(git)
+    { command -v gcc >/dev/null 2>&1 && command -v make >/dev/null 2>&1; } || need+=(build-essential)
+    [ ${#need[@]} -eq 0 ] && return 0
+    if [ "$(id -u)" != 0 ]; then
+        echo "missing build tools (${need[*]}); run as root or: sudo apt install -y ${need[*]}" >&2
+        exit 1
+    fi
+    echo "==> installing build prerequisites: ${need[*]}"
+    export DEBIAN_FRONTEND=noninteractive
+    apt-get update -qq && apt-get install -y "${need[@]}"
+}
 
 # Fetch the dbgen SOURCE if it is not already on disk, so the tree need not be
 # committed to git. An existing checkout (source present) is left untouched.
@@ -88,8 +127,10 @@ ensure_dbgen_makefile() {
 if [ "${SKIP_DBGEN:-0}" = "1" ] && [ -s "$DBGEN_DIR/lineitem.tbl" ]; then
     echo "==> [$DB] reusing the existing .tbl files (SKIP_DBGEN=1)"
 else
-    # tpch-dbgen is not committed (see .gitignore); fetch the source if missing,
-    # then build the dbgen binary once (a fresh clone has no binary).
+    # tpch-dbgen is not committed (see .gitignore); make sure git + a C toolchain
+    # are present, then fetch the source if missing and build the dbgen binary
+    # once (a fresh clone has no binary).
+    ensure_build_tools
     ensure_dbgen_source
     if [ ! -x "$DBGEN_DIR/dbgen" ]; then
         echo "==> [$DB] no dbgen binary - building it from source"
@@ -105,14 +146,27 @@ pg -d postgres -c "DROP DATABASE IF EXISTS $DB;"
 pg -d postgres -c "CREATE DATABASE $DB;"
 
 echo "==> [$DB] applying schema"
-pg -d "$DB" -f "$SCHEMA"
+# Feed the schema on STDIN (opened by this root shell) rather than `psql -f`: with
+# -f, psql runs as the postgres user and opens the file itself, which fails when
+# the repo lives under a 0750 home dir (postgres cannot traverse into /home/<user>
+# -> "Permission denied"). Streaming avoids postgres touching the filesystem.
+pg -d "$DB" < "$SCHEMA"
 
 echo "==> [$DB] loading tables (streamed; trailing '|' stripped on the fly)"
 for t in $TABLES; do
     t0=$(date +%s)
+    expected=$(wc -l < "$DBGEN_DIR/$t.tbl")
     sed 's/|$//' "$DBGEN_DIR/$t.tbl" \
         | pg -d "$DB" -c "\copy $t FROM STDIN WITH (FORMAT csv, DELIMITER '|')"
-    echo "    - $t loaded ($(($(date +%s) - t0))s)"
+    # psql's \copy does NOT honour ON_ERROR_STOP - a data error prints a message
+    # but psql still exits 0, so the pipeline "succeeds" and a partial/empty load
+    # would slip through silently. Verify the row count matches the .tbl instead.
+    got=$(pg -d "$DB" -tAc "SELECT count(*) FROM $t;")
+    if [ "$got" != "$expected" ]; then
+        echo "!! [$DB] $t load INCOMPLETE: loaded $got of $expected rows - aborting" >&2
+        exit 1
+    fi
+    echo "    - $t loaded: $got rows ($(($(date +%s) - t0))s)"
 done
 
 echo "==> [$DB] creating indexes + get_tax_rate()"

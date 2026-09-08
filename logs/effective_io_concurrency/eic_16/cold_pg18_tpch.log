@@ -1,0 +1,229 @@
+make: Entering directory '/home/user01/GreenSQL'
+cold_runner configuration:
+  QUERY_DIR      = queries/tpch/tpch-queries
+  COLD_LOG       = logs/effective_io_concurrency/eic_16/query_cold_tpch.csv
+  DB_NAME        = tpch
+  DB_USER        = postgres
+  PGVER          = 18
+  PGPORT         = 5434
+  PG_VERSION     = 18.4
+  RUNS           = 3 (cold runs per query)
+  STATEMENT_TIMEOUT = 900
+  MODE           = COLD
+Found 53 queries under queries/tpch/tpch-queries
+
+[1/53] queries/tpch/tpch-queries/q01/base.sql (3 cold runs)
+  cold 1/3: 2.183336 sec (server 1963.851 ms) [read=112600 hit=28 blks]
+  cold 2/3: 2.199816 sec (server 1978.285 ms) [read=112600 hit=28 blks]
+  cold 3/3: 2.155539 sec (server 1969.582 ms) [read=112600 hit=28 blks]
+[2/53] queries/tpch/tpch-queries/q01/v1_materialized.sql (3 cold runs)
+  cold 1/3: 2.199383 sec (server 1975.696 ms) [read=112600 hit=28 blks]
+  cold 2/3: 2.097665 sec (server 1973.266 ms) [read=112600 hit=28 blks]
+  cold 3/3: 2.146303 sec (server 1958.691 ms) [read=112600 hit=28 blks]
+[3/53] queries/tpch/tpch-queries/q02/base.sql (3 cold runs)
+  cold 1/3: 54.370438 sec (server 54097.764 ms) [read=21913 hit=21464092 blks]
+  cold 2/3: 54.572076 sec (server 54278.418 ms) [read=21913 hit=21464092 blks]
+  cold 3/3: 51.042269 sec (server 50842.291 ms) [read=21913 hit=21464092 blks]
+[4/53] queries/tpch/tpch-queries/q02/v1_materialized.sql (3 cold runs)
+  cold 1/3: 54.228446 sec (server 53984.001 ms) [read=21913 hit=21464092 blks]
+  cold 2/3: 54.358683 sec (server 54085.333 ms) [read=21913 hit=21464092 blks]
+  cold 3/3: 54.343658 sec (server 54068.375 ms) [read=21913 hit=21464092 blks]
+[5/53] queries/tpch/tpch-queries/q02/v2_decorrelate.sql (3 cold runs)
+  cold 1/3: 0.823339 sec (server 592.248 ms) [read=21913 hit=18469 blks]
+  cold 2/3: 0.856781 sec (server 578.209 ms) [read=21913 hit=18469 blks]
+  cold 3/3: 0.865986 sec (server 592.865 ms) [read=21913 hit=18469 blks]
+[6/53] queries/tpch/tpch-queries/q03/base.sql (3 cold runs)
+  cold 1/3: 1.912872 sec (server 1687.557 ms) [read=124938 hit=501664 blks]
+  cold 2/3: 1.899561 sec (server 1675.155 ms) [read=124938 hit=501664 blks]
+  cold 3/3: 1.900043 sec (server 1669.085 ms) [read=124938 hit=501664 blks]
+[7/53] queries/tpch/tpch-queries/q03/v1_materialized.sql (3 cold runs)
+  cold 1/3: 1.874613 sec (server 1614.114 ms) [read=124938 hit=501664 blks]
+  cold 2/3: 1.923508 sec (server 1694.297 ms) [read=124938 hit=501664 blks]
+  cold 3/3: 1.882923 sec (server 1663.624 ms) [read=124938 hit=501664 blks]
+[8/53] queries/tpch/tpch-queries/q04/base.sql (3 cold runs)
+  cold 1/3: 2.033265 sec (server 1808.684 ms) [read=81242 hit=174234 blks]
+  cold 2/3: 2.000796 sec (server 1773.390 ms) [read=81242 hit=174234 blks]
+  cold 3/3: 2.027343 sec (server 1836.475 ms) [read=81242 hit=174234 blks]
+[9/53] queries/tpch/tpch-queries/q04/v1_materialized.sql (3 cold runs)
+  cold 1/3: 2.172875 sec (server 1989.753 ms) [read=81242 hit=174234 blks]
+  cold 2/3: 2.026259 sec (server 1834.630 ms) [read=81242 hit=174234 blks]
+  cold 3/3: 2.026879 sec (server 1816.762 ms) [read=81242 hit=174234 blks]
+[10/53] queries/tpch/tpch-queries/q04/v2_in.sql (3 cold runs)
+  cold 1/3: 2.031019 sec (server 1803.017 ms) [read=81242 hit=174234 blks]
+  cold 2/3: 2.076809 sec (server 1851.037 ms) [read=81242 hit=174234 blks]
+  cold 3/3: 2.058806 sec (server 1844.410 ms) [read=81242 hit=174234 blks]
+[11/53] queries/tpch/tpch-queries/q05/base.sql (3 cold runs)
+  cold 1/3: 4.213930 sec (server 3864.765 ms) [read=80734 hit=502339 blks]
+  cold 2/3: 5.078370 sec (server 4848.365 ms) [read=80734 hit=502339 blks]
+  cold 3/3: 5.018727 sec (server 4786.795 ms) [read=80734 hit=502339 blks]
+[12/53] queries/tpch/tpch-queries/q05/v1_materialized.sql (3 cold runs)
+  cold 1/3: 4.883464 sec (server 4677.053 ms) [read=80734 hit=502339 blks]
+  cold 2/3: 4.855036 sec (server 4554.868 ms) [read=80734 hit=502339 blks]
+  cold 3/3: 4.390214 sec (server 4202.975 ms) [read=80734 hit=502339 blks]
+[13/53] queries/tpch/tpch-queries/q06/base.sql (3 cold runs)
+  cold 1/3: 1.453837 sec (server 1234.231 ms) [read=112600 hit=0 blks]
+  cold 2/3: 1.444346 sec (server 1248.656 ms) [read=112600 hit=0 blks]
+  cold 3/3: 1.398040 sec (server 1228.056 ms) [read=112600 hit=0 blks]
+[14/53] queries/tpch/tpch-queries/q06/v1_materialized.sql (3 cold runs)
+  cold 1/3: 1.452952 sec (server 1234.292 ms) [read=112600 hit=0 blks]
+  cold 2/3: 1.452845 sec (server 1233.873 ms) [read=112600 hit=0 blks]
+  cold 3/3: 1.416742 sec (server 1231.927 ms) [read=112600 hit=0 blks]
+[15/53] queries/tpch/tpch-queries/q07/base.sql (3 cold runs)
+  cold 1/3: 6.855619 sec (server 6625.381 ms) [read=118610 hit=535161 blks]
+  cold 2/3: 6.741338 sec (server 6509.084 ms) [read=118610 hit=535161 blks]
+  cold 3/3: 6.813039 sec (server 6588.084 ms) [read=118610 hit=535161 blks]
+[16/53] queries/tpch/tpch-queries/q07/v1_materialized.sql (3 cold runs)
+  cold 1/3: 6.796791 sec (server 6610.706 ms) [read=118610 hit=535161 blks]
+  cold 2/3: 6.686125 sec (server 6455.427 ms) [read=118610 hit=535161 blks]
+  cold 3/3: 6.591445 sec (server 6360.215 ms) [read=118610 hit=535161 blks]
+[17/53] queries/tpch/tpch-queries/q07/v2_union_all.sql (3 cold runs)
+  cold 1/3: 6.879291 sec (server 6640.658 ms) [read=118610 hit=539211 blks]
+  cold 2/3: 6.801806 sec (server 6574.165 ms) [read=118610 hit=539211 blks]
+  cold 3/3: 6.693358 sec (server 6463.330 ms) [read=118610 hit=539211 blks]
+[18/53] queries/tpch/tpch-queries/q08/base.sql (3 cold runs)
+  cold 1/3: 6.626443 sec (server 6354.423 ms) [read=110846 hit=656315 blks]
+  cold 2/3: 6.591448 sec (server 6356.230 ms) [read=110846 hit=656315 blks]
+  cold 3/3: 6.488957 sec (server 6283.756 ms) [read=110846 hit=656315 blks]
+[19/53] queries/tpch/tpch-queries/q08/v1_materialized.sql (3 cold runs)
+  cold 1/3: 6.549093 sec (server 6313.552 ms) [read=110846 hit=656315 blks]
+  cold 2/3: 6.599126 sec (server 6367.472 ms) [read=110846 hit=656315 blks]
+  cold 3/3: 6.854797 sec (server 6659.391 ms) [read=110846 hit=656315 blks]
+[20/53] queries/tpch/tpch-queries/q08/v2_filter.sql (3 cold runs)
+  cold 1/3: 5.577034 sec (server 5345.531 ms) [read=110846 hit=656315 blks]
+  cold 2/3: 7.276159 sec (server 7003.254 ms) [read=110846 hit=656315 blks]
+  cold 3/3: 6.901725 sec (server 6712.538 ms) [read=110846 hit=656315 blks]
+[21/53] queries/tpch/tpch-queries/q09/base.sql (3 cold runs)
+  cold 1/3: 2.296327 sec (server 2086.982 ms) [read=160648 hit=714 blks]
+  cold 2/3: 2.296437 sec (server 2067.540 ms) [read=160648 hit=714 blks]
+  cold 3/3: 2.213650 sec (server 2014.521 ms) [read=160648 hit=714 blks]
+[22/53] queries/tpch/tpch-queries/q09/v1_materialized.sql (3 cold runs)
+  cold 1/3: 2.215048 sec (server 2010.338 ms) [read=160648 hit=714 blks]
+  cold 2/3: 2.284484 sec (server 2055.915 ms) [read=160648 hit=714 blks]
+  cold 3/3: 2.221142 sec (server 2018.299 ms) [read=160648 hit=714 blks]
+[23/53] queries/tpch/tpch-queries/q10/base.sql (3 cold runs)
+  cold 1/3: 2.269490 sec (server 2061.161 ms) [read=86459 hit=174845 blks]
+  cold 2/3: 2.324061 sec (server 2096.657 ms) [read=86459 hit=174845 blks]
+  cold 3/3: 2.281856 sec (server 2047.325 ms) [read=86459 hit=174845 blks]
+[24/53] queries/tpch/tpch-queries/q10/v1_materialized.sql (3 cold runs)
+  cold 1/3: 2.290554 sec (server 1948.666 ms) [read=86459 hit=174845 blks]
+  cold 2/3: 2.350509 sec (server 2108.439 ms) [read=86459 hit=174845 blks]
+  cold 3/3: 2.247248 sec (server 2064.357 ms) [read=86459 hit=174845 blks]
+[25/53] queries/tpch/tpch-queries/q11/base.sql (3 cold runs)
+  cold 1/3: 0.594898 sec (server 390.767 ms) [read=17784 hit=19131 blks]
+  cold 2/3: 0.631697 sec (server 415.909 ms) [read=17784 hit=19131 blks]
+  cold 3/3: 0.610737 sec (server 392.509 ms) [read=17784 hit=19131 blks]
+[26/53] queries/tpch/tpch-queries/q11/v1_materialized.sql (3 cold runs)
+  cold 1/3: 0.632192 sec (server 412.312 ms) [read=17784 hit=19131 blks]
+  cold 2/3: 0.689223 sec (server 497.154 ms) [read=17784 hit=19131 blks]
+  cold 3/3: 0.633085 sec (server 451.127 ms) [read=17784 hit=19131 blks]
+[27/53] queries/tpch/tpch-queries/q11/v2_cte_threshold.sql (3 cold runs)
+  cold 1/3: 0.624957 sec (server 432.397 ms) [read=17784 hit=19131 blks]
+  cold 2/3: 0.619541 sec (server 418.165 ms) [read=17784 hit=19131 blks]
+  cold 3/3: 0.638665 sec (server 418.213 ms) [read=17784 hit=19131 blks]
+[28/53] queries/tpch/tpch-queries/q12/base.sql (3 cold runs)
+  cold 1/3: 1.754219 sec (server 1528.927 ms) [read=138736 hit=21 blks]
+  cold 2/3: 1.676763 sec (server 1500.907 ms) [read=138736 hit=21 blks]
+  cold 3/3: 1.749156 sec (server 1523.089 ms) [read=138736 hit=21 blks]
+[29/53] queries/tpch/tpch-queries/q12/v1_materialized.sql (3 cold runs)
+  cold 1/3: 1.687469 sec (server 1507.193 ms) [read=138736 hit=21 blks]
+  cold 2/3: 1.738115 sec (server 1511.414 ms) [read=138736 hit=21 blks]
+  cold 3/3: 1.710892 sec (server 1492.524 ms) [read=138736 hit=21 blks]
+[30/53] queries/tpch/tpch-queries/q12/v2_filter.sql (3 cold runs)
+  cold 1/3: 1.749528 sec (server 1527.256 ms) [read=138736 hit=21 blks]
+  cold 2/3: 1.696568 sec (server 1519.269 ms) [read=138736 hit=21 blks]
+  cold 3/3: 1.694074 sec (server 1515.995 ms) [read=138736 hit=21 blks]
+[31/53] queries/tpch/tpch-queries/q13/base.sql (3 cold runs)
+  cold 1/3: 2.120583 sec (server 1898.221 ms) [read=29736 hit=3 blks]
+  cold 2/3: 2.095303 sec (server 1876.611 ms) [read=29736 hit=3 blks]
+  cold 3/3: 2.067095 sec (server 1844.609 ms) [read=29736 hit=3 blks]
+[32/53] queries/tpch/tpch-queries/q13/v1_materialized.sql (3 cold runs)
+  cold 1/3: 2.063935 sec (server 1877.629 ms) [read=29736 hit=3 blks]
+  cold 2/3: 2.127170 sec (server 1931.240 ms) [read=29736 hit=3 blks]
+  cold 3/3: 2.125558 sec (server 1903.898 ms) [read=29736 hit=3 blks]
+[33/53] queries/tpch/tpch-queries/q13/v2_correlated.sql (3 cold runs)
+  cold 1/3: 5.575330 sec (server 5387.233 ms) [read=31266 hit=1921868 blks]
+  cold 2/3: 4.787729 sec (server 4570.459 ms) [read=31266 hit=1921868 blks]
+  cold 3/3: 4.759916 sec (server 4567.274 ms) [read=31266 hit=1921868 blks]
+[34/53] queries/tpch/tpch-queries/q14/base.sql (3 cold runs)
+  cold 1/3: 1.486400 sec (server 1267.169 ms) [read=116728 hit=0 blks]
+  cold 2/3: 1.462288 sec (server 1249.365 ms) [read=116728 hit=0 blks]
+  cold 3/3: 1.506732 sec (server 1293.228 ms) [read=116728 hit=0 blks]
+[35/53] queries/tpch/tpch-queries/q14/v1_materialized.sql (3 cold runs)
+  cold 1/3: 1.508245 sec (server 1284.681 ms) [read=116728 hit=0 blks]
+  cold 2/3: 1.543057 sec (server 1322.579 ms) [read=116728 hit=0 blks]
+  cold 3/3: 1.501966 sec (server 1279.095 ms) [read=116728 hit=0 blks]
+[36/53] queries/tpch/tpch-queries/q14/v2_filter.sql (3 cold runs)
+  cold 1/3: 1.516804 sec (server 1294.818 ms) [read=116728 hit=0 blks]
+  cold 2/3: 1.477629 sec (server 1288.668 ms) [read=116728 hit=0 blks]
+  cold 3/3: 1.519647 sec (server 1285.465 ms) [read=116728 hit=0 blks]
+[37/53] queries/tpch/tpch-queries/q15/base.sql (3 cold runs)
+  cold 1/3: 1.533679 sec (server 1311.524 ms) [read=112823 hit=3 blks]
+  cold 2/3: 1.485983 sec (server 1291.798 ms) [read=112823 hit=3 blks]
+  cold 3/3: 1.528777 sec (server 1303.597 ms) [read=112823 hit=3 blks]
+[38/53] queries/tpch/tpch-queries/q15/v1_materialized.sql (3 cold runs)
+  cold 1/3: 1.477820 sec (server 1281.160 ms) [read=112823 hit=3 blks]
+  cold 2/3: 1.482834 sec (server 1290.909 ms) [read=112823 hit=3 blks]
+  cold 3/3: 1.517959 sec (server 1298.310 ms) [read=112823 hit=3 blks]
+[39/53] queries/tpch/tpch-queries/q16/base.sql (3 cold runs)
+  cold 1/3: 0.893164 sec (server 671.152 ms) [read=21911 hit=737 blks]
+  cold 2/3: 0.877515 sec (server 655.407 ms) [read=21911 hit=722 blks]
+  cold 3/3: 0.899180 sec (server 677.771 ms) [read=21911 hit=714 blks]
+[40/53] queries/tpch/tpch-queries/q16/v1_materialized.sql (3 cold runs)
+  cold 1/3: 0.857707 sec (server 637.721 ms) [read=21911 hit=735 blks]
+  cold 2/3: 0.805832 sec (server 580.937 ms) [read=21911 hit=737 blks]
+  cold 3/3: 0.894775 sec (server 675.685 ms) [read=21911 hit=737 blks]
+[41/53] queries/tpch/tpch-queries/q16/v2_not_exists.sql (3 cold runs)
+  cold 1/3: 0.840611 sec (server 626.498 ms) [read=21911 hit=737 blks]
+  cold 2/3: 0.806816 sec (server 628.833 ms) [read=21911 hit=734 blks]
+  cold 3/3: 0.881727 sec (server 664.292 ms) [read=21911 hit=737 blks]
+[42/53] queries/tpch/tpch-queries/q17/v2_decorrelate.sql (3 cold runs)
+  cold 1/3: 6.064976 sec (server 5870.133 ms) [read=116728 hit=562950 blks]
+  cold 2/3: 6.228732 sec (server 6009.455 ms) [read=116728 hit=562959 blks]
+  cold 3/3: 6.238667 sec (server 6024.624 ms) [read=116728 hit=562995 blks]
+[43/53] queries/tpch/tpch-queries/q18/base.sql (3 cold runs)
+  cold 1/3: 5.912124 sec (server 5683.225 ms) [read=142421 hit=338006 blks]
+  cold 2/3: 5.842670 sec (server 5614.671 ms) [read=142421 hit=337991 blks]
+  cold 3/3: 5.827826 sec (server 5599.014 ms) [read=142421 hit=337989 blks]
+[44/53] queries/tpch/tpch-queries/q18/v1_materialized.sql (3 cold runs)
+  cold 1/3: 5.321200 sec (server 5121.197 ms) [read=142421 hit=337944 blks]
+  cold 2/3: 5.692180 sec (server 5414.873 ms) [read=142421 hit=337923 blks]
+  cold 3/3: 5.965195 sec (server 5687.113 ms) [read=142421 hit=337895 blks]
+[45/53] queries/tpch/tpch-queries/q18/v2_join.sql (3 cold runs)
+  cold 1/3: 5.709023 sec (server 5408.975 ms) [read=142421 hit=337987 blks]
+  cold 2/3: 5.592172 sec (server 5393.911 ms) [read=142421 hit=337970 blks]
+  cold 3/3: 5.495966 sec (server 5385.324 ms) [read=142421 hit=337949 blks]
+[46/53] queries/tpch/tpch-queries/q19/base.sql (3 cold runs)
+  cold 1/3: 1.461106 sec (server 1286.428 ms) [read=116728 hit=0 blks]
+  cold 2/3: 1.488040 sec (server 1273.288 ms) [read=116728 hit=0 blks]
+  cold 3/3: 1.507304 sec (server 1280.783 ms) [read=116728 hit=0 blks]
+[47/53] queries/tpch/tpch-queries/q19/v1_materialized.sql (3 cold runs)
+  cold 1/3: 1.502041 sec (server 1280.895 ms) [read=116728 hit=0 blks]
+  cold 2/3: 1.453412 sec (server 1276.985 ms) [read=116728 hit=0 blks]
+  cold 3/3: 1.502994 sec (server 1281.477 ms) [read=116728 hit=0 blks]
+[48/53] queries/tpch/tpch-queries/q19/v2_union_all.sql (3 cold runs)
+  cold 1/3: 1.941093 sec (server 1712.558 ms) [read=116728 hit=233348 blks]
+  cold 2/3: 1.891912 sec (server 1709.377 ms) [read=116728 hit=233421 blks]
+  cold 3/3: 1.873289 sec (server 1681.753 ms) [read=116728 hit=233455 blks]
+[49/53] queries/tpch/tpch-queries/q21/base.sql (3 cold runs)
+  cold 1/3: 1.868769 sec (server 1641.919 ms) [read=148455 hit=323501 blks]
+  cold 2/3: 1.889853 sec (server 1660.388 ms) [read=148455 hit=323501 blks]
+  cold 3/3: 1.865091 sec (server 1649.560 ms) [read=148455 hit=323501 blks]
+[50/53] queries/tpch/tpch-queries/q21/v1_materialized.sql (3 cold runs)
+  cold 1/3: 1.857585 sec (server 1664.642 ms) [read=148455 hit=323501 blks]
+  cold 2/3: 1.880561 sec (server 1654.304 ms) [read=148455 hit=323501 blks]
+  cold 3/3: 1.858387 sec (server 1631.302 ms) [read=148455 hit=323501 blks]
+[51/53] queries/tpch/tpch-queries/q22/base.sql (3 cold runs)
+  cold 1/3: 0.395280 sec (server 171.132 ms) [read=5135 hit=59092 blks]
+  cold 2/3: 0.398048 sec (server 173.818 ms) [read=5135 hit=59092 blks]
+  cold 3/3: 0.428070 sec (server 198.224 ms) [read=5135 hit=59092 blks]
+[52/53] queries/tpch/tpch-queries/q22/v1_materialized.sql (3 cold runs)
+  cold 1/3: 0.423254 sec (server 199.200 ms) [read=5135 hit=59092 blks]
+  cold 2/3: 0.425257 sec (server 198.653 ms) [read=5135 hit=59092 blks]
+  cold 3/3: 0.402873 sec (server 202.906 ms) [read=5135 hit=59092 blks]
+[53/53] queries/tpch/tpch-queries/q22/v2_anti_join.sql (3 cold runs)
+  cold 1/3: 0.728716 sec (server 500.640 ms) [read=29736 hit=3609 blks]
+  cold 2/3: 0.707945 sec (server 451.496 ms) [read=29736 hit=3609 blks]
+  cold 3/3: 0.832678 sec (server 647.561 ms) [read=29736 hit=3609 blks]
+
+Done. Cold rows appended to logs/effective_io_concurrency/eic_16/query_cold_tpch.csv
+make: Leaving directory '/home/user01/GreenSQL'

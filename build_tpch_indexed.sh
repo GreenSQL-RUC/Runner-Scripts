@@ -54,7 +54,12 @@ build_one() {
 
     echo "==> [$idx PG$ver] applying index suite ($(basename "$SCHEMA"))"
     t0=$(date +%s)
-    "${pg[@]}" -d "$idx" -f "$SCHEMA"
+    # Feed the DDL on STDIN (opened by this root shell) rather than `psql -f`: with
+    # -f, psql runs as the postgres user and opens the file itself, which fails
+    # when the repo lives under a 0750 home dir (postgres cannot traverse into
+    # /home/<user> -> "Permission denied"). ON_ERROR_STOP still applies to these
+    # server-side statements, so a failed CREATE INDEX aborts exactly as before.
+    "${pg[@]}" -d "$idx" < "$SCHEMA"
     echo "    indexes built in $(($(date +%s) - t0))s"
 
     "${pg[@]}" -d "$idx" -c "ANALYZE;" >/dev/null

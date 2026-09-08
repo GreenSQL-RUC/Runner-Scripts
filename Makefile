@@ -74,6 +74,12 @@ DB_USER       ?= postgres
 PGVER         ?= 16
 PGPORT        ?= $(shell pg_lsclusters -h 2>/dev/null | awk -v v='$(PGVER)' '$$1 == v && $$2 == "main" { print $$3 }')
 WORKERS       ?=              # max_parallel_workers_per_gather for every query; empty = planner decides
+# Step-up mode: BATCH_SIZES="1 2 4 8 16" measures each query at every listed
+# batch size after the warmups (whole batch-size curve, no slope). Empty = the
+# usual two-point (1, BATCHNUM) slope. SKIP_CATALOG=1 skips the per-relation
+# snapshot (the warm step-up driver snapshots once, not per query).
+BATCH_SIZES   ?=
+SKIP_CATALOG  ?=
 # Seconds before the SERVER cancels a query; empty = no limit. The safety net
 # for unattended sweeps - a wedged query is cancelled rather than running all
 # night. Comment kept off the value line (GNU Make folds trailing whitespace).
@@ -92,6 +98,7 @@ SUDO_PRIME    = printf '%s\n' '$(SUDO_PASSWORD)' | sudo -S -v >/dev/null 2>&1
 
 # sudo needs the 'msr' kernel module to expose /dev/cpu/*/msr for RAPL.
 RUN_ENV = QUERY_DIR="$(DIR)" RUNS=$(RUNS) WARMUP="$(WARMUP)" BATCHNUM="$(BATCHNUM)" \
+          BATCH_SIZES="$(BATCH_SIZES)" SKIP_CATALOG="$(SKIP_CATALOG)" \
           DB_NAME="$(DB_NAME)" DB_USER="$(DB_USER)" PGPORT="$(PGPORT)" \
           WORKERS="$(WORKERS)" STATEMENT_TIMEOUT="$(STATEMENT_TIMEOUT)" \
           LOGS_DIR="$(LOGS_DIR)" \
@@ -152,7 +159,7 @@ COLD_ENV = QUERY_DIR="$(DIR)" DB_NAME="$(DB_NAME)" DB_USER="$(DB_USER)" \
 
 # `all` (build) is the default even though it is not the first rule in the file.
 .DEFAULT_GOAL := all
-.PHONY: all run cold plans outputs write write-db clean pg-info check-pg matrix matrix-plan partial-archive index-build index-verify index-drop-db test-shared-buffer test-work-mem test-effective-cache-size test-max-parallel-workers plans-work-mem test-hash-mem-multiplier test-parallel-leader-participation test-effective-io-concurrency test-io-combine-limit test-io-method
+.PHONY: all run cold plans outputs write write-db clean pg-info check-pg matrix matrix-plan partial-archive index-build index-verify index-drop-db test-shared-buffer test-work-mem test-effective-cache-size test-max-parallel-workers plans-work-mem test-hash-mem-multiplier test-parallel-leader-participation test-effective-io-concurrency test-io-combine-limit test-io-method set-parameters warm-stepup
 
 # Move a query's - or a whole run's - rows out of the live result CSVs into
 # archive/partial/ (e.g. to pull a bad measurement without re-running the whole
@@ -602,6 +609,51 @@ test-io-method:
 	    WORK_MEM="$(IOM_WORK_MEM)" MAX_PARALLEL_WORKERS_PER_GATHER="$(IOM_MAX_PARALLEL_WORKERS_PER_GATHER)" \
 	    STATEMENT_TIMEOUT="$(STATEMENT_TIMEOUT)" LOGS_ROOT="$(IOM_LOGS)" DRYRUN="$(DRYRUN)" \
 	    bash test_io_method.sh
+
+# ----- set / reset the fixed "testing" GUCs -----------------------------------
+# set-parameters applies the testing GUCs (shared_buffers 4GB, work_mem 64MB,
+# effective_cache_size 12GB, effective_io_concurrency 64,
+# max_parallel_workers_per_gather 4, io_combine_limit + io_max_combine_limit 1MB
+# on PG18) via ALTER SYSTEM + restart; reset_all_parameters.sh undoes them.
+# SET_VERS defaults to 18 (the version the io_* knobs need); widen it if wanted.
+#   make set-parameters                    # PG18
+#   make set-parameters SET_VERS="16 18"
+SET_VERS ?= 18
+set-parameters:
+	@$(SUDO_PRIME) \
+	    || { echo "sudo authentication failed (override with: make set-parameters SUDO_PASSWORD=...)"; exit 1; }; \
+	  sudo -n bash set_test_parameters.sh $(SET_VERS)
+
+# ----- warm step-up benchmark (per-query cold start, warm measurement) --------
+# run_warm_stepup.sh runs every query in WSU_DIR REPEATS times in one saved
+# RANDOM order; per entry it drops the OS cache + restarts, does WARMUP runs, then
+# measures a step-up of batch sizes (WSU_BATCH_SIZES, N copies per psql process)
+# WARM. Results land in WSU_LOGS/. Set the tuning GUCs FIRST (make set-parameters)
+# and reset after. DRYRUN=1 generates+saves the order and runs nothing.
+#   make set-parameters && make warm-stepup
+#   make warm-stepup WSU_DB=tpch_idx           # the indexed database
+#   make warm-stepup DRYRUN=1                   # just build+save the run order
+#   make warm-stepup ORDER_FILE=logs/warm_stepup/run_order.txt   # replay an order
+WSU_DIR         ?= queries/tpch/tpch-queries
+WSU_DB          ?= tpch
+WSU_PGVER       ?= 18
+WSU_REPEATS     ?= 3
+WSU_WARMUP      ?= 2
+WSU_BATCH_SIZES ?= 1 2 4 8 16
+WSU_RUNS        ?= 1
+WSU_LOGS        ?= logs/warm_stepup
+WSU_RUNID       ?=
+ORDER_FILE      ?=
+warm-stepup:
+	@$(SUDO_PRIME) \
+	    || { echo "sudo authentication failed (override with: make warm-stepup SUDO_PASSWORD=...)"; exit 1; }; \
+	  sudo -n modprobe msr 2>/dev/null || true; \
+	  sudo -n env DIR="$(WSU_DIR)" DB_NAME="$(WSU_DB)" PGVER="$(WSU_PGVER)" \
+	    REPEATS="$(WSU_REPEATS)" WARMUP="$(WSU_WARMUP)" BATCH_SIZES="$(WSU_BATCH_SIZES)" \
+	    RUNS="$(WSU_RUNS)" LOGS_ROOT="$(WSU_LOGS)" RUNID="$(WSU_RUNID)" \
+	    STATEMENT_TIMEOUT="$(STATEMENT_TIMEOUT)" \
+	    ORDER_FILE="$(ORDER_FILE)" DRYRUN="$(DRYRUN)" \
+	    bash run_warm_stepup.sh
 
 clean:
 	rm -f $(TARGET) $(PLAN_TARGET) $(OUTPUT_TARGET) $(WRITE_TARGET) $(COLD_TARGET)

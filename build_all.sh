@@ -11,13 +11,23 @@
 # other scale factor is "tpch<SF>" - so SF2 -> tpch2, SF5 -> tpch5. The same
 # names exist on all clusters; the port selects which one you reach.
 #
+# After the base DBs, it also builds the INDEXED CLONES (<db>_idx, via
+# build_tpch_indexed.sh) BY DEFAULT, since the parameter sweeps default to
+# DBS="tpch tpch_idx". Set SKIP_INDEX=1 to build only the base DBs.
+#
 # Databases that already exist are SKIPPED, so this is safe to re-run after
 # adding a version or a scale factor. FORCE=1 rebuilds them instead.
+#
+# FRESH UBUNTU (24.04): works out of the box. Prerequisites - the build toolchain
+# and the requested PostgreSQL majors (via the PGDG apt repo, each with its own
+# 'main' cluster) - are installed first by bootstrap_ubuntu.sh, so the matrix
+# below finds every cluster. Set SKIP_BOOTSTRAP=1 on a box you already manage.
 #
 # Run as root so the inner "sudo -u postgres" needs no password:
 #   sudo bash build_all.sh
 #   sudo bash build_all.sh "2" "14 18"
 #   sudo FORCE=1 bash build_all.sh "1" "16"
+#   sudo SKIP_BOOTSTRAP=1 bash build_all.sh          # skip prerequisite install
 #
 set -euo pipefail
 
@@ -26,7 +36,14 @@ VERS="${2:-14 16 18}"
 
 HERE="$(cd "$(dirname "$0")" && pwd)"
 
+# Fresh-box provisioning: install the toolchain and the requested PostgreSQL
+# majors up front (idempotent), so every cluster the matrix needs exists.
+if [ "${SKIP_BOOTSTRAP:-0}" != "1" ] && [ -f "$HERE/bootstrap_ubuntu.sh" ]; then
+    bash "$HERE/bootstrap_ubuntu.sh" $VERS
+fi
+
 port_of() {
+    command -v pg_lsclusters >/dev/null 2>&1 || return 0
     pg_lsclusters -h | awk -v v="$1" '$1 == v && $2 == "main" { print $3 }'
 }
 
@@ -76,6 +93,21 @@ for sf in $SFS; do
     echo "==> scale factor $sf done on:$todo - dropping its .tbl files"
     rm -f "$HERE/tpch-dbgen"/*.tbl
 done
+
+# Build the indexed clones (<db>_idx) by default - the parameter sweeps default to
+# DBS="tpch tpch_idx", so the _idx DBs are part of a normal build. Each base DB
+# just built gets an _idx TEMPLATE clone + the ixtest_ index suite. Set
+# SKIP_INDEX=1 to build only the base DBs. FORCE is passed through so a forced
+# base rebuild also rebuilds its _idx.
+if [ "${SKIP_INDEX:-0}" != "1" ]; then
+    idx_dbs=""
+    for sf in $SFS; do
+        if [ "$sf" = "1" ]; then idx_dbs="$idx_dbs tpch"; else idx_dbs="$idx_dbs tpch$sf"; fi
+    done
+    echo
+    echo "===================== INDEXED CLONES ====================="
+    FORCE="${FORCE:-0}" bash "$HERE/build_tpch_indexed.sh" "$idx_dbs" "$VERS"
+fi
 
 echo
 echo "===================== MATRIX ====================="

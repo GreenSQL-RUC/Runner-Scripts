@@ -1023,6 +1023,38 @@ int main(void) {
         batchnum = MAX_BATCHNUM;
     }
 
+    /* STEP-UP mode. When BATCH_SIZES is set (e.g. "1 2 4 8 16", space- or
+     * comma-separated), each query is measured at EVERY listed size after the
+     * warmups - the whole batch-size curve in one warmed session - instead of
+     * the two-point (1, BATCHNUM) slope. It takes over from BATCHNUM and no
+     * slope is fitted. Used by the warm step-up driver (run_warm_stepup.sh). */
+    int batch_sizes[64];
+    int n_batch_sizes = 0;
+    int max_batch = batchnum;          /* widest batch we must size buffers for */
+    const char *batch_sizes_env = getenv("BATCH_SIZES");
+    if (batch_sizes_env && *batch_sizes_env) {
+        char tmp[256];
+        snprintf(tmp, sizeof(tmp), "%s", batch_sizes_env);
+        for (char *tok = strtok(tmp, " ,\t"); tok && n_batch_sizes < 64;
+             tok = strtok(NULL, " ,\t")) {
+            int v = atoi(tok);
+            if (v < 1) continue;
+            if (v > MAX_BATCHNUM) v = MAX_BATCHNUM;
+            batch_sizes[n_batch_sizes++] = v;
+            if (v > max_batch) max_batch = v;
+        }
+        if (n_batch_sizes == 0)
+            fprintf(stderr, "BATCH_SIZES=\"%s\" held no valid size; using BATCHNUM\n",
+                    batch_sizes_env);
+    }
+
+    /* Skip the per-relation catalog snapshot (and its psql round-trip). The
+     * step-up driver invokes the runner once per query, so it takes ONE catalog
+     * up front and sets SKIP_CATALOG for the rest rather than re-snapshotting. */
+    const char *skip_catalog_env = getenv("SKIP_CATALOG");
+    int skip_catalog = (skip_catalog_env && *skip_catalog_env &&
+                        strcmp(skip_catalog_env, "0") != 0);
+
     /* Which cluster (i.e. which PostgreSQL major) and how many parallel workers
      * - see build_psql_env_prefix. Both empty => psql defaults, planner decides. */
     const char *pg_port = env_or("PGPORT", "");
@@ -1037,16 +1069,32 @@ int main(void) {
     print_config(query_dir, log_file, sample_file, catalog_file, slope_file,
                  db_name, db_user, runs, warmup, batchnum, sigless_addr, workers,
                  pg_port, stmt_timeout, pg_version);
+    if (n_batch_sizes > 0)
+        printf("  BATCH_SIZES    = %s (step-up; RUNS batches at each size, no slope)\n",
+               batch_sizes_env);
+    if (skip_catalog)
+        printf("  SKIP_CATALOG   = on (no per-relation snapshot this invocation)\n");
 
     /* --- Find the queries ------------------------------------------ */
+    /* QUERY_DIR is normally a directory searched recursively, but it may also
+     * point straight at a single .sql file - the warm step-up driver runs the
+     * queries one invocation at a time (restart + drop cache per query), so it
+     * hands the runner one file at a time. */
     char *files[MAX_QUERIES];
-    int count = collect_queries(query_dir, files, 0, MAX_QUERIES);
+    int count;
+    struct stat qd_st;
+    if (stat(query_dir, &qd_st) == 0 && S_ISREG(qd_st.st_mode)) {
+        files[0] = strdup(query_dir);
+        count = files[0] ? 1 : 0;
+    } else {
+        count = collect_queries(query_dir, files, 0, MAX_QUERIES);
+    }
     if (count == 0) {
         fprintf(stderr, "No .sql files found under %s\n", query_dir);
         return 1;
     }
     qsort(files, count, sizeof(char *), cmp_str);
-    printf("Found %d queries under %s\n\n", count, query_dir);
+    printf("Found %d quer%s under %s\n\n", count, count == 1 ? "y" : "ies", query_dir);
 
     /* --- Prepare the RAPL energy counters -------------------------- */
     if (rapl_init(RAPL_CORE) != 0) {
@@ -1067,9 +1115,10 @@ int main(void) {
         for (int i = 0; i < count; i++) free(files[i]);
         return 1;
     }
-    /* The slope file exists only when there are two sizes to fit a line to. */
+    /* The slope file exists only when there are two sizes to fit a line to -
+     * never in step-up mode, which records the whole curve in the timing CSV. */
     FILE *slope = NULL;
-    if (batchnum > 1) {
+    if (batchnum > 1 && n_batch_sizes == 0) {
         slope = open_csv_append(slope_file, HDR_SLOPE);
         if (!slope) {
             fclose(log); fclose(samples);
@@ -1082,9 +1131,11 @@ int main(void) {
     make_run_id(run_id, sizeof(run_id));
 
     /* Snapshot relation sizes before measuring, so the sizes recorded are the
-     * ones the sweep actually ran against. */
-    write_catalog_snapshot(catalog_file, env_prefix, db_user, db_name,
-                           pg_version, run_id);
+     * ones the sweep actually ran against. Skippable (SKIP_CATALOG) so the
+     * step-up driver, which invokes the runner once per query, snapshots once. */
+    if (!skip_catalog)
+        write_catalog_snapshot(catalog_file, env_prefix, db_user, db_name,
+                               pg_version, run_id);
 
     /* psql's stdout is captured rather than discarded so the EXPLAIN SUMMARY and
      * BUFFERS lines can be parsed back out of it; batch_tmp holds the BATCHNUM-
@@ -1093,10 +1144,11 @@ int main(void) {
     snprintf(out_tmp,   sizeof(out_tmp),   "/tmp/query_runner_out_%d.txt",   (int)getpid());
     snprintf(batch_tmp, sizeof(batch_tmp), "/tmp/query_runner_batch_%d.sql", (int)getpid());
 
-    /* One profile per copy in a batch, allocated once and reused. */
-    run_profile *profiles = malloc((size_t)batchnum * sizeof(run_profile));
+    /* One profile per copy in a batch, allocated once and reused. Sized to the
+     * widest batch (max_batch = the largest step-up size, else BATCHNUM). */
+    run_profile *profiles = malloc((size_t)max_batch * sizeof(run_profile));
     if (!profiles) {
-        fprintf(stderr, "out of memory for a %d-copy batch\n", batchnum);
+        fprintf(stderr, "out of memory for a %d-copy batch\n", max_batch);
         fclose(log); fclose(samples);
         for (int i = 0; i < count; i++) free(files[i]);
         return 1;
@@ -1136,7 +1188,10 @@ int main(void) {
          * the cache and is cold, so it is excluded from the anchor whenever there
          * is a later, warm one (warmup >= 2). The N=BATCHNUM point is the
          * measured batches. index 0 = the N=1 anchor, index 1 = N=BATCHNUM. */
-        if (batchnum > 1)
+        if (n_batch_sizes > 0)
+            printf("[%d/%d] %s (%d warmup + step-up %s x%d each)\n",
+                   q + 1, count, query_id, warmup, batch_sizes_env, runs);
+        else if (batchnum > 1)
             printf("[%d/%d] %s (%d warmup [warm ones = N=1 anchor] + %d x%d)\n",
                    q + 1, count, query_id, warmup, runs, batchnum);
         else
@@ -1160,20 +1215,40 @@ int main(void) {
                                                 "warmup", w, runs, warmup);
                 /* Prime run = the first, when a warmer one follows it. */
                 int is_prime = (warmup >= 2 && w == 1);
-                if (batchnum > 1 && !is_prime && !br.failed) {
+                if (slope && !is_prime && !br.failed) {
                     acc_wall[0] += br.elapsed;
                     acc_pkg[0]  += br.e[0];
                     acc_core[0] += br.e[1];
                     acc_n[0]++;
                 }
                 printf("  warmup %d/%d: %.6f sec, 1 copy (%s)\n", w, warmup, br.elapsed,
-                       is_prime ? "cache prime" : (batchnum > 1 ? "N=1 anchor" : "not measured"));
+                       is_prime ? "cache prime" : (slope ? "N=1 anchor" : "warm-up"));
                 fflush(stdout);
             }
         }
 
-        /* --- measured: RUNS batches at N=BATCHNUM (the large slope point) --- */
-        if (build_batch_file(full_path, batch_tmp, batchnum) == 0) {
+        if (n_batch_sizes > 0) {
+            /* --- STEP-UP: RUNS measured batches at EACH listed size, warm --- */
+            for (int si = 0; si < n_batch_sizes; si++) {
+                int bs = batch_sizes[si];
+                if (build_batch_file(full_path, batch_tmp, bs) != 0) {
+                    fprintf(stderr, "Could not build %d-copy file for %s\n", bs, query_id);
+                    continue;
+                }
+                for (int r = 1; r <= runs; r++) {
+                    batch_result br = run_one_batch(cmd, out_tmp, bs, profiles, log, samples,
+                                                    run_id, pg_version, query_id,
+                                                    "measured", r, runs, warmup);
+                    if (br.failed) failures++;
+                    printf("  N=%-3d batch %d/%d: %.6f sec, %d cop%s", bs, r, runs,
+                           br.elapsed, br.ncopies, br.ncopies == 1 ? "y" : "ies");
+                    if (br.server_sum > 0) printf(" (server sum %.3f ms)", br.server_sum);
+                    printf("\n");
+                    fflush(stdout);
+                }
+            }
+        } else if (build_batch_file(full_path, batch_tmp, batchnum) == 0) {
+            /* --- measured: RUNS batches at N=BATCHNUM (the large slope point) --- */
             for (int r = 1; r <= runs; r++) {
                 batch_result br = run_one_batch(cmd, out_tmp, batchnum, profiles, log, samples,
                                                 run_id, pg_version, query_id,
@@ -1222,6 +1297,10 @@ int main(void) {
 
             printf("  slope: pkg %.4g J/exec (intercept %.4g J), "
                    "wall %.6f s/exec (intercept %.6f s)\n", sp, ip, sw, iw);
+        } else if (n_batch_sizes > 0) {
+            printf("  step-up done: %d size%s x %d run%s (%d failure%s)\n",
+                   n_batch_sizes, n_batch_sizes == 1 ? "" : "s",
+                   runs, runs == 1 ? "" : "s", failures, failures == 1 ? "" : "s");
         } else {
             printf("  query total: %d measured batch%s (%d failure%s)\n",
                    acc_n[0] + acc_n[1], (acc_n[0] + acc_n[1]) == 1 ? "" : "es",
