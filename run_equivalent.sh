@@ -30,7 +30,7 @@ cd "$HERE"
 
 PGVERS="${PGVERS:-16 18}"
 DBS="${DBS:-tpch tpch2 tpch5}"
-DIR="${DIR:-queries/planner_tests}"
+DIR="${DIR:-queries/EquivalentQueries"
 REPEATS="${REPEATS:-10}"
 COLD_RUNS="${COLD_RUNS:-15}"
 MATRIX_RUNS="${MATRIX_RUNS:-15}"
