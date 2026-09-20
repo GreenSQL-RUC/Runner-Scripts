@@ -1,0 +1,34 @@
+run_id:        20260918T204804Z-d479ea
+started_utc:   2026-09-18T20:48:04Z
+finished_utc:  2026-09-18T22:44:09Z
+total_runtime: 01:56:05  (6965 seconds)   avg_per_entry: 43s
+entries:       159   ok: 159   failed: 0
+-- parameters --
+pg:                 18
+db:                 tpch_idx
+queries_dir:        queries/tpch/tpch-queries
+queries:            53
+repeats:            3
+batch_sizes:        1 2 4 8 16
+runs_per_size:      1
+warmup:             2
+batch_cap_slow:     none (slow_copy_sec 1)
+statement_timeout:  900s
+workers:            planner default
+port:               5434
+logs_root:          logs/warm_stepup
+run_dir:            logs/warm_stepup/20260918T204804Z-d479ea
+order_file:         (generated)
+saved_order:        logs/warm_stepup/20260918T204804Z-d479ea/run_order_20260918T204804Z-d479ea.txt
+-- thermal / clock --
+thermal_policy:     gate T_LO=55 T_HI=60 PREHEAT_MAX_S=60 COOLDOWN_MAX_S=120
+fix_clock:          1
+clock_max_khz:      2000000
+clock_no_turbo: 0
+clock_governor: performance
+clock_min_freq_khz: 400000
+clock_max_freq_khz: 2000000
+rapl_pl1_w:         22.0
+rapl_pl1_tau_s:     27.98
+rapl_pl2_w:         44.0
+dmesg_throttle_msgs: 0 during run (0 total)

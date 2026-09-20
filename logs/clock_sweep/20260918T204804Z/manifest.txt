@@ -1,0 +1,8 @@
+# clock sweep 20260918T204804Z
+# cpu base_khz=1700000 max_turbo_khz=3600000
+# db=tpch_idx dir=queries/tpch/tpch-queries repeats=3 warmup=2 batch_sizes='1 2 4 8 16'
+# thermal_equalise=1 t_lo=55 t_hi=60 fix_clock=1
+# pass  clock_khz  started_utc  duration  status  run_dir
+1      2000000    2026-09-18T20:48:04Z 01:56:05  ok       logs/warm_stepup/20260918T204804Z-d479ea
+2      2500000    2026-09-18T22:49:09Z 01:34:18  ok       logs/warm_stepup/20260918T224909Z-a543de
+3      3000000    2026-09-19T00:28:27Z 01:28:24  ok       logs/warm_stepup/20260919T002827Z-f3d31e

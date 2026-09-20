@@ -1,0 +1,6 @@
+run_id:        20260917T105341Z-de2df1
+db:            tpch_idx   pg:            18
+started_utc:   2026-09-17T10:53:41Z
+finished_utc:  2026-09-18T00:57:39Z
+entries:       530   ok: 530   failed: 0
+total_runtime: 14:03:58  (50638 seconds)   avg_per_entry: 95s

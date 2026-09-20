@@ -1,0 +1,25 @@
+[20:48:04Z] clock sweep: ceilings [2000000 2500000 3000000] kHz   DB=tpch_idx  REPEATS=3  BATCH_SIZES='1 2 4 8 16'
+[20:48:04Z]   thermal gate 55-60 C, FIX_CLOCK=1, gap 300s between passes
+[20:48:04Z]   sweep dir: logs/clock_sweep/20260918T204804Z
+[20:48:04Z]   cpu: base 1700000 kHz, max turbo 3600000 kHz
+[20:48:04Z]   suspend/lid-close inhibited for the sweep (idle inhibited too)
+[20:48:04Z] pass 1/3: ceiling 2000 MHz -> logs/clock_sweep/20260918T204804Z/pass1_2000000.log
+[22:44:09Z] pass 1 done in 01:56:05 -> logs/warm_stepup/20260918T204804Z-d479ea
+[22:44:09Z] idling 300s before the next pass
+[22:49:09Z] pass 2/3: ceiling 2500 MHz -> logs/clock_sweep/20260918T204804Z/pass2_2500000.log
+[00:23:27Z] pass 2 done in 01:34:18 -> logs/warm_stepup/20260918T224909Z-a543de
+[00:23:27Z] idling 300s before the next pass
+[00:28:27Z] pass 3/3: ceiling 3000 MHz -> logs/clock_sweep/20260918T204804Z/pass3_3000000.log
+[01:56:51Z] pass 3 done in 01:28:24 -> logs/warm_stepup/20260919T002827Z-f3d31e
+[01:56:51Z] sweep done: 3 ok, 0 failed
+[01:56:51Z] manifest: logs/clock_sweep/20260918T204804Z/manifest.txt
+
+# clock sweep 20260918T204804Z
+# cpu base_khz=1700000 max_turbo_khz=3600000
+# db=tpch_idx dir=queries/tpch/tpch-queries repeats=3 warmup=2 batch_sizes='1 2 4 8 16'
+# thermal_equalise=1 t_lo=55 t_hi=60 fix_clock=1
+# pass  clock_khz  started_utc  duration  status  run_dir
+1      2000000    2026-09-18T20:48:04Z 01:56:05  ok       logs/warm_stepup/20260918T204804Z-d479ea
+2      2500000    2026-09-18T22:49:09Z 01:34:18  ok       logs/warm_stepup/20260918T224909Z-a543de
+3      3000000    2026-09-19T00:28:27Z 01:28:24  ok       logs/warm_stepup/20260919T002827Z-f3d31e
+[01:56:51Z] final clock state: no_turbo: 0 governor: powersave min_freq_khz: 400000 max_freq_khz: 3600000 

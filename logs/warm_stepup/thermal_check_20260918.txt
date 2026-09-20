@@ -1,0 +1,38 @@
+# thermal_check.py over the four tpch_idx warm step-up runs, generated 2026-09-18T19:45:24Z
+# columns: 17 Sep baseline | run1 logging only | run2 gated 55-60 | run3 gated 55-60 + FIX_CLOCK=1 (turbo off, performance, 1.7 GHz cap)
+# note: runs 1-3 on a laptop; absolute joules/seconds in run3 are not comparable with runs 1-2 (clock capped), only the noise/slope figures are
+                            20260917T105341Z-de2df  20260918T141724Z-9150d  20260918T153808Z-7f871  20260918T172207Z-8ec83
+groups                                         530                     159                     159                     159
+pkg_temp_start mean C                          n/a                    68.9                    58.9                    55.6
+pkg_temp_start SD C  (<=2)                     n/a                    5.04                    1.30                    0.80
+throttle deltas sum  (0)                         0                  740760                  611336                       0
+measured batches throttled                    0.0%                   22.5%                   13.2%                    0.0%
+measured batches >=95C                        0.0%                   18.9%                   12.5%                    0.0%
+pkg_temp_max median C                          n/a                    79.0                    76.0                    57.0
+preheat_s mean                                 0.0                     0.0                     0.0                     7.5
+cooldown_wait_s mean                           0.0                     0.0                     5.1                     0.0
+--- 4w queries ----------------------------------------------------------------------------------------------------------
+  queries                                       12                      12                      12                      12
+  corr(E16,t16) pooled                       -0.78                   -0.65                    0.82                    0.86
+  corr(E16,t16) per-q median                   -0.73                   -0.87                    0.47                    0.89
+  corr(E16res,Tstart)                          n/a                    0.04                    0.05                    0.01
+  rank(E16res,J60)                           -0.44                   -0.28                    0.03                    0.31
+  rank(t16res,J60)                            0.47                    0.36                    0.06                    0.26
+  rank(E16res,J900)                          -0.12                    0.31                    0.19                   -0.11
+  E16 CV median                              3.40%                   1.83%                   0.96%                   0.41%
+  E16 CV mean                                2.89%                   2.21%                   2.20%                   1.04%
+  slope err {1,16} R1 median                   2.00%                   1.50%                   0.75%                   0.46%
+--- 0-2w queries ----------------------------------------------------------------------------------------------------------
+  queries                                       41                      41                      41                      41
+  corr(E16,t16) pooled                       -0.22                    0.04                    0.25                    0.72
+  corr(E16,t16) per-q median                   -0.11                    0.16                    0.41                    0.94
+  corr(E16res,Tstart)                          n/a                    0.17                    0.07                    0.03
+  rank(E16res,J60)                            0.10                    0.18                    0.12                    0.08
+  rank(t16res,J60)                            0.29                    0.37                    0.11                    0.08
+  rank(E16res,J900)                           0.14                   -0.09                    0.14                   -0.19
+  E16 CV median                              1.69%                   1.18%                   0.98%                   0.70%
+  E16 CV mean                                1.93%                   1.38%                   1.43%                   1.12%
+  slope err {1,16} R1 median                   1.12%                   0.96%                   0.56%                   0.63%
+--- all queries ----------------------------------------------------------------------------------------------------------
+  slope err {1,16} R1 median                   1.28%                   0.99%                   0.61%                   0.59%
+  slope err {1,16} R1 mean                   1.81%                   1.26%                   1.33%                   0.92%

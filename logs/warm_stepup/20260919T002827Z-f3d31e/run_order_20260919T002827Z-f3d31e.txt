@@ -1,0 +1,324 @@
+# warm step-up run order
+# run_id=20260919T002827Z-f3d31e
+# generated 2026-09-19T00:28:28Z  DIR=queries/tpch/tpch-queries  REPEATS=3  total=159
+# thermal_policy: gate T_LO=55 T_HI=60 PREHEAT_MAX_S=60 COOLDOWN_MAX_S=120   fix_clock: 1   clock_max_khz: 3000000
+# generated fresh: 53 queries x 3 repeats
+queries/tpch/tpch-queries/q02/v2_decorrelate.sql
+queries/tpch/tpch-queries/q07/v2_union_all.sql
+queries/tpch/tpch-queries/q16/v1_materialized.sql
+queries/tpch/tpch-queries/q14/v1_materialized.sql
+queries/tpch/tpch-queries/q15/base.sql
+queries/tpch/tpch-queries/q03/base.sql
+queries/tpch/tpch-queries/q22/v1_materialized.sql
+queries/tpch/tpch-queries/q02/v1_materialized.sql
+queries/tpch/tpch-queries/q01/base.sql
+queries/tpch/tpch-queries/q04/v1_materialized.sql
+queries/tpch/tpch-queries/q18/v1_materialized.sql
+queries/tpch/tpch-queries/q07/v2_union_all.sql
+queries/tpch/tpch-queries/q12/v2_filter.sql
+queries/tpch/tpch-queries/q10/v1_materialized.sql
+queries/tpch/tpch-queries/q18/base.sql
+queries/tpch/tpch-queries/q08/base.sql
+queries/tpch/tpch-queries/q22/v2_anti_join.sql
+queries/tpch/tpch-queries/q14/v2_filter.sql
+queries/tpch/tpch-queries/q17/v2_decorrelate.sql
+queries/tpch/tpch-queries/q03/v1_materialized.sql
+queries/tpch/tpch-queries/q06/base.sql
+queries/tpch/tpch-queries/q03/v1_materialized.sql
+queries/tpch/tpch-queries/q18/v2_join.sql
+queries/tpch/tpch-queries/q02/base.sql
+queries/tpch/tpch-queries/q22/base.sql
+queries/tpch/tpch-queries/q09/base.sql
+queries/tpch/tpch-queries/q02/v2_decorrelate.sql
+queries/tpch/tpch-queries/q21/base.sql
+queries/tpch/tpch-queries/q04/base.sql
+queries/tpch/tpch-queries/q11/base.sql
+queries/tpch/tpch-queries/q19/v2_union_all.sql
+queries/tpch/tpch-queries/q14/base.sql
+queries/tpch/tpch-queries/q16/base.sql
+queries/tpch/tpch-queries/q07/v1_materialized.sql
+queries/tpch/tpch-queries/q07/v1_materialized.sql
+queries/tpch/tpch-queries/q16/base.sql
+queries/tpch/tpch-queries/q19/v1_materialized.sql
+queries/tpch/tpch-queries/q12/base.sql
+queries/tpch/tpch-queries/q13/base.sql
+queries/tpch/tpch-queries/q09/v1_materialized.sql
+queries/tpch/tpch-queries/q10/base.sql
+queries/tpch/tpch-queries/q14/v2_filter.sql
+queries/tpch/tpch-queries/q22/v1_materialized.sql
+queries/tpch/tpch-queries/q11/v2_cte_threshold.sql
+queries/tpch/tpch-queries/q22/v2_anti_join.sql
+queries/tpch/tpch-queries/q12/base.sql
+queries/tpch/tpch-queries/q14/v1_materialized.sql
+queries/tpch/tpch-queries/q08/v1_materialized.sql
+queries/tpch/tpch-queries/q17/v2_decorrelate.sql
+queries/tpch/tpch-queries/q15/v1_materialized.sql
+queries/tpch/tpch-queries/q07/v2_union_all.sql
+queries/tpch/tpch-queries/q12/v1_materialized.sql
+queries/tpch/tpch-queries/q19/v1_materialized.sql
+queries/tpch/tpch-queries/q08/v2_filter.sql
+queries/tpch/tpch-queries/q13/v2_correlated.sql
+queries/tpch/tpch-queries/q10/base.sql
+queries/tpch/tpch-queries/q02/v1_materialized.sql
+queries/tpch/tpch-queries/q05/base.sql
+queries/tpch/tpch-queries/q14/base.sql
+queries/tpch/tpch-queries/q21/v1_materialized.sql
+queries/tpch/tpch-queries/q10/base.sql
+queries/tpch/tpch-queries/q11/v2_cte_threshold.sql
+queries/tpch/tpch-queries/q11/v1_materialized.sql
+queries/tpch/tpch-queries/q04/v2_in.sql
+queries/tpch/tpch-queries/q12/v2_filter.sql
+queries/tpch/tpch-queries/q21/v1_materialized.sql
+queries/tpch/tpch-queries/q19/base.sql
+queries/tpch/tpch-queries/q07/base.sql
+queries/tpch/tpch-queries/q08/base.sql
+queries/tpch/tpch-queries/q14/v2_filter.sql
+queries/tpch/tpch-queries/q04/v1_materialized.sql
+queries/tpch/tpch-queries/q15/v1_materialized.sql
+queries/tpch/tpch-queries/q12/base.sql
+queries/tpch/tpch-queries/q19/v2_union_all.sql
+queries/tpch/tpch-queries/q13/base.sql
+queries/tpch/tpch-queries/q18/base.sql
+queries/tpch/tpch-queries/q05/base.sql
+queries/tpch/tpch-queries/q07/base.sql
+queries/tpch/tpch-queries/q02/v2_decorrelate.sql
+queries/tpch/tpch-queries/q18/base.sql
+queries/tpch/tpch-queries/q05/v1_materialized.sql
+queries/tpch/tpch-queries/q06/v1_materialized.sql
+queries/tpch/tpch-queries/q04/v2_in.sql
+queries/tpch/tpch-queries/q10/v1_materialized.sql
+queries/tpch/tpch-queries/q13/v1_materialized.sql
+queries/tpch/tpch-queries/q10/v1_materialized.sql
+queries/tpch/tpch-queries/q04/base.sql
+queries/tpch/tpch-queries/q19/base.sql
+queries/tpch/tpch-queries/q18/v1_materialized.sql
+queries/tpch/tpch-queries/q19/v2_union_all.sql
+queries/tpch/tpch-queries/q11/v1_materialized.sql
+queries/tpch/tpch-queries/q16/v2_not_exists.sql
+queries/tpch/tpch-queries/q18/v2_join.sql
+queries/tpch/tpch-queries/q06/base.sql
+queries/tpch/tpch-queries/q15/v1_materialized.sql
+queries/tpch/tpch-queries/q16/v2_not_exists.sql
+queries/tpch/tpch-queries/q03/base.sql
+queries/tpch/tpch-queries/q14/base.sql
+queries/tpch/tpch-queries/q08/v1_materialized.sql
+queries/tpch/tpch-queries/q05/v1_materialized.sql
+queries/tpch/tpch-queries/q06/v1_materialized.sql
+queries/tpch/tpch-queries/q12/v1_materialized.sql
+queries/tpch/tpch-queries/q08/base.sql
+queries/tpch/tpch-queries/q07/base.sql
+queries/tpch/tpch-queries/q13/v2_correlated.sql
+queries/tpch/tpch-queries/q19/v1_materialized.sql
+queries/tpch/tpch-queries/q13/v2_correlated.sql
+queries/tpch/tpch-queries/q22/base.sql
+queries/tpch/tpch-queries/q19/base.sql
+queries/tpch/tpch-queries/q16/v1_materialized.sql
+queries/tpch/tpch-queries/q01/base.sql
+queries/tpch/tpch-queries/q05/base.sql
+queries/tpch/tpch-queries/q01/v1_materialized.sql
+queries/tpch/tpch-queries/q02/base.sql
+queries/tpch/tpch-queries/q11/v2_cte_threshold.sql
+queries/tpch/tpch-queries/q09/v1_materialized.sql
+queries/tpch/tpch-queries/q06/base.sql
+queries/tpch/tpch-queries/q09/base.sql
+queries/tpch/tpch-queries/q16/base.sql
+queries/tpch/tpch-queries/q01/v1_materialized.sql
+queries/tpch/tpch-queries/q16/v2_not_exists.sql
+queries/tpch/tpch-queries/q16/v1_materialized.sql
+queries/tpch/tpch-queries/q13/v1_materialized.sql
+queries/tpch/tpch-queries/q11/base.sql
+queries/tpch/tpch-queries/q11/v1_materialized.sql
+queries/tpch/tpch-queries/q02/base.sql
+queries/tpch/tpch-queries/q18/v1_materialized.sql
+queries/tpch/tpch-queries/q12/v2_filter.sql
+queries/tpch/tpch-queries/q05/v1_materialized.sql
+queries/tpch/tpch-queries/q21/base.sql
+queries/tpch/tpch-queries/q12/v1_materialized.sql
+queries/tpch/tpch-queries/q04/base.sql
+queries/tpch/tpch-queries/q22/v1_materialized.sql
+queries/tpch/tpch-queries/q21/v1_materialized.sql
+queries/tpch/tpch-queries/q01/v1_materialized.sql
+queries/tpch/tpch-queries/q21/base.sql
+queries/tpch/tpch-queries/q02/v1_materialized.sql
+queries/tpch/tpch-queries/q09/base.sql
+queries/tpch/tpch-queries/q15/base.sql
+queries/tpch/tpch-queries/q06/v1_materialized.sql
+queries/tpch/tpch-queries/q13/base.sql
+queries/tpch/tpch-queries/q04/v2_in.sql
+queries/tpch/tpch-queries/q01/base.sql
+queries/tpch/tpch-queries/q15/base.sql
+queries/tpch/tpch-queries/q04/v1_materialized.sql
+queries/tpch/tpch-queries/q11/base.sql
+queries/tpch/tpch-queries/q07/v1_materialized.sql
+queries/tpch/tpch-queries/q03/base.sql
+queries/tpch/tpch-queries/q03/v1_materialized.sql
+queries/tpch/tpch-queries/q08/v2_filter.sql
+queries/tpch/tpch-queries/q17/v2_decorrelate.sql
+queries/tpch/tpch-queries/q18/v2_join.sql
+queries/tpch/tpch-queries/q22/v2_anti_join.sql
+queries/tpch/tpch-queries/q13/v1_materialized.sql
+queries/tpch/tpch-queries/q08/v2_filter.sql
+queries/tpch/tpch-queries/q08/v1_materialized.sql
+queries/tpch/tpch-queries/q22/base.sql
+queries/tpch/tpch-queries/q09/v1_materialized.sql
+queries/tpch/tpch-queries/q14/v1_materialized.sql
+# per-entry run ids (group n, its run_id, the predecessor group's run_id):
+# order: 1 5ACD486470B49231 prev=none
+# order: 2 7A14C6C25D10A532 prev=5ACD486470B49231
+# order: 3 19910F4FA8DDDE74 prev=7A14C6C25D10A532
+# order: 4 A49F4EC4CBBE9E54 prev=19910F4FA8DDDE74
+# order: 5 DE065115C0574249 prev=A49F4EC4CBBE9E54
+# order: 6 9A37430C34B6C13B prev=DE065115C0574249
+# order: 7 F08BA6F7F11B207A prev=9A37430C34B6C13B
+# order: 8 6D9B050CC46EA46B prev=F08BA6F7F11B207A
+# order: 9 C9D5609EA5D01839 prev=6D9B050CC46EA46B
+# order: 10 00A070678F51B716 prev=C9D5609EA5D01839
+# order: 11 6E8B073CC6AC4010 prev=00A070678F51B716
+# order: 12 18BF3494B766BBCF prev=6E8B073CC6AC4010
+# order: 13 D8D79BA35AE076D9 prev=18BF3494B766BBCF
+# order: 14 29C84AB0F2A33BD9 prev=D8D79BA35AE076D9
+# order: 15 C88E330B69B07DD2 prev=29C84AB0F2A33BD9
+# order: 16 E3FAD9A5363B4A22 prev=C88E330B69B07DD2
+# order: 17 7C6E9896A594F659 prev=E3FAD9A5363B4A22
+# order: 18 3733F0DE349F5EFA prev=7C6E9896A594F659
+# order: 19 D2264200CC2948CC prev=3733F0DE349F5EFA
+# order: 20 AAE068BCC5AF2257 prev=D2264200CC2948CC
+# order: 21 F15D8086E548C29C prev=AAE068BCC5AF2257
+# order: 22 7F2D79BD3DACA389 prev=F15D8086E548C29C
+# order: 23 44F088AF7C40B0CD prev=7F2D79BD3DACA389
+# order: 24 03A051F46675ECCE prev=44F088AF7C40B0CD
+# order: 25 E1F21A622238E087 prev=03A051F46675ECCE
+# order: 26 B6688F664B7E98C4 prev=E1F21A622238E087
+# order: 27 A038B7192B56E928 prev=B6688F664B7E98C4
+# order: 28 071114F5F00CF34F prev=A038B7192B56E928
+# order: 29 F3C84F218D2EE8F4 prev=071114F5F00CF34F
+# order: 30 939555A1AD2026FD prev=F3C84F218D2EE8F4
+# order: 31 BF6BD30439381A25 prev=939555A1AD2026FD
+# order: 32 45F74527A8593FA7 prev=BF6BD30439381A25
+# order: 33 DED446F91E3FCA63 prev=45F74527A8593FA7
+# order: 34 3165563220C0A45B prev=DED446F91E3FCA63
+# order: 35 C3903E49B1C27966 prev=3165563220C0A45B
+# order: 36 4F5A57F85C8DD961 prev=C3903E49B1C27966
+# order: 37 F3C19EB42A180828 prev=4F5A57F85C8DD961
+# order: 38 B4090B4595B8E98F prev=F3C19EB42A180828
+# order: 39 F0F20949F12E40C4 prev=B4090B4595B8E98F
+# order: 40 17D3D4EA05DC7437 prev=F0F20949F12E40C4
+# order: 41 060656D290254C08 prev=17D3D4EA05DC7437
+# order: 42 CF1467F0F0B31017 prev=060656D290254C08
+# order: 43 74978B5A386A07FC prev=CF1467F0F0B31017
+# order: 44 2F515E369F990457 prev=74978B5A386A07FC
+# order: 45 8951136A3E77B985 prev=2F515E369F990457
+# order: 46 BB6F8A797B753DFE prev=8951136A3E77B985
+# order: 47 5BED1F3E2C35AF15 prev=BB6F8A797B753DFE
+# order: 48 2830EF0E76BEFD90 prev=5BED1F3E2C35AF15
+# order: 49 D15D3A1CFDCD2B06 prev=2830EF0E76BEFD90
+# order: 50 EEFD1FFF5A92B667 prev=D15D3A1CFDCD2B06
+# order: 51 3B610DB91D07B5A9 prev=EEFD1FFF5A92B667
+# order: 52 A864F84F644714B5 prev=3B610DB91D07B5A9
+# order: 53 276ADC7FB84BCB15 prev=A864F84F644714B5
+# order: 54 C42CA5C5D19F7574 prev=276ADC7FB84BCB15
+# order: 55 2AF91F019DBE97BD prev=C42CA5C5D19F7574
+# order: 56 BFF733B1C95302AE prev=2AF91F019DBE97BD
+# order: 57 4EA5D682C226EC01 prev=BFF733B1C95302AE
+# order: 58 21770801DBB61603 prev=4EA5D682C226EC01
+# order: 59 FDAFF53B46FB5118 prev=21770801DBB61603
+# order: 60 D391DA75FCCCA115 prev=FDAFF53B46FB5118
+# order: 61 C740A975AF6439DF prev=D391DA75FCCCA115
+# order: 62 C25E956906DCE418 prev=C740A975AF6439DF
+# order: 63 BDCC7C52D36F2572 prev=C25E956906DCE418
+# order: 64 085771C49384D53F prev=BDCC7C52D36F2572
+# order: 65 7F80BC008CDD70A8 prev=085771C49384D53F
+# order: 66 EF223C7A2D93AE2B prev=7F80BC008CDD70A8
+# order: 67 91C9DD0EA29A74EC prev=EF223C7A2D93AE2B
+# order: 68 2E3763049E5B26AF prev=91C9DD0EA29A74EC
+# order: 69 537FFA765712CB73 prev=2E3763049E5B26AF
+# order: 70 9950A68D102FB100 prev=537FFA765712CB73
+# order: 71 812DA428AE1B4540 prev=9950A68D102FB100
+# order: 72 97B751FD41B7BE00 prev=812DA428AE1B4540
+# order: 73 9678BCCB3E3483D4 prev=97B751FD41B7BE00
+# order: 74 3EDE26D97DE4E616 prev=9678BCCB3E3483D4
+# order: 75 6FB0B089CAF5528E prev=3EDE26D97DE4E616
+# order: 76 A13360C9558D7D15 prev=6FB0B089CAF5528E
+# order: 77 4A9C1A0784E08817 prev=A13360C9558D7D15
+# order: 78 2C6D6C6FD72C28AB prev=4A9C1A0784E08817
+# order: 79 1838AEC21023CDAF prev=2C6D6C6FD72C28AB
+# order: 80 9A6AAEABFC11D5FF prev=1838AEC21023CDAF
+# order: 81 FD4A68DE169E67F5 prev=9A6AAEABFC11D5FF
+# order: 82 29DF123D969BD9CD prev=FD4A68DE169E67F5
+# order: 83 16CE4BB40B833D47 prev=29DF123D969BD9CD
+# order: 84 05EDEED07F38657E prev=16CE4BB40B833D47
+# order: 85 6387886DEA8E8059 prev=05EDEED07F38657E
+# order: 86 17A0CCCBE0262720 prev=6387886DEA8E8059
+# order: 87 BCE1E9165FA73312 prev=17A0CCCBE0262720
+# order: 88 9917B85B75166F20 prev=BCE1E9165FA73312
+# order: 89 16923B3D07E33D3A prev=9917B85B75166F20
+# order: 90 7965999844FCAABA prev=16923B3D07E33D3A
+# order: 91 0F2872065E6CA606 prev=7965999844FCAABA
+# order: 92 CA1EA22CAC001AF8 prev=0F2872065E6CA606
+# order: 93 7948644B46C1DE37 prev=CA1EA22CAC001AF8
+# order: 94 FA695F8A9AB3BE6F prev=7948644B46C1DE37
+# order: 95 9C24B20767A03AAB prev=FA695F8A9AB3BE6F
+# order: 96 C5EDBDEEE95E6969 prev=9C24B20767A03AAB
+# order: 97 228EB81565D7A944 prev=C5EDBDEEE95E6969
+# order: 98 7C96648758BA9C14 prev=228EB81565D7A944
+# order: 99 F82CF485D79E6C6A prev=7C96648758BA9C14
+# order: 100 00CBDD70999972FD prev=F82CF485D79E6C6A
+# order: 101 FA67CF3BA1B72D29 prev=00CBDD70999972FD
+# order: 102 E5F5F296E1FFC7D0 prev=FA67CF3BA1B72D29
+# order: 103 EBFF101D931CC6CD prev=E5F5F296E1FFC7D0
+# order: 104 BA5DA5FEA2FDB47D prev=EBFF101D931CC6CD
+# order: 105 583EB1923855A680 prev=BA5DA5FEA2FDB47D
+# order: 106 5E4CCDDAA6B4AA27 prev=583EB1923855A680
+# order: 107 5C27A181FE47BE57 prev=5E4CCDDAA6B4AA27
+# order: 108 84F71D3F1145FE74 prev=5C27A181FE47BE57
+# order: 109 56F4887F32CE5D2D prev=84F71D3F1145FE74
+# order: 110 9196D732C0DF88EC prev=56F4887F32CE5D2D
+# order: 111 A07CA91D81918BEF prev=9196D732C0DF88EC
+# order: 112 EE81FF9ABA01159F prev=A07CA91D81918BEF
+# order: 113 08610D4A7A0B1BDE prev=EE81FF9ABA01159F
+# order: 114 32EFDD8D528A71AE prev=08610D4A7A0B1BDE
+# order: 115 8A577E43684EDED9 prev=32EFDD8D528A71AE
+# order: 116 F7908E793CDEFCDD prev=8A577E43684EDED9
+# order: 117 B88F049BD222746A prev=F7908E793CDEFCDD
+# order: 118 BC3DFAF298C5815F prev=B88F049BD222746A
+# order: 119 B91D10C5578EEC3B prev=BC3DFAF298C5815F
+# order: 120 18F6584BFCB0CE0D prev=B91D10C5578EEC3B
+# order: 121 BDA9BEAFF8825E00 prev=18F6584BFCB0CE0D
+# order: 122 CD0C4E3188707853 prev=BDA9BEAFF8825E00
+# order: 123 C9A5236BC8378C86 prev=CD0C4E3188707853
+# order: 124 08ED3D8908097F78 prev=C9A5236BC8378C86
+# order: 125 503E803700CDA7EC prev=08ED3D8908097F78
+# order: 126 723C97E780C33A4D prev=503E803700CDA7EC
+# order: 127 4DE48761616A1080 prev=723C97E780C33A4D
+# order: 128 FEBCE1B933DB171D prev=4DE48761616A1080
+# order: 129 2ED982512EBE3E56 prev=FEBCE1B933DB171D
+# order: 130 AACF626993F095B7 prev=2ED982512EBE3E56
+# order: 131 E7AB3CAD4B9AE094 prev=AACF626993F095B7
+# order: 132 005D1BB62272534D prev=E7AB3CAD4B9AE094
+# order: 133 C3905AFD11E338CC prev=005D1BB62272534D
+# order: 134 ED97BF4B51F9BFC6 prev=C3905AFD11E338CC
+# order: 135 633A5DACC6181D83 prev=ED97BF4B51F9BFC6
+# order: 136 68C0361A80F6AD1E prev=633A5DACC6181D83
+# order: 137 314FB19CAAC82E7F prev=68C0361A80F6AD1E
+# order: 138 47EEF06EA1CE029B prev=314FB19CAAC82E7F
+# order: 139 1C1CC53466CA8022 prev=47EEF06EA1CE029B
+# order: 140 C3A853A504864C70 prev=1C1CC53466CA8022
+# order: 141 834A230F4230CB5F prev=C3A853A504864C70
+# order: 142 6A5709E9733E9B60 prev=834A230F4230CB5F
+# order: 143 E19329D5984EDAD1 prev=6A5709E9733E9B60
+# order: 144 68E477BDF024B6C4 prev=E19329D5984EDAD1
+# order: 145 93D2F2B02C2B78E3 prev=68E477BDF024B6C4
+# order: 146 7DD28FD5FD079224 prev=93D2F2B02C2B78E3
+# order: 147 47022173F36BC5BB prev=7DD28FD5FD079224
+# order: 148 E62BA604E57028AB prev=47022173F36BC5BB
+# order: 149 963785D7F30A781C prev=E62BA604E57028AB
+# order: 150 A0E7F0C6CF3CD0F5 prev=963785D7F30A781C
+# order: 151 5AFBAC8B5BA80132 prev=A0E7F0C6CF3CD0F5
+# order: 152 2E483E85D4BDDC4B prev=5AFBAC8B5BA80132
+# order: 153 D33134698EF62D05 prev=2E483E85D4BDDC4B
+# order: 154 670B9FFF7F18738A prev=D33134698EF62D05
+# order: 155 FC7205C25C94C65F prev=670B9FFF7F18738A
+# order: 156 C8C0776E7323B7BC prev=FC7205C25C94C65F
+# order: 157 4EB5AF401F9073B4 prev=C8C0776E7323B7BC
+# order: 158 697AF04A282F9F91 prev=4EB5AF401F9073B4
+# order: 159 BDD7CD4F9A2AAC68 prev=697AF04A282F9F91

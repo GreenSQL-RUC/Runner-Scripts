@@ -1,0 +1,366 @@
+==> run_id=20260919T002827Z-f3d31e  order (159 entries) -> logs/warm_stepup/20260919T002827Z-f3d31e/run_order_20260919T002827Z-f3d31e.txt
+warm step-up: PG18  DB=tpch_idx  DIR=queries/tpch/tpch-queries  BATCH_SIZES='1 2 4 8 16'  WARMUP=2  RUNS=1  REPEATS=3
+  thermal: gate T_LO=55 T_HI=60 PREHEAT_MAX_S=60 COOLDOWN_MAX_S=120   fix_clock: 1 (ceiling 3000000)   batch cap: none
+  logs -> logs/warm_stepup/20260919T002827Z-f3d31e/  (159 entries)
+clock_control: no_turbo=0 (ceiling 3000000 kHz is a turbo bin)
+clock_control: governor=performance (was powersave)
+clock_control: max_freq=3000000 kHz on 8 CPUs
+[1/159] queries/tpch/tpch-queries/q02/v2_decorrelate.sql  (run_id 5ACD486470B49231)
+  ok
+[2/159] queries/tpch/tpch-queries/q07/v2_union_all.sql  (run_id 7A14C6C25D10A532)
+  ok
+[3/159] queries/tpch/tpch-queries/q16/v1_materialized.sql  (run_id 19910F4FA8DDDE74)
+  ok
+[4/159] queries/tpch/tpch-queries/q14/v1_materialized.sql  (run_id A49F4EC4CBBE9E54)
+  ok
+[5/159] queries/tpch/tpch-queries/q15/base.sql  (run_id DE065115C0574249)
+  ok
+[6/159] queries/tpch/tpch-queries/q03/base.sql  (run_id 9A37430C34B6C13B)
+  ok
+[7/159] queries/tpch/tpch-queries/q22/v1_materialized.sql  (run_id F08BA6F7F11B207A)
+  ok
+[8/159] queries/tpch/tpch-queries/q02/v1_materialized.sql  (run_id 6D9B050CC46EA46B)
+  ok
+[9/159] queries/tpch/tpch-queries/q01/base.sql  (run_id C9D5609EA5D01839)
+  ok
+[10/159] queries/tpch/tpch-queries/q04/v1_materialized.sql  (run_id 00A070678F51B716)
+  ok
+[11/159] queries/tpch/tpch-queries/q18/v1_materialized.sql  (run_id 6E8B073CC6AC4010)
+  ok
+[12/159] queries/tpch/tpch-queries/q07/v2_union_all.sql  (run_id 18BF3494B766BBCF)
+  ok
+[13/159] queries/tpch/tpch-queries/q12/v2_filter.sql  (run_id D8D79BA35AE076D9)
+  ok
+[14/159] queries/tpch/tpch-queries/q10/v1_materialized.sql  (run_id 29C84AB0F2A33BD9)
+  ok
+[15/159] queries/tpch/tpch-queries/q18/base.sql  (run_id C88E330B69B07DD2)
+  ok
+[16/159] queries/tpch/tpch-queries/q08/base.sql  (run_id E3FAD9A5363B4A22)
+  ok
+[17/159] queries/tpch/tpch-queries/q22/v2_anti_join.sql  (run_id 7C6E9896A594F659)
+  ok
+[18/159] queries/tpch/tpch-queries/q14/v2_filter.sql  (run_id 3733F0DE349F5EFA)
+  ok
+[19/159] queries/tpch/tpch-queries/q17/v2_decorrelate.sql  (run_id D2264200CC2948CC)
+  ok
+[20/159] queries/tpch/tpch-queries/q03/v1_materialized.sql  (run_id AAE068BCC5AF2257)
+  ok
+[21/159] queries/tpch/tpch-queries/q06/base.sql  (run_id F15D8086E548C29C)
+  ok
+[22/159] queries/tpch/tpch-queries/q03/v1_materialized.sql  (run_id 7F2D79BD3DACA389)
+  ok
+[23/159] queries/tpch/tpch-queries/q18/v2_join.sql  (run_id 44F088AF7C40B0CD)
+  ok
+[24/159] queries/tpch/tpch-queries/q02/base.sql  (run_id 03A051F46675ECCE)
+  ok
+[25/159] queries/tpch/tpch-queries/q22/base.sql  (run_id E1F21A622238E087)
+  ok
+[26/159] queries/tpch/tpch-queries/q09/base.sql  (run_id B6688F664B7E98C4)
+  ok
+[27/159] queries/tpch/tpch-queries/q02/v2_decorrelate.sql  (run_id A038B7192B56E928)
+  ok
+[28/159] queries/tpch/tpch-queries/q21/base.sql  (run_id 071114F5F00CF34F)
+  ok
+[29/159] queries/tpch/tpch-queries/q04/base.sql  (run_id F3C84F218D2EE8F4)
+  ok
+[30/159] queries/tpch/tpch-queries/q11/base.sql  (run_id 939555A1AD2026FD)
+  ok
+[31/159] queries/tpch/tpch-queries/q19/v2_union_all.sql  (run_id BF6BD30439381A25)
+  ok
+[32/159] queries/tpch/tpch-queries/q14/base.sql  (run_id 45F74527A8593FA7)
+  ok
+[33/159] queries/tpch/tpch-queries/q16/base.sql  (run_id DED446F91E3FCA63)
+  ok
+[34/159] queries/tpch/tpch-queries/q07/v1_materialized.sql  (run_id 3165563220C0A45B)
+  ok
+[35/159] queries/tpch/tpch-queries/q07/v1_materialized.sql  (run_id C3903E49B1C27966)
+  ok
+[36/159] queries/tpch/tpch-queries/q16/base.sql  (run_id 4F5A57F85C8DD961)
+  ok
+[37/159] queries/tpch/tpch-queries/q19/v1_materialized.sql  (run_id F3C19EB42A180828)
+  ok
+[38/159] queries/tpch/tpch-queries/q12/base.sql  (run_id B4090B4595B8E98F)
+  ok
+[39/159] queries/tpch/tpch-queries/q13/base.sql  (run_id F0F20949F12E40C4)
+  ok
+[40/159] queries/tpch/tpch-queries/q09/v1_materialized.sql  (run_id 17D3D4EA05DC7437)
+  ok
+[41/159] queries/tpch/tpch-queries/q10/base.sql  (run_id 060656D290254C08)
+  ok
+[42/159] queries/tpch/tpch-queries/q14/v2_filter.sql  (run_id CF1467F0F0B31017)
+  ok
+[43/159] queries/tpch/tpch-queries/q22/v1_materialized.sql  (run_id 74978B5A386A07FC)
+  ok
+[44/159] queries/tpch/tpch-queries/q11/v2_cte_threshold.sql  (run_id 2F515E369F990457)
+  ok
+[45/159] queries/tpch/tpch-queries/q22/v2_anti_join.sql  (run_id 8951136A3E77B985)
+  ok
+[46/159] queries/tpch/tpch-queries/q12/base.sql  (run_id BB6F8A797B753DFE)
+  ok
+[47/159] queries/tpch/tpch-queries/q14/v1_materialized.sql  (run_id 5BED1F3E2C35AF15)
+  ok
+[48/159] queries/tpch/tpch-queries/q08/v1_materialized.sql  (run_id 2830EF0E76BEFD90)
+  ok
+[49/159] queries/tpch/tpch-queries/q17/v2_decorrelate.sql  (run_id D15D3A1CFDCD2B06)
+  ok
+[50/159] queries/tpch/tpch-queries/q15/v1_materialized.sql  (run_id EEFD1FFF5A92B667)
+  ok
+[51/159] queries/tpch/tpch-queries/q07/v2_union_all.sql  (run_id 3B610DB91D07B5A9)
+  ok
+[52/159] queries/tpch/tpch-queries/q12/v1_materialized.sql  (run_id A864F84F644714B5)
+  ok
+[53/159] queries/tpch/tpch-queries/q19/v1_materialized.sql  (run_id 276ADC7FB84BCB15)
+  ok
+[54/159] queries/tpch/tpch-queries/q08/v2_filter.sql  (run_id C42CA5C5D19F7574)
+  ok
+[55/159] queries/tpch/tpch-queries/q13/v2_correlated.sql  (run_id 2AF91F019DBE97BD)
+  ok
+[56/159] queries/tpch/tpch-queries/q10/base.sql  (run_id BFF733B1C95302AE)
+  ok
+[57/159] queries/tpch/tpch-queries/q02/v1_materialized.sql  (run_id 4EA5D682C226EC01)
+  ok
+[58/159] queries/tpch/tpch-queries/q05/base.sql  (run_id 21770801DBB61603)
+  ok
+[59/159] queries/tpch/tpch-queries/q14/base.sql  (run_id FDAFF53B46FB5118)
+  ok
+[60/159] queries/tpch/tpch-queries/q21/v1_materialized.sql  (run_id D391DA75FCCCA115)
+  ok
+[61/159] queries/tpch/tpch-queries/q10/base.sql  (run_id C740A975AF6439DF)
+  ok
+[62/159] queries/tpch/tpch-queries/q11/v2_cte_threshold.sql  (run_id C25E956906DCE418)
+  ok
+[63/159] queries/tpch/tpch-queries/q11/v1_materialized.sql  (run_id BDCC7C52D36F2572)
+  ok
+[64/159] queries/tpch/tpch-queries/q04/v2_in.sql  (run_id 085771C49384D53F)
+  ok
+[65/159] queries/tpch/tpch-queries/q12/v2_filter.sql  (run_id 7F80BC008CDD70A8)
+  ok
+[66/159] queries/tpch/tpch-queries/q21/v1_materialized.sql  (run_id EF223C7A2D93AE2B)
+  ok
+[67/159] queries/tpch/tpch-queries/q19/base.sql  (run_id 91C9DD0EA29A74EC)
+  ok
+[68/159] queries/tpch/tpch-queries/q07/base.sql  (run_id 2E3763049E5B26AF)
+  ok
+[69/159] queries/tpch/tpch-queries/q08/base.sql  (run_id 537FFA765712CB73)
+  ok
+[70/159] queries/tpch/tpch-queries/q14/v2_filter.sql  (run_id 9950A68D102FB100)
+  ok
+[71/159] queries/tpch/tpch-queries/q04/v1_materialized.sql  (run_id 812DA428AE1B4540)
+  ok
+[72/159] queries/tpch/tpch-queries/q15/v1_materialized.sql  (run_id 97B751FD41B7BE00)
+  ok
+[73/159] queries/tpch/tpch-queries/q12/base.sql  (run_id 9678BCCB3E3483D4)
+  ok
+[74/159] queries/tpch/tpch-queries/q19/v2_union_all.sql  (run_id 3EDE26D97DE4E616)
+  ok
+[75/159] queries/tpch/tpch-queries/q13/base.sql  (run_id 6FB0B089CAF5528E)
+  ok
+[76/159] queries/tpch/tpch-queries/q18/base.sql  (run_id A13360C9558D7D15)
+  ok
+[77/159] queries/tpch/tpch-queries/q05/base.sql  (run_id 4A9C1A0784E08817)
+  ok
+[78/159] queries/tpch/tpch-queries/q07/base.sql  (run_id 2C6D6C6FD72C28AB)
+  ok
+[79/159] queries/tpch/tpch-queries/q02/v2_decorrelate.sql  (run_id 1838AEC21023CDAF)
+  ok
+[80/159] queries/tpch/tpch-queries/q18/base.sql  (run_id 9A6AAEABFC11D5FF)
+  ok
+[81/159] queries/tpch/tpch-queries/q05/v1_materialized.sql  (run_id FD4A68DE169E67F5)
+  ok
+[82/159] queries/tpch/tpch-queries/q06/v1_materialized.sql  (run_id 29DF123D969BD9CD)
+  ok
+[83/159] queries/tpch/tpch-queries/q04/v2_in.sql  (run_id 16CE4BB40B833D47)
+  ok
+[84/159] queries/tpch/tpch-queries/q10/v1_materialized.sql  (run_id 05EDEED07F38657E)
+  ok
+[85/159] queries/tpch/tpch-queries/q13/v1_materialized.sql  (run_id 6387886DEA8E8059)
+  ok
+[86/159] queries/tpch/tpch-queries/q10/v1_materialized.sql  (run_id 17A0CCCBE0262720)
+  ok
+[87/159] queries/tpch/tpch-queries/q04/base.sql  (run_id BCE1E9165FA73312)
+  ok
+[88/159] queries/tpch/tpch-queries/q19/base.sql  (run_id 9917B85B75166F20)
+  ok
+[89/159] queries/tpch/tpch-queries/q18/v1_materialized.sql  (run_id 16923B3D07E33D3A)
+  ok
+[90/159] queries/tpch/tpch-queries/q19/v2_union_all.sql  (run_id 7965999844FCAABA)
+  ok
+[91/159] queries/tpch/tpch-queries/q11/v1_materialized.sql  (run_id 0F2872065E6CA606)
+  ok
+[92/159] queries/tpch/tpch-queries/q16/v2_not_exists.sql  (run_id CA1EA22CAC001AF8)
+  ok
+[93/159] queries/tpch/tpch-queries/q18/v2_join.sql  (run_id 7948644B46C1DE37)
+  ok
+[94/159] queries/tpch/tpch-queries/q06/base.sql  (run_id FA695F8A9AB3BE6F)
+  ok
+[95/159] queries/tpch/tpch-queries/q15/v1_materialized.sql  (run_id 9C24B20767A03AAB)
+  ok
+[96/159] queries/tpch/tpch-queries/q16/v2_not_exists.sql  (run_id C5EDBDEEE95E6969)
+  ok
+[97/159] queries/tpch/tpch-queries/q03/base.sql  (run_id 228EB81565D7A944)
+  ok
+[98/159] queries/tpch/tpch-queries/q14/base.sql  (run_id 7C96648758BA9C14)
+  ok
+[99/159] queries/tpch/tpch-queries/q08/v1_materialized.sql  (run_id F82CF485D79E6C6A)
+  ok
+[100/159] queries/tpch/tpch-queries/q05/v1_materialized.sql  (run_id 00CBDD70999972FD)
+  ok
+[101/159] queries/tpch/tpch-queries/q06/v1_materialized.sql  (run_id FA67CF3BA1B72D29)
+  ok
+[102/159] queries/tpch/tpch-queries/q12/v1_materialized.sql  (run_id E5F5F296E1FFC7D0)
+  ok
+[103/159] queries/tpch/tpch-queries/q08/base.sql  (run_id EBFF101D931CC6CD)
+  ok
+[104/159] queries/tpch/tpch-queries/q07/base.sql  (run_id BA5DA5FEA2FDB47D)
+  ok
+[105/159] queries/tpch/tpch-queries/q13/v2_correlated.sql  (run_id 583EB1923855A680)
+  ok
+[106/159] queries/tpch/tpch-queries/q19/v1_materialized.sql  (run_id 5E4CCDDAA6B4AA27)
+  ok
+[107/159] queries/tpch/tpch-queries/q13/v2_correlated.sql  (run_id 5C27A181FE47BE57)
+  ok
+[108/159] queries/tpch/tpch-queries/q22/base.sql  (run_id 84F71D3F1145FE74)
+  ok
+[109/159] queries/tpch/tpch-queries/q19/base.sql  (run_id 56F4887F32CE5D2D)
+  ok
+[110/159] queries/tpch/tpch-queries/q16/v1_materialized.sql  (run_id 9196D732C0DF88EC)
+  ok
+[111/159] queries/tpch/tpch-queries/q01/base.sql  (run_id A07CA91D81918BEF)
+  ok
+[112/159] queries/tpch/tpch-queries/q05/base.sql  (run_id EE81FF9ABA01159F)
+  ok
+[113/159] queries/tpch/tpch-queries/q01/v1_materialized.sql  (run_id 08610D4A7A0B1BDE)
+  ok
+[114/159] queries/tpch/tpch-queries/q02/base.sql  (run_id 32EFDD8D528A71AE)
+  ok
+[115/159] queries/tpch/tpch-queries/q11/v2_cte_threshold.sql  (run_id 8A577E43684EDED9)
+  ok
+[116/159] queries/tpch/tpch-queries/q09/v1_materialized.sql  (run_id F7908E793CDEFCDD)
+  ok
+[117/159] queries/tpch/tpch-queries/q06/base.sql  (run_id B88F049BD222746A)
+  ok
+[118/159] queries/tpch/tpch-queries/q09/base.sql  (run_id BC3DFAF298C5815F)
+  ok
+[119/159] queries/tpch/tpch-queries/q16/base.sql  (run_id B91D10C5578EEC3B)
+  ok
+[120/159] queries/tpch/tpch-queries/q01/v1_materialized.sql  (run_id 18F6584BFCB0CE0D)
+  ok
+[121/159] queries/tpch/tpch-queries/q16/v2_not_exists.sql  (run_id BDA9BEAFF8825E00)
+  ok
+[122/159] queries/tpch/tpch-queries/q16/v1_materialized.sql  (run_id CD0C4E3188707853)
+  ok
+[123/159] queries/tpch/tpch-queries/q13/v1_materialized.sql  (run_id C9A5236BC8378C86)
+  ok
+[124/159] queries/tpch/tpch-queries/q11/base.sql  (run_id 08ED3D8908097F78)
+  ok
+[125/159] queries/tpch/tpch-queries/q11/v1_materialized.sql  (run_id 503E803700CDA7EC)
+  ok
+[126/159] queries/tpch/tpch-queries/q02/base.sql  (run_id 723C97E780C33A4D)
+  ok
+[127/159] queries/tpch/tpch-queries/q18/v1_materialized.sql  (run_id 4DE48761616A1080)
+  ok
+[128/159] queries/tpch/tpch-queries/q12/v2_filter.sql  (run_id FEBCE1B933DB171D)
+  ok
+[129/159] queries/tpch/tpch-queries/q05/v1_materialized.sql  (run_id 2ED982512EBE3E56)
+  ok
+[130/159] queries/tpch/tpch-queries/q21/base.sql  (run_id AACF626993F095B7)
+  ok
+[131/159] queries/tpch/tpch-queries/q12/v1_materialized.sql  (run_id E7AB3CAD4B9AE094)
+  ok
+[132/159] queries/tpch/tpch-queries/q04/base.sql  (run_id 005D1BB62272534D)
+  ok
+[133/159] queries/tpch/tpch-queries/q22/v1_materialized.sql  (run_id C3905AFD11E338CC)
+  ok
+[134/159] queries/tpch/tpch-queries/q21/v1_materialized.sql  (run_id ED97BF4B51F9BFC6)
+  ok
+[135/159] queries/tpch/tpch-queries/q01/v1_materialized.sql  (run_id 633A5DACC6181D83)
+  ok
+[136/159] queries/tpch/tpch-queries/q21/base.sql  (run_id 68C0361A80F6AD1E)
+  ok
+[137/159] queries/tpch/tpch-queries/q02/v1_materialized.sql  (run_id 314FB19CAAC82E7F)
+  ok
+[138/159] queries/tpch/tpch-queries/q09/base.sql  (run_id 47EEF06EA1CE029B)
+  ok
+[139/159] queries/tpch/tpch-queries/q15/base.sql  (run_id 1C1CC53466CA8022)
+  ok
+[140/159] queries/tpch/tpch-queries/q06/v1_materialized.sql  (run_id C3A853A504864C70)
+  ok
+[141/159] queries/tpch/tpch-queries/q13/base.sql  (run_id 834A230F4230CB5F)
+  ok
+[142/159] queries/tpch/tpch-queries/q04/v2_in.sql  (run_id 6A5709E9733E9B60)
+  ok
+[143/159] queries/tpch/tpch-queries/q01/base.sql  (run_id E19329D5984EDAD1)
+  ok
+[144/159] queries/tpch/tpch-queries/q15/base.sql  (run_id 68E477BDF024B6C4)
+  ok
+[145/159] queries/tpch/tpch-queries/q04/v1_materialized.sql  (run_id 93D2F2B02C2B78E3)
+  ok
+[146/159] queries/tpch/tpch-queries/q11/base.sql  (run_id 7DD28FD5FD079224)
+  ok
+[147/159] queries/tpch/tpch-queries/q07/v1_materialized.sql  (run_id 47022173F36BC5BB)
+  ok
+[148/159] queries/tpch/tpch-queries/q03/base.sql  (run_id E62BA604E57028AB)
+  ok
+[149/159] queries/tpch/tpch-queries/q03/v1_materialized.sql  (run_id 963785D7F30A781C)
+  ok
+[150/159] queries/tpch/tpch-queries/q08/v2_filter.sql  (run_id A0E7F0C6CF3CD0F5)
+  ok
+[151/159] queries/tpch/tpch-queries/q17/v2_decorrelate.sql  (run_id 5AFBAC8B5BA80132)
+  ok
+[152/159] queries/tpch/tpch-queries/q18/v2_join.sql  (run_id 2E483E85D4BDDC4B)
+  ok
+[153/159] queries/tpch/tpch-queries/q22/v2_anti_join.sql  (run_id D33134698EF62D05)
+  ok
+[154/159] queries/tpch/tpch-queries/q13/v1_materialized.sql  (run_id 670B9FFF7F18738A)
+  ok
+[155/159] queries/tpch/tpch-queries/q08/v2_filter.sql  (run_id FC7205C25C94C65F)
+  ok
+[156/159] queries/tpch/tpch-queries/q08/v1_materialized.sql  (run_id C8C0776E7323B7BC)
+  ok
+[157/159] queries/tpch/tpch-queries/q22/base.sql  (run_id 4EB5AF401F9073B4)
+  ok
+[158/159] queries/tpch/tpch-queries/q09/v1_materialized.sql  (run_id 697AF04A282F9F91)
+  ok
+[159/159] queries/tpch/tpch-queries/q14/v1_materialized.sql  (run_id BDD7CD4F9A2AAC68)
+  ok
+clock_control: no_turbo restored to 0
+clock_control: governor restored to powersave
+clock_control: max_freq restored to 3600000 kHz
+run_id:        20260919T002827Z-f3d31e
+started_utc:   2026-09-19T00:28:28Z
+finished_utc:  2026-09-19T01:56:51Z
+total_runtime: 01:28:23  (5303 seconds)   avg_per_entry: 33s
+entries:       159   ok: 159   failed: 0
+-- parameters --
+pg:                 18
+db:                 tpch_idx
+queries_dir:        queries/tpch/tpch-queries
+queries:            53
+repeats:            3
+batch_sizes:        1 2 4 8 16
+runs_per_size:      1
+warmup:             2
+batch_cap_slow:     none (slow_copy_sec 1)
+statement_timeout:  900s
+workers:            planner default
+port:               5434
+logs_root:          logs/warm_stepup
+run_dir:            logs/warm_stepup/20260919T002827Z-f3d31e
+order_file:         (generated)
+saved_order:        logs/warm_stepup/20260919T002827Z-f3d31e/run_order_20260919T002827Z-f3d31e.txt
+-- thermal / clock --
+thermal_policy:     gate T_LO=55 T_HI=60 PREHEAT_MAX_S=60 COOLDOWN_MAX_S=120
+fix_clock:          1
+clock_max_khz:      3000000
+clock_no_turbo: 0
+clock_governor: performance
+clock_min_freq_khz: 400000
+clock_max_freq_khz: 3000000
+rapl_pl1_w:         22.0
+rapl_pl1_tau_s:     27.98
+rapl_pl2_w:         44.0
+dmesg_throttle_msgs: 0 during run (0 total)
+
+warm step-up done: 159 ok, 0 failed of 159 entries in 01:28:23
+  results dir: logs/warm_stepup/20260919T002827Z-f3d31e/  (query_timing_tpch_idx.csv, ..., summary.txt)
+  order: logs/warm_stepup/20260919T002827Z-f3d31e/run_order_20260919T002827Z-f3d31e.txt   console: logs/warm_stepup/20260919T002827Z-f3d31e/console.log

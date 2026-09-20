@@ -3,66 +3,107 @@
 A self-contained harness for measuring the **wall-clock time and CPU energy
 (RAPL)** of SQL queries on PostgreSQL, across several PostgreSQL major versions,
 several datasets, and a matrix of server tuning parameters. The workload is
-mostly TPC-H, plus a few real-world datasets.
+mostly TPC-H (the 53-query variant set, plus the 17k-query SQLStorm suite),
+plus a few real-world datasets.
 
-Everything is driven through the **`Makefile`** (the single entry point) which
-sets environment variables and invokes small C "runner" programs and Bash
-orchestration scripts. Results are appended to CSV files under `logs/`.
+Everything is driven through the **`Makefile`** (the single entry point), which
+fills in one shared set of knobs and invokes small C "runner" programs and Bash
+drivers. Results are appended to CSV files under `logs/`.
 
-> **New here / no context?** Read [Mental model](#mental-model) then
-> [Where to find things](#where-to-find-things). The Makefile target table is
-> the fastest index of "how do I run X".
+> **New here?** Read [Mental model](#mental-model), then `make help`, then
+> [The Makefile](#the-makefile-command-reference).
 
 ---
 
 ## Mental model
 
-- **Runners (C)** do the actual measuring: run a query via `psql`, time it, read
-  RAPL energy counters, parse the `EXPLAIN` output, and append CSV rows. They are
-  configured entirely through environment variables. See [The runners](#the-runners-c).
-- **The Makefile** is how you invoke a runner: it fills in the env vars, primes
-  `sudo`, loads the `msr` kernel module (for RAPL), and picks the right cluster.
-- **Sweep scripts (Bash)** wrap the Makefile to vary ONE server parameter at a
-  time (e.g. `shared_buffers`), writing each value's results to its own sub-folder
-  of `logs/`. See [Parameter sweeps](#parameter-sweeps).
-- **RAPL needs root + the `msr` module.** Nearly everything runs as root (via
-  `sudo`); the Makefile handles priming (`SUDO_PASSWORD`, default `a`).
-- **PostgreSQL version == port.** Each installed major (PG14/16/18 here) runs its
-  own `main` cluster on its own port. `PGVER` selects the version; the port is
-  looked up from it. Every CSV row carries `pg_version`, so results from
-  different majors share one file and are still told apart.
-- **Database naming.** `tpch` = TPC-H scale factor 1; `tpch2`/`tpch5` = SF2/SF5;
-  `<db>_idx` = an indexed clone of `<db>`; `estat` and `warehouse` are real-world
-  datasets; `tpch_write` is a disposable scratch DB for write tests.
+- **Two measurement modes, and only two.**
+  - **`make warm-stepup`** — the main benchmark. Every query is run `REPEATS`
+    times in one saved random order; each entry gets a clean **cold start**
+    (cache drop + cluster restart), `WARMUP` warm-up runs, then a measured batch
+    **step-up** at `BATCH_SIZES` (N copies of the query in one `psql` process),
+    warm.
+  - **`make cold`** — cold-cache runs: cache drop + restart before *every*
+    execution, `RUNS` executions per query, no warm-ups or batches.
+  - `make run` is one plain warm pass of the same runner with no restarts — the
+    quick "does this suite work" check, not a measurement protocol.
+- **Runners (C, in `run/`, compiled into `bin/`)** do the measuring: run a query
+  via `psql`, time it, read RAPL, sample the thermal/clock sensors, parse the
+  `EXPLAIN` output, append CSV rows. Configured entirely by environment
+  variables, which the Makefile sets.
+- **Drivers and sweeps (Bash)**: `run/` holds the run drivers (warm step-up,
+  matrix, parameter set/reset); `test/` the one-GUC parameter sweeps and the
+  plan-consistency checks; `build/` the data loaders and query generators.
+- **One set of knobs.** `PGVER DB_NAME DIR LOGS_DIR WARMUP BATCH_SIZES RUNS
+  REPEATS WORKERS STATEMENT_TIMEOUT PGVERS DBS DRYRUN` mean the same thing for
+  every target. `make help` prints them with their current values.
+- **Thermal state is always logged, never forced by default.** Every batch row
+  records package temperature (start/end/mean/max), hottest core, mean MHz,
+  throttle counts, idle gap and power. The two protocol knobs from
+  `run/thermal_runner_brief.md` — `THERMAL_EQUALISE` (temperature-gated start)
+  and `FIX_CLOCK` (turbo off + performance governor) — are **off** unless set.
+- **RAPL needs root + the `msr` module.** The Makefile primes `sudo`
+  (`SUDO_PASSWORD`, default `a`) and loads the module.
+- **PostgreSQL version == port.** Each installed major (PG15/16/17/18 by default) runs its own
+  `main` cluster on its own port; `PGVER` selects the version, the port is looked
+  up. Every CSV row carries `pg_version`.
+- **Database naming.** `tpch` = TPC-H SF1; `tpch2`/`tpch5` = SF2/SF5;
+  `<db>_idx` = indexed clone of `<db>`; `estat`, `warehouse` = real-world
+  datasets; `tpch_write` = disposable scratch DB for the write benchmark.
+- **Queries carry their own `EXPLAIN`.** Every `.sql` is written as
+  `EXPLAIN (ANALYZE, TIMING OFF, COSTS ON, SUMMARY ON, BUFFERS) <statement>` so
+  the runner can parse server-side figures. A bare `SELECT` runs but leaves the
+  per-copy server columns empty.
 
 ---
 
 ## Quick start
 
 ```bash
-# 0. Fresh Ubuntu 24.04 only: install prerequisites (toolchain + the PostgreSQL
-#    majors via PGDG, each as its own cluster). build_all.sh does this for you,
-#    so it is optional to run separately.
-sudo bash bootstrap_ubuntu.sh          # PG 14 16 18  (or e.g. "16")
+# 0. Fresh Ubuntu 24.04 only: toolchain + the PostgreSQL majors (PGDG), each as
+#    its own cluster. build_all.sh runs this itself, so it is optional here.
+sudo bash build/bootstrap_ubuntu.sh          # PG 15 16 17 18  (or e.g. "18")
 
-# 1. Build the runner binaries (query_runner, cold_runner, plan_builder, ...)
-make all
+# 1. Build the runners into bin/
+make
 
-# 2. Build/load data — generates TPC-H, loads every cluster, AND builds the
-#    indexed clones (<db>_idx) too, by default (SKIP_INDEX=1 for base DBs only).
-#    On a fresh box this also runs bootstrap_ubuntu.sh first (SKIP_BOOTSTRAP=1).
-sudo bash build_all.sh                 # all SFs+versions; or scope: build_all.sh "1" "18"
+# 2. Load data: TPC-H at every scale factor on every cluster, plus the indexed
+#    clones (<db>_idx). SKIP_INDEX=1 for base DBs only; SKIP_BOOTSTRAP=1 on a
+#    box you already manage.
+sudo bash build/build_all.sh                 # or scope: build_all.sh "1" "18"
 
-# 3. Run the warm read benchmark on one DB/version
-make run PGVER=18 DB_NAME=tpch DIR=queries/tpch/tpch-queries
+# 3. Apply the fixed testing GUCs, run the benchmark, restore the defaults
+make set-parameters
+make warm-stepup DB_NAME=tpch_idx REPEATS=3
+make reset-parameters
 
-# 4. Results are appended under logs/ (see “Output CSVs”)
+# 4. Results: logs/warm_stepup/<RUNID>/ (CSVs, run order, summary.txt)
 ```
 
-A run needs root for RAPL; the Makefile primes `sudo` for you (override the
-password with `make run SUDO_PASSWORD=...`).
+Quick check that a new query suite runs at all (one warm pass, no restarts):
+
+```bash
+make fetch-sqlstorm                                   # 17k SQLStorm queries -> queries/tpch/SQLStorm
+make run DIR=queries/tpch/SQLStorm DB_NAME=tpch_idx WARMUP=1 BATCH_SIZES=1 STATEMENT_TIMEOUT=10
+```
 
 ---
+
+## PostgreSQL versions
+
+- **Majors:** 15, 16, 17 and 18 (`PGVERS` in the Makefile, `bootstrap_ubuntu.sh`,
+  `build_all.sh`, `build_tpch_indexed.sh`). PG14 leaves community support in
+  November 2026 and is no longer built. `PGVER` (the version a single run
+  targets) defaults to 18.
+- **Minors are pinned.** `build/bootstrap_ubuntu.sh` installs each major at the
+  exact minor in its `PIN_MINOR` table (15.19, 16.15, 17.11, 18.6, the newest
+  PGDG releases on 2026-09-18) and writes `/etc/apt/preferences.d/greensql-postgresql`
+  with priority 1001, so `apt-get upgrade` stays on that minor even after a newer
+  one is published. Every box built from this repo therefore runs the same
+  binaries. To move to a newer minor, bump `PIN_MINOR` and re-run the bootstrap;
+  a box already on a different minor is left alone with a warning unless
+  `FORCE_MINOR=1` is set (`PIN_MINOR=0` disables pinning altogether). Bumping
+  a pin is a change in the thing being measured: note it next to the results.
 
 ## Installation debugging
 
@@ -72,259 +113,279 @@ Common problems bringing the harness up on a new box, and how to fix them.
 The scripts assume the **Debian/Ubuntu packaged** PostgreSQL (`postgresql-common`):
 clusters named `<ver> main`, discovered with `pg_lsclusters`; one `psql` that
 selects a server by **port**; data under `/var/lib/postgresql/<ver>/main`. A
-**from-source** install (e.g. into `/usr/local/pgsql`, as some manual guides do)
-provides none of that — no `pg_lsclusters`, a bare `psql` bound to a single
-hard-coded version, no `main` clusters — so every script fails at the port lookup
-("No 'main' cluster …") or can't find `pg_lsclusters` at all.
+**from-source** install (e.g. into `/usr/local/pgsql`) provides none of that, so
+every script fails at the port lookup ("No 'main' cluster …") or can't find
+`pg_lsclusters` at all.
 - **Tell which you have:** `command -v pg_lsclusters` — present ⇒ packaged; if it's
   missing but `psql` works, you have a non-packaged/source install.
-- **Fix (data is disposable):** remove the old install and re-provision the
-  packaged form:
+- **Fix (data is disposable):** remove the old install and re-provision:
   ```bash
   sudo systemctl stop postgresql 2>/dev/null; sudo apt-get purge -y 'postgresql*'
   sudo rm -rf /var/lib/postgresql /etc/postgresql /etc/postgresql-common
-  sudo bash bootstrap_ubuntu.sh 14 16 18
+  sudo bash build/bootstrap_ubuntu.sh 15 16 17 18
   ```
 - A pre-existing packaged cluster (e.g. Ubuntu's default PG16) is fine — bootstrap
-  adds the PGDG repo and the other majors alongside it; it won't be discovered
-  wrongly, since versions are keyed by their own `main` cluster and port.
+  adds the PGDG repo and the other majors alongside it.
 
 ### "No 'main' cluster for PostgreSQL `<N>`"
 That major isn't installed, or `PGVER`/`PGVERS` names one that isn't. List what's
-there with `pg_lsclusters`; provision the missing major with
-`sudo bash bootstrap_ubuntu.sh <N>`, or pass a version that exists.
+there with `make pg-info`; provision the missing major with
+`sudo bash build/bootstrap_ubuntu.sh <N>`, or pass a version that exists.
 
 ### Only one cluster after installing several majors
-Installing `postgresql-14/16/18` in one `apt` run sometimes auto-creates a `main`
-cluster for only one version. `bootstrap_ubuntu.sh` now creates the rest; by hand
-it's `sudo pg_createcluster <ver> main --start`. Ports are auto-assigned to the
-next free one and discovered via `pg_lsclusters`, so the exact numbers don't matter.
+Installing `postgresql-15/16/17/18` in one `apt` run sometimes auto-creates a `main`
+cluster for only one version. `bootstrap_ubuntu.sh` creates the rest; by hand
+it's `sudo pg_createcluster <ver> main --start`.
 
 ### "Permission denied" reading a schema .sql
-Seen as `psql: error: …/schema/….sql: Permission denied`. `psql -f` opens the file
-as the **postgres** user, which can't traverse a `0750` home dir (`/home/<user>`).
-`build_tpch.sh` and `build_tpch_indexed.sh` avoid this by streaming the schema on
-stdin. If you still see it — from `build_estat.sh`/`build_warehouse.sh` (not yet
-fixed) or an older copy — either apply the same `< "$SCHEMA"` change or
-`sudo chmod o+x /home/<user>`.
+`psql -f` opens the file as the **postgres** user, which can't traverse a `0750`
+home dir. `build_tpch.sh` and `build_tpch_indexed.sh` stream the schema on stdin
+to avoid this; if you still see it, `sudo chmod o+x /home/<user>`.
 
 ### A database looks too small / `lineitem` is empty
-e.g. `tpch` is ~400 MB instead of ~1.4 GB at SF1. A COPY failed, but psql's
-`\copy` does **not** honor `ON_ERROR_STOP`, so an older build could finish with an
-empty table and still report success. `build_tpch.sh` now verifies each table's
-row count against the `.tbl` and aborts on a short load. To repair an existing
-partial DB you must rebuild it — `build_all`/`build_tpch` **skip a DB that already
-exists**, even a broken one, so force it:
+A COPY failed silently in an older build. `build_tpch.sh` now verifies row counts
+and aborts on a short load. To repair, force a rebuild (existing DBs are skipped
+otherwise):
 ```bash
-sudo FORCE=1 SKIP_BOOTSTRAP=1 bash build_all.sh "1" "<ver>"
-# or, always drops + recreates:
-sudo bash build_tpch.sh <sf> <db> <ver>
+sudo FORCE=1 SKIP_BOOTSTRAP=1 bash build/build_all.sh "1" "<ver>"
+sudo bash build/build_tpch.sh <sf> <db> <ver>       # always drops + recreates
 ```
 
 ### dbgen won't build (no gcc/make/git)
-A fresh box has no toolchain. `bootstrap_ubuntu.sh` and `build_tpch.sh` auto-install
-`build-essential` + `git` when run as root; offline or non-root, do it yourself:
-`sudo apt install -y build-essential git`.
+`bootstrap_ubuntu.sh` and `build_tpch.sh` auto-install `build-essential` + `git`
+as root; otherwise `sudo apt install -y build-essential git`.
 
 ### `make run` fails with a RAPL / `msr` error
-The energy runner needs Intel RAPL MSRs and the `msr` module (`sudo modprobe msr`;
-the Makefile attempts this). On VMs, most cloud instances, or non-Intel CPUs the
-MSRs are unavailable — data loading, `make plans`, and `make outputs` still work,
-but the energy columns won't be populated.
+The runners need Intel RAPL MSRs and the `msr` module (`sudo modprobe msr`; the
+Makefile attempts this). On VMs and non-Intel CPUs the MSRs are unavailable —
+data loading, `make plans` and `make outputs` still work.
 
 ### `sudo` keeps prompting / "sudo authentication failed"
-The Makefile primes sudo with `SUDO_PASSWORD` (default `a`). Override it:
-`make run SUDO_PASSWORD=yourpw` (same for the `test-*`/`build` targets), or run the
-build scripts directly under `sudo`.
+The Makefile primes sudo with `SUDO_PASSWORD` (default `a`):
+`make warm-stepup SUDO_PASSWORD=yourpw`.
 
 ### Low-memory box
-The tuning params (`shared_buffers=4GB`, `effective_cache_size=12GB`) are large; on
-a small machine lower them per-sweep (e.g. `make test-work-mem WM_SHARED_BUFFERS=2GB`)
-or edit `set_test_parameters.sh`. `effective_cache_size` is only a planner hint, so
-it is safe to leave above physical RAM.
+The testing GUCs (`SHARED_BUFFERS=4GB`, `EFFECTIVE_CACHE_SIZE=12GB`) are large; on
+a small machine lower them on the command line (`make test-work-mem
+SHARED_BUFFERS=2GB`) or in `run/set_test_parameters.sh`.
+
+### A CSV refuses to append ("header does not match")
+The column layout changed (e.g. the thermal columns added on 2026-09-18). The
+runner refuses rather than mix layouts in one file. Move the old file aside or
+use another `LOGS_DIR`.
 
 ---
 
 ## Repository layout
 
-### The runners (C)
+```
+Makefile          the entry point (make help)
+bin/              compiled runners (git-ignored; `make` builds them)
+run/              runners (.c) + run drivers (.sh)
+test/             parameter sweeps + plan-consistency checks (.sh)
+build/            data loaders, provisioning, query generators/fetchers
+queries/          ALL SQL (see below)
+schema/           DDL: tpch, index suite, estat, warehouse
+logs/             results (CSV); sub-folders per sweep / per warm-stepup run
+plans/ outputs/   EXPLAIN plans / result rows from plan_builder / output_runner
+Data/             raw real-world data + normalisers for estat / warehouse
+archive/ matrix_logs/ old/ tpch-dbgen/   run artifacts, prior project, upstream dbgen (ignore)
+```
 
-Small, single-file programs. Each is configured via environment variables (the
-Makefile sets them) and appends CSV rows. `make all` compiles them; the binaries
-are git-ignored.
+### `run/` — runners (C) and run drivers (Bash)
 
-| Source | Binary | What it does |
-|---|---|---|
-| **`query_runner.c`** | `query_runner` | The main **warm** read benchmark. For each `.sql` file it runs `WARMUP` unmeasured executions then `RUNS` measured ones, timing each and reading RAPL energy. Uses a **batch/slope method** to remove fixed per-process overhead: it measures at two batch sizes — 1 copy and `BATCHNUM` copies concatenated into one `psql` process — and fits `E = intercept + slope·N`, so `slope` is the query's own marginal cost. Also supports a **step-up mode** (`BATCH_SIZES="1 2 4 8 16"`) that measures the whole batch-size curve, and accepts a single `.sql` file (not just a directory). Writes four CSVs (timing/samples/slope/catalog). |
-| **`cold_runner.c`** | `cold_runner` | The **cold-cache** variant. Before every query it drops the OS page cache (`sync; echo 3 > /proc/sys/vm/drop_caches`) and restarts the cluster (`pg_ctlcluster <PGVER> main restart`) to empty `shared_buffers`, so reads hit disk. Refuses to restart a cluster a live sweep is using. Rows go to `query_cold_<db>.csv`. Invoked by `make cold` (or `make run COLD=1`). |
-| **`plan_builder.c`** | `plan_builder` | Saves each query's **plan** (`EXPLAIN ANALYZE`) to `plans/<db>/<query>.txt`, mirroring the query folder tree. No timing/energy. `make plans`. |
-| **`output_runner.c`** | `output_runner` | Saves each query's **result rows** to `outputs/<db>/<query>.txt` — strips a leading `EXPLAIN` so the underlying statement returns rows. A correctness/verification companion to `plan_builder`. `make outputs`. |
-| **`write_runner.c`** | `write_runner` | Energy/timing runner for **write (mutating) SQL**. Deliberately isolated: runs ONLY against the disposable `tpch_write` DB and refuses the canonical read DBs. Each `.sql` file has a `@MEASURE`-delimited SETUP vs MEASURED section so state resets before every run. `make write`. |
-| **`rapl.c` / `rapl.h`** | — | Reads Intel RAPL MSRs (package / core / gpu / dram joules). Linked into `query_runner`, `cold_runner`, and `write_runner`. Needs root and `modprobe msr`. |
-
-### Orchestration & build scripts (Bash)
-
-| Script | Purpose |
+| File | What it does |
 |---|---|
-| **`bootstrap_ubuntu.sh`** | **Fresh-box provisioning (Ubuntu 24.04).** Installs the build toolchain (`build-essential`, `git`), adds the PostgreSQL PGDG apt repo, and installs the requested majors (default 14/16/18) — each `apt` install auto-creates and starts a `main` cluster. Idempotent. Both build scripts call it automatically on a fresh box. |
-| **`build_all.sh`** | Build the whole data matrix: every scale factor on every installed cluster. Generates dbgen data once per SF, loads each cluster. Skips existing DBs (resumable). On a fresh box it runs `bootstrap_ubuntu.sh` first (skip with `SKIP_BOOTSTRAP=1`). |
-| **`build_tpch.sh`** | Generate TPC-H data at a scale factor and load it into a fresh `<db>` on one version's cluster. Auto-installs `git`+`build-essential` if missing (for dbgen) and provisions the target version's cluster via `bootstrap_ubuntu.sh` if it doesn't exist (`SKIP_BOOTSTRAP=1` to error instead). |
-| **`build_tpch_indexed.sh`** | Build indexed clones `<db>_idx` (template-clone of `<db>` + the `ixtest_` index suite from `schema/index_schema_tpch.sql`, then `ANALYZE`). Base DBs stay index-light. |
-| **`build_estat.sh` / `build_warehouse.sh`** | Load the real-world Eurostat (`estat`) and retail/warehouse (`warehouse`) datasets from `Data/` into fresh DBs. |
-| **`run_matrix.sh`** | Unattended sweep of the warm benchmark across versions × DB sizes; each combo is one `make run`. Resumable (`matrix_logs/completed.tsv`). `make matrix` / `make matrix-plan`. |
-| **`set_test_parameters.sh`** | **Apply** the fixed testing GUCs (`shared_buffers=4GB`, `work_mem=64MB`, `effective_cache_size=12GB`, `effective_io_concurrency=64`, `max_parallel_workers_per_gather=4`, `io_combine_limit`+`io_max_combine_limit=1MB` on PG18) via `ALTER SYSTEM` + restart. `make set-parameters`. |
-| **`reset_all_parameters.sh`** | **Undo** — strip GUC overrides out of `postgresql.auto.conf` and restart. Resets the core four; pass `EXTRA_PARAMS="..."` for any others. Works even when the server is down (edits the file directly). Every sweep's cleanup calls this. |
-| **`run_warm_stepup.sh`** | Warm benchmark with a **per-query cold start**: runs every query `REPEATS` times in one saved **random order**; per entry it (1) drops cache + restarts, (2) does `WARMUP` runs, (3) measures a batch **step-up** `N=1,2,4,8,16`. Uses `query_runner`'s step-up + single-file modes. `make warm-stepup`. |
-| **`work_mem_plans.sh`** | Sweeps `work_mem` and saves the resulting **plans** (not timings) into their own folders under `plans/work_mem/`. `make plans-work-mem`. |
-| **`archive_partial.sh`** | Surgically move a query's / a run's rows out of the live CSVs into `archive/partial/` (reversible), e.g. to pull a bad measurement without re-running. Searches `logs/` recursively and mirrors sub-folder layout. `make partial-archive`. |
-| **`post_to_sigless.sh`** | Post a start/stop marker to an external "sigless" power meter over HTTP (optional; enabled via `SIGLESS_ADDR`). |
+| **`query_runner.c`** | The **warm** runner. Per query: optional thermal equalisation, `WARMUP` single-copy warm-ups, then `RUNS` measured batches at each size in `BATCH_SIZES`. Times each batch, reads RAPL, samples package/core temperature, MHz and throttle counters in a background thread, parses each copy's `EXPLAIN`. Accepts a directory or a single `.sql`. Writes `query_timing_`, `query_samples_`, `query_catalog_<db>.csv`. |
+| **`cold_runner.c`** | The **cold-cache** runner: before every execution it drops the OS page cache and restarts the cluster (`pg_ctlcluster <PGVER> main restart`). Refuses to restart a cluster a live runner is using. Writes `query_cold_<db>.csv`. **All cold runs go through `make cold`.** |
+| **`plan_builder.c`** | Saves each query's `EXPLAIN ANALYZE` plan to `plans/<db>/…`. `APPEND=1` appends a dated snapshot section instead of replacing, and reports whether the plan **shape** changed vs the previous snapshot (consistency testing). |
+| **`output_runner.c`** | Saves each query's result rows to `outputs/<db>/…` (strips a leading `EXPLAIN`). Correctness companion to `plan_builder`. |
+| **`write_runner.c`** | The **cold write** runner for mutating SQL (`queries/write/`), only against a scratch `*_write` DB. Per execution: run the file's SETUP (above `@MEASURE`), quiesce (autovacuum off on `w_*`, `CHECKPOINT`), drop caches + restart the cluster, then time only the `@MEASURE` section (RAPL, psql `\timing`, WAL bytes). No warm-up, no batching: a write cannot be repeated warm without drifting. Writes `write_cold_<db>.csv`. |
+| **`rapl.c` / `rapl.h`** | Intel RAPL MSR reader (package / core / gpu / dram joules). |
+| **`run_warm_stepup.sh`** | **The main benchmark driver** (`make warm-stepup`). Builds and saves the random order (with per-entry `run_id`s and each group's predecessor), does the per-entry cold start, invokes `query_runner` on one file at a time, writes `summary.txt` with every parameter plus clock/RAPL-limit state. Handles `FIX_CLOCK`. |
+| **`run_matrix.sh`** | `warm-stepup` across `PGVERS × DBS`, unattended and resumable (`make matrix` / `make matrix-plan`). Each combination is one warm-stepup run folder under `logs/matrix/`. |
+| **`run_equivalent.sh`** | One overnight sequence over `queries/equivalent/tpch`: plan snapshots, cold runs, warm matrix. |
+| **`clock_control.sh`** | `apply` / `restore` / `status` / `with <cmd>`: disable turbo + performance governor, and put it back. Used by `FIX_CLOCK=1`. |
+| **`set_test_parameters.sh`** / **`reset_all_parameters.sh`** | Apply / undo the fixed testing GUCs (`make set-parameters` / `make reset-parameters`). Reset works even when the server is down. |
+| **`archive_partial.sh`** | Move a query's / a run's rows out of the live CSVs into `archive/partial/` (reversible). `make partial-archive`. |
+| **`post_to_sigless.sh`** | Start/stop markers to an external power meter (optional, `SIGLESS_ADDR`). |
+| **`thermal_runner_brief.md`** | The analysis brief behind the thermal columns and protocol knobs. |
 
-### The parameter-sweep scripts (`test_*.sh`)
+### `test/` — parameter sweeps and consistency checks
 
-Each sweeps **one** server parameter while pinning the others to the standard
-testing values (`shared_buffers=4GB`, `effective_cache_size=12GB`,
-`work_mem=64MB`, `max_parallel_workers_per_gather=4`), writing each value's
-results to its own `logs/<param>/<tag>/` sub-folder. See
-[Parameter sweeps](#parameter-sweeps).
+`test_<param>.sh` sweeps **one** GUC (values listed in the script) with the
+other testing knobs pinned (`SHARED_BUFFERS`, `EFFECTIVE_CACHE_SIZE`, `WORK_MEM`,
+`MAX_PARALLEL_WORKERS_PER_GATHER`), running `make run` (warm) or `make cold`
+at each value into `logs/<param>/<tag>/`, and resets everything on exit.
+Invoke as `make test-<param>` (dashes for underscores):
+`test-shared-buffer`, `test-work-mem`, `test-effective-cache-size`,
+`test-max-parallel-workers-per-gather`, `test-hash-mem-multiplier`,
+`test-parallel-leader-participation`, `test-effective-io-concurrency` (cold),
+`test-io-combine-limit` (cold, PG18+), `test-io-method` (cold, PG18+).
 
-`test_shared_buffer.sh`, `test_work_mem.sh`, `test_effective_cache_size.sh`,
-`test_max_parallel_workers_per_gather.sh`, `test_hash_mem_multiplier.sh`,
-`test_parallel_leader_participation.sh`, `test_effective_io_concurrency.sh`
-(cold), `test_io_combine_limit.sh` (cold, PG18+), `test_io_method.sh`
-(cold, PG18+).
+| File | Purpose |
+|---|---|
+| **`work_mem_plans.sh`** | Plans (not timings) at each `work_mem` value → `plans/work_mem/wm_<size>/<db>/`. `make plans-work-mem`. |
+| **`plan_snapshots.sh`** | `make plans APPEND=1` `REPEATS` times per `PGVERS × DBS`, then a drift summary of every query whose plan shape changed. `make plan-snapshots`. |
+| **`planner_consistency.sh`** / **`run_planner_matrix.sh`** | Standalone cold/warm planner-drift runs with plan hashes and RAPL deltas, and their version × DB sweep. `make planner-consistency`. |
 
-### Directories
+### `build/` — provisioning, data, queries
+
+| File | Purpose |
+|---|---|
+| **`bootstrap_ubuntu.sh`** | Fresh Ubuntu 24.04: toolchain + PGDG repo + the requested majors, each as a `main` cluster. |
+| **`build_all.sh`** | The whole data matrix: every scale factor on every cluster, plus the `_idx` clones. Resumable. |
+| **`build_tpch.sh`** / **`build_tpch_indexed.sh`** | One TPC-H DB at a scale factor / its indexed clone (`ixtest_` suite). `SKEW=<z>` builds it from Microsoft Research's Zipfian generator (fetched into `tpch-dbgen-skew/`), e.g. `SKEW=0` + `SKEW=2` for a comparable uniform/skewed pair. |
+| **`build_estat.sh`** / **`build_warehouse.sh`** | Load the Eurostat and warehouse datasets from `Data/`. |
+| **`fetch_sqlstorm_queries.sh`** | Download the SQLStorm TPC-H suite (~17k files) into `queries/tpch/SQLStorm/`, adding the `EXPLAIN` wrapper. `make fetch-sqlstorm`. |
+| **`generate_tpch_query_set.py`** | Regenerate `queries/tpch/tpch-queries/` (the 53 variants; slow ones to `queries/slow/`). |
+| **`generate_tpch_core_queries.py`** / **`generate_tpch_function_queries.py`** | Regenerate `queries/tpch/Core/` and `queries/tpch/Functions/`. |
+| **`generate_tpch_write_queries.py`** | Regenerate `queries/write/tpch/`. |
+
+### `queries/` — all SQL
 
 | Path | Contents |
 |---|---|
-| **`queries/`** | The read workload (`.sql`). `queries/tpch/tpch-queries/` holds the TPC-H query folders (`q01`–`q22`, with `q20` absent — 21 folders) each with variants (`base.sql`, `v1_materialized.sql`, …) — 53 `.sql` files in total, the default step-up target. Also `queries/tpch/Core`, `queries/tpch/Functions`, `queries/estat`, `queries/warehouse`. Queries are written as `EXPLAIN (ANALYZE, …) SELECT …` so the runner can parse server-side figures. |
-| **`write_queries/`** | Mutating SQL for `write_runner` (insert/update/delete/copy/ddl/merge/…), each with a `@MEASURE` split. |
-| **`slow_queries/`** | A set of deliberately slow queries kept aside from the main corpus. |
-| **`schema/`** | DDL: `tpch_schema.sql`, `index_schema_tpch.sql` (the `ixtest_` suite), `estat_schema.sql`, `warehouse_schema.sql`. |
-| **`Data/`** | Raw real-world data + Python normalizers for `estat`/`warehouse`. |
-| **`logs/`** | **All benchmark results (CSV).** Top-level files are the plain `make run`/`make cold` output; sub-folders (`shared_buffers/`, `work_mem/`, `effective_cache_size/`, `max_parallel_workers/`, `hash_mem_multiplier/`, `parallel_leader_participation/`, `effective_io_concurrency/`, `io_combine_limit/`, `io_method/`, `warm_stepup/`) hold the sweep results. |
-| **`plans/`** | `EXPLAIN` plans from `plan_builder` (`plans/<db>/…`), plus `plans/work_mem/` from the work_mem plan sweep. |
-| **`outputs/`** | Query result rows from `output_runner` (`outputs/<db>/…`). |
-| **`matrix_logs/`** | Console logs + `completed.tsv` from `run_matrix.sh` (git-ignored). |
-| **`archive/`** | Snapshots of earlier result sets and `archive/partial/` (rows pulled by `archive_partial.sh`). Git-ignored. |
-| **`tpch-dbgen/`** | **External tool** (upstream TPC-H `dbgen`) used only to generate TPC-H `.tbl` data; fetched on demand by `build_tpch.sh`. Not part of this project's source; ignore it. |
-| **`old/`** | Prior project kept locally for reference; **ignore.** |
-| **`DATATYPES_DB_PLAN.md`** | Design note for a datatypes-focused test DB. |
+| `queries/tpch/tpch-queries/` | The TPC-H set: `q01`–`q22` folders (`q20` absent) with variants (`base.sql`, `v1_materialized.sql`, …) — 53 files, the default `DIR`. |
+| `queries/tpch/SQLStorm/` | The SQLStorm suite (17k files), fetched on demand, git-ignored. |
+| `queries/tpch/Core/`, `queries/tpch/Functions/` | Generated operator / function micro-benchmarks. |
+| `queries/estat/`, `queries/warehouse/` | The real-world datasets' queries. |
+| `queries/equivalent/tpch/`, `queries/equivalent/estat/` | Sets of queries that return the **same result** written different ways (plan-consistency / equivalence tests). |
+| `queries/slow/tpch/` | Deliberately slow queries kept out of the default sets. |
+| `queries/write/tpch/` | Mutating SQL for `write_runner` (`@MEASURE` split). Never point `make run` at it. |
 
 ---
 
 ## The Makefile (command reference)
 
-`make` with no target builds the binaries. Common targets:
+`make` builds the runners; `make help` lists everything with current values.
 
 | Target | What it does |
 |---|---|
-| `make all` | Compile all runner binaries. |
-| `make run` | Warm read benchmark (`query_runner`). Key vars: `PGVER`, `DB_NAME`, `DIR`, `RUNS`, `WARMUP`, `BATCHNUM`, `BATCH_SIZES`, `WORKERS`, `STATEMENT_TIMEOUT`, `LOGS_DIR`. |
-| `make cold` | Cold-cache benchmark (`cold_runner`; drops cache + restarts per query). |
-| `make plans` / `make outputs` | Save plans / result rows. |
-| `make write` / `make write-db` | Write benchmark / (re)clone the `tpch_write` scratch DB. |
-| `make matrix` / `make matrix-plan` | Unattended version × size sweep / print its plan. |
-| `make index-build` / `index-verify` / `index-drop-db` | Manage the `_idx` indexed clones. |
-| `make partial-archive` | Move selected rows into `archive/partial/` (needs `QUERY=` or `RUNID=`). |
-| `make pg-info` / `make check-pg` | Show clusters / verify `PGVER` resolves to a port. |
-| **Parameter sweeps** | `test-shared-buffer`, `test-work-mem`, `test-effective-cache-size`, `test-max-parallel-workers`, `test-hash-mem-multiplier`, `test-parallel-leader-participation`, `test-effective-io-concurrency`, `test-io-combine-limit`, `test-io-method`, `plans-work-mem`. |
-| **This sweep** | `make set-parameters` then `make warm-stepup` (see below). |
+| `make warm-stepup` | **The main benchmark.** `logs/warm_stepup/<RUNID>/`. Knobs: `DB_NAME DIR REPEATS WARMUP BATCH_SIZES RUNS STATEMENT_TIMEOUT RUNID ORDER_FILE THERMAL_EQUALISE FIX_CLOCK BATCH_CAP_SLOW`. |
+| `make cold` | Cold-cache runs (`RUNS` per query). `logs/query_cold_<db>.csv`. |
+| `make run` | One plain warm pass (`WARMUP`, `BATCH_SIZES`, `RUNS`); no restarts. |
+| `make matrix` / `matrix-plan` | `warm-stepup` over `PGVERS × DBS` (resumable) / schedule + ETA only. |
+| `make set-parameters` / `reset-parameters` | Apply / undo the fixed testing GUCs on `SET_VERS` (default `PGVER`). |
+| `make test-<param>` | One-GUC sweep (see `test/`). `DRYRUN=1` prints the plan. |
+| `make plans` / `outputs` | Save plans / result rows. `APPEND=1` for plan snapshots. |
+| `make plan-snapshots` / `planner-consistency` | Plan-consistency checks. |
+| `make write` / `write-db` | Cold write benchmark (restart before every execution) / rebuild its scratch DB. |
+| `make index-build` / `index-verify` / `index-drop-db` | The `<db>_idx` clones. |
+| `make partial-archive` | Pull rows out of the live CSVs (`QUERY=` / `RUNID=`). |
+| `make fetch-sqlstorm` | Download the SQLStorm suite. |
+| `make pg-info` / `check-pg` | Clusters / verify `PGVER` resolves to a port. |
 
-Most targets accept `DRYRUN=1` to print the plan and change nothing, `PGVERS="14 16 18"` to pick versions, and `DIR=…` to scope the query set.
+Shared knobs (defaults): `PGVER=18 DB_NAME=tpch DIR=queries/tpch/tpch-queries
+LOGS_DIR=logs WARMUP=2 BATCH_SIZES="1 16" RUNS=1 REPEATS=1 WORKERS=
+STATEMENT_TIMEOUT=900 PGVERS="15 16 17 18" DBS="tpch tpch_idx" DRYRUN=`.
+Thermal (off by default): `THERMAL_EQUALISE=0|1|burn T_LO=55 T_HI=60
+PREHEAT_MAX_S=60 COOLDOWN_MAX_S=120 PREHEAT_S=30 FIX_CLOCK=0
+BATCH_CAP_SLOW= SLOW_COPY_SEC=1`.
 
 ---
 
 ## Output CSVs
 
-Written under `LOGS_DIR` (default `logs/`), one set per database
-(`…_<db>.csv`). Every row carries `run_id` (one per runner invocation) and
-`pg_version`.
+Written under `LOGS_DIR` (default `logs/`; warm-stepup uses its own run folder),
+one set per database (`…_<db>.csv`). Every row carries `run_id` and
+`pg_version`. A runner **refuses to append** to a file whose header differs
+from what it writes.
 
-- **`query_timing_<db>.csv`** — one row per **batch**. Columns:
+- **`query_timing_<db>.csv`** — one row per **batch**:
   `timestamp_utc, run_id, pg_version, query, phase, batch_index, batchnum, runs,
   warmup, elapsed_sec, avg_copy_elapsed_sec, server_sum_ms, client_overhead_sec,
   client_user_cpu_sec, client_sys_cpu_sec, client_max_rss_kb, failed,
-  rapl_pkg_j, rapl_core_j, rapl_gpu_j, rapl_dram_j`.
-  `phase` is `warmup`/`measured`; `batchnum` is the batch size N (1, 2, 4, …).
-- **`query_samples_<db>.csv`** — one row per **copy** within a batch (per-copy
-  server-side plan figures). Join to the batch row on `run_id + query + phase +
-  batch_index`.
-- **`query_slope_<db>.csv`** — one row per **query** (only in slope mode,
-  `BATCHNUM>1`): fitted slope + intercept for wall time and pkg/core energy.
-- **`query_catalog_<db>.csv`** — relation sizes, snapshotted once per sweep.
+  rapl_pkg_j, rapl_core_j, rapl_gpu_j, rapl_dram_j,`
+  `pkg_temp_start_c, pkg_temp_end_c, pkg_temp_mean_c, pkg_temp_max_c,
+  core_temp_max_c, mhz_mean, throttle_core_delta, throttle_pkg_delta,
+  idle_before_s, preheat_s, cooldown_wait_s, pkg_watts_mean`.
+  `phase` is `warmup`/`measured`; `batchnum` is the batch size N;
+  `timestamp_utc` is taken at batch **end**. The thermal block: package
+  temperature at start (the key state variable) and end, its mean/max sampled
+  every 200 ms during the batch, the hottest core, mean `scaling_cur_freq` over
+  all CPUs and samples, throttle-counter deltas (non-zero = hard throttling),
+  wall time since the previous batch ended, the seconds the equalisation step
+  took before this query's first batch (0 when off), and `rapl_pkg_j /
+  elapsed_sec`.
+- **`query_samples_<db>.csv`** — one row per **copy** within a batch: planning /
+  execution ms, plan shape (`plan_nodes, scan_nodes, rows_out, rows_processed,
+  rows_estimated, bytes_processed, rows_removed_filter, workers_launched,
+  relations`), buffers, `failed`, then `pkg_temp_start_c, mhz_mean` repeated
+  from the batch. Join to the batch row on `run_id + query + phase +
+  batch_index`. Populated only for queries written as `EXPLAIN (ANALYZE, …)`.
+- **`query_catalog_<db>.csv`** — relation sizes, once per runner invocation
+  (once per warm-stepup run).
 - **`query_cold_<db>.csv`** — cold-runner rows (`make cold`).
+- **`write_cold_<db>.csv`** — `make write` (one row per cold execution: `setup_sec`, `elapsed_sec`, `stmt_ms`, `wal_bytes`, `failed_stage`, RAPL).
+
+---
+
+## The warm step-up run in detail
+
+```bash
+make set-parameters                       # shared_buffers=4GB, work_mem=64MB, effective_cache_size=12GB,
+                                          # effective_io_concurrency=64, max_parallel_workers_per_gather=4,
+                                          # io_combine_limit=1MB (+io_max_combine_limit) on PG18
+make warm-stepup DB_NAME=tpch_idx REPEATS=3
+make warm-stepup DRYRUN=1                 # just generate + save the order
+make warm-stepup ORDER_FILE=logs/warm_stepup/<RUNID>/run_order_<RUNID>.txt   # replay
+make reset-parameters
+```
+
+For each of the `queries × REPEATS` entries, in the saved random order:
+1. drop the OS page cache and restart the cluster (clean cold start);
+2. *(only if `THERMAL_EQUALISE` is set)* equalise the die temperature —
+   pre-heat with an all-core burn below `T_LO`, wait above `T_HI`;
+3. `WARMUP` warm-up runs (the first primes the cache);
+4. `RUNS` measured batches at each `N` in `BATCH_SIZES` (default `1 16`; the
+   full curve is `1 2 4 8 16` — never above 16).
+
+Each run lives in `logs/warm_stepup/<RUNID>/`:
+- `run_order_<RUNID>.txt` — the order, plus `# order: <n> <run_id> prev=<run_id>`
+  lines giving every group's `run_id` and its predecessor's;
+- `query_timing_<db>.csv`, `query_samples_<db>.csv`, `query_catalog_<db>.csv`;
+- `console.log` — the per-entry runner output;
+- `summary.txt` — total runtime, tallies, every parameter, the thermal policy,
+  and the clock state (`no_turbo`, governor, min/max freq), RAPL PL1/PL2 limits
+  and a `dmesg` throttle-message count.
+
+`FIX_CLOCK=1` disables turbo and sets the performance governor for the whole
+run and restores the previous values at the end (also on Ctrl-C).
+`BATCH_CAP_SLOW=8` (for the 17k-query suite) skips batch sizes above 8 for any
+query whose warm 1-copy run takes longer than `SLOW_COPY_SEC`.
 
 ---
 
 ## Parameter sweeps
 
-Each `test_*.sh` isolates one server GUC: it pins the standard four testing knobs
-(`shared_buffers=4GB`, `effective_cache_size=12GB`, `work_mem=64MB`,
-`max_parallel_workers_per_gather=4`), then steps the target GUC through a list of
-values, running the benchmark at each and writing to its own log sub-folder.
-
-- **Warm sweeps** (`make run`): shared_buffers, work_mem, effective_cache_size,
-  max_parallel_workers_per_gather, hash_mem_multiplier,
-  parallel_leader_participation.
-- **Cold sweeps** (`make cold`): effective_io_concurrency, io_combine_limit
-  (PG18+), io_method (PG18+, sweeps `worker`/`io_uring`/`sync`).
-
-Mechanics: the fixed GUCs are applied once (`ALTER SYSTEM`) with one restart
-(`shared_buffers` needs it); the swept GUC then only reloads between values.
-On exit each sweep calls **`reset_all_parameters.sh`** to restore defaults —
-version-specific extras are passed via `EXTRA_PARAMS`. If a sweep is interrupted
-and leaves non-default settings, run it by hand:
+Each `test/test_<param>.sh` isolates one server GUC: it pins the standard four
+testing knobs, then steps the target GUC through its values, running the
+benchmark at each into `logs/<param>/<tag>/`. Warm sweeps use `make run`
+(`WARMUP`, `BATCH_SIZES`, `RUNS`); cold sweeps use `make cold` (`RUNS`).
+On exit each sweep calls `run/reset_all_parameters.sh`. If one is interrupted:
 
 ```bash
-sudo bash reset_all_parameters.sh            # all clusters, core four
-EXTRA_PARAMS="io_method io_workers" sudo bash reset_all_parameters.sh 18
+make reset-parameters                                   # PGVER (default 18)
+sudo bash run/reset_all_parameters.sh                   # every cluster
+EXTRA_PARAMS="io_method io_workers" sudo bash run/reset_all_parameters.sh 18
 ```
 
 ---
 
-## The full testing sweep (`set-parameters` + `warm-stepup`)
-
-The current end-to-end run:
+## Plan consistency
 
 ```bash
-# 1. Apply the fixed testing parameters (PG18 by default)
-make set-parameters
-#    shared_buffers=4GB, work_mem=64MB, effective_cache_size=12GB,
-#    effective_io_concurrency=64, max_parallel_workers_per_gather=4,
-#    io_combine_limit=1MB (+ io_max_combine_limit=1MB)
-
-# 2. Run the warm step-up benchmark
-make warm-stepup                  # DB=tpch by default
-make warm-stepup WSU_DB=tpch_idx  # the indexed database
-make warm-stepup DRYRUN=1         # just generate + save the random order
-
-# 3. Restore defaults when done
-EXTRA_PARAMS="effective_io_concurrency io_combine_limit io_max_combine_limit" \
-    sudo bash reset_all_parameters.sh 18
+make plans APPEND=1 DIR=queries/equivalent/tpch DB_NAME=tpch     # run repeatedly
+make plan-snapshots PGVERS="16 18" DBS="tpch tpch_idx" REPEATS=10
 ```
 
-`warm-stepup` (script: `run_warm_stepup.sh`) runs every query in `WSU_DIR`
-(default `queries/tpch/tpch-queries`, 53 files) `WSU_REPEATS` times (default 3)
-in **one saved random order**. For each of the `queries × repeats` entries it:
-
-1. drops the OS page cache and restarts the cluster (clean cold start),
-2. does `WARMUP` (default 2) warm-up runs,
-3. measures a **batch step-up** `BATCH_SIZES="1 2 4 8 16"` — N copies of the
-   query in one `psql` process — warm.
-
-**Each run is isolated by a `RUNID`** (UTC timestamp + random, overridable via
-`WSU_RUNID`): everything lands in its own folder `logs/warm_stepup/<RUNID>/`, so a
-new run never overwrites an earlier one. That folder holds:
-
-- `run_order_<RUNID>.txt` — the exact random order used (with `run_id` in the header),
-- `query_timing_<db>.csv`, `query_samples_<db>.csv`, `query_catalog_<db>.csv` — this run's results,
-- `console.log` — the per-entry `make run` output,
-- `summary.txt` — tallies and the **total runtime** of the run (also echoed at the end).
-
-The `query` and `batchnum` columns tie every measurement back to its place in the
-order. Re-run a saved order (into a fresh `RUNID` folder) with
-`make warm-stepup ORDER_FILE=logs/warm_stepup/<RUNID>/run_order_<RUNID>.txt`.
+With `APPEND=1`, `plan_builder` appends a section
+`-- ==== plan_builder snapshot N <utc> pg=<ver> db=<db> query=<q> ====` plus the
+plan to each `plans/<db>/<query>.txt`, and compares the new plan's *shape* (node
+tree, scan/join methods, relations — cost/row/timing numbers stripped) with the
+previous snapshot, printing `same shape` or `SHAPE CHANGED`. `plan-snapshots`
+repeats that and summarises every query that drifted.
 
 ---
 
@@ -332,31 +393,28 @@ order. Re-run a saved order (into a fresh `RUNID` folder) with
 
 | I want to… | Look at |
 |---|---|
-| Run/understand the warm benchmark | `query_runner.c`, `make run` in `Makefile` |
-| Run/understand the cold benchmark | `cold_runner.c`, `make cold` |
-| Understand a result CSV's columns | [Output CSVs](#output-csvs); `HDR_*` in `query_runner.c` |
-| See how a sweep pins/steps a GUC | any `test_*.sh` (they share one template) |
-| Set / reset the testing GUCs | `set_test_parameters.sh` / `reset_all_parameters.sh` |
-| The current full sweep | `run_warm_stepup.sh`, `make set-parameters` + `make warm-stepup` |
-| Build or load data | `build_all.sh`, `build_tpch.sh`, `build_tpch_indexed.sh` |
-| The query workload | `queries/` (TPC-H in `queries/tpch/tpch-queries`) |
-| Schema / indexes | `schema/` |
-| All the commands | `Makefile` (targets listed above) |
-| Pull a bad measurement | `archive_partial.sh`, `make partial-archive` |
+| Run the main benchmark | `make warm-stepup`; `run/run_warm_stepup.sh`; `run/query_runner.c` |
+| Run cold measurements | `make cold`; `run/cold_runner.c` |
+| Understand a CSV column | [Output CSVs](#output-csvs); `HDR_*` in `run/query_runner.c` |
+| The thermal columns / protocol | `run/thermal_runner_brief.md`; `THERMAL_EQUALISE`, `FIX_CLOCK` in the Makefile |
+| Sweep one GUC | `test/test_<param>.sh`, `make test-<param>` |
+| Check the planner is stable | `make plans APPEND=1`, `make plan-snapshots` |
+| Set / reset the testing GUCs | `make set-parameters` / `make reset-parameters` |
+| Build or load data | `build/build_all.sh`, `build/build_tpch.sh`, `build/build_tpch_indexed.sh` |
+| Regenerate or fetch queries | `build/generate_*.py`, `make fetch-sqlstorm` |
+| All the commands | `make help` |
+| Pull a bad measurement | `make partial-archive`, `run/archive_partial.sh` |
 
 ---
 
 ## Requirements
 
-- **Ubuntu 24.04** (or Debian/Ubuntu with `apt`). On a fresh box,
-  **`bootstrap_ubuntu.sh` installs everything below** (the build scripts call it
-  automatically) — so the only manual prerequisite is `sudo`/root.
-- PostgreSQL clusters managed via `pg_ctlcluster` / `pg_lsclusters` (Debian/Ubuntu
-  packaging), one `main` cluster per major version — installed from the PGDG apt
-  repo (bootstrap sets that up; Ubuntu's own repos carry only one major).
-- `gcc`, `make`, `git`, and TPC-H `dbgen` (dbgen is fetched by `build_tpch.sh`
-  into `tpch-dbgen/`; the toolchain is installed by bootstrap / build_tpch).
-- Root access (RAPL MSRs, cache drop, cluster restarts, `apt`). The Makefile
-  primes `sudo` (`SUDO_PASSWORD`, default `a`).
-- Linux with Intel RAPL and the **`msr`** kernel module for the energy runner
-  (`sudo modprobe msr`; the Makefile does this). Not needed just to load data.
+- **Ubuntu 24.04** (or Debian/Ubuntu with `apt`); `build/bootstrap_ubuntu.sh`
+  installs everything below on a fresh box.
+- PostgreSQL clusters managed via `pg_ctlcluster` / `pg_lsclusters`, one `main`
+  cluster per major version, from the PGDG apt repo.
+- `gcc`, `make`, `git`, TPC-H `dbgen` (fetched into `tpch-dbgen/` on demand).
+- Root access (RAPL MSRs, cache drop, cluster restarts, `apt`).
+- Linux with Intel RAPL and the `msr` module for the energy columns; the
+  thermal columns read `coretemp` / `cpufreq` / `thermal_throttle` from sysfs
+  and are simply left empty where a sensor is missing.
