@@ -1,0 +1,1997 @@
+===== detach.sh start 2026-09-21T23:02:07Z  pid 1499584
+===== command: bash test/run_slope_sample.sh
+===== suspend inhibited: yes
+== reference tier 23:02:07Z
+==> replaying saved order: logs/slope_sample/order_reference.txt
+==> run_id=reference_20260921T230207Z  order (280 entries) -> logs/slope_sample/warm_stepup/reference_20260921T230207Z/run_order_reference_20260921T230207Z.txt
+warm step-up: PG18  DB=tpch_idx  DIR=queries/tpch/sqlstorm_slope/reference  BATCH_SIZES='1 2 4 8 16'  WARMUP=2  RUNS=1  REPEATS=1
+  thermal: gate T_LO=55 T_HI=60 PREHEAT_MAX_S=60 COOLDOWN_MAX_S=120   fix_clock: 1 (ceiling 2500000)   batch cap: none
+  logs -> logs/slope_sample/warm_stepup/reference_20260921T230207Z/  (280 entries)
+clock_control: no_turbo=0 (ceiling 2500000 kHz is a turbo bin)
+clock_control: governor=performance (was powersave)
+clock_control: max_freq=2500000 kHz on 8 CPUs
+[1/280] queries/tpch/sqlstorm_slope/reference/15338.sql  (run_id D70138D9EC25F09B)
+  ok
+[2/280] queries/tpch/sqlstorm_slope/reference/29659.sql  (run_id 9FAF0E024838AF87)
+  ok
+[3/280] queries/tpch/sqlstorm_slope/reference/26387.sql  (run_id 6FFE52CBA65F4D0A)
+  ok
+[4/280] queries/tpch/sqlstorm_slope/reference/11767.sql  (run_id D10145EB16B1E8D3)
+  ok
+[5/280] queries/tpch/sqlstorm_slope/reference/5820.sql  (run_id 26C0805987C3677E)
+  ok
+[6/280] queries/tpch/sqlstorm_slope/reference/8033.sql  (run_id 958592B2EA923B6B)
+  ok
+[7/280] queries/tpch/sqlstorm_slope/reference/15598.sql  (run_id 1E6D3CD8D33A5166)
+  ok
+[8/280] queries/tpch/sqlstorm_slope/reference/5820.sql  (run_id 66A2D59198A88C71)
+  ok
+[9/280] queries/tpch/sqlstorm_slope/reference/10945.sql  (run_id 57B6E98200D2AE13)
+  ok
+[10/280] queries/tpch/sqlstorm_slope/reference/8865.sql  (run_id 83DBBEB9E0C79EC6)
+  ok
+[11/280] queries/tpch/sqlstorm_slope/reference/8033.sql  (run_id D9FC27CA6E299CA9)
+  ok
+[12/280] queries/tpch/sqlstorm_slope/reference/26382.sql  (run_id 353D63A23AB433F2)
+  ok
+[13/280] queries/tpch/sqlstorm_slope/reference/1022.sql  (run_id 594B9D713A8B8A80)
+  ok
+[14/280] queries/tpch/sqlstorm_slope/reference/5116.sql  (run_id E32F6B85622EE968)
+  ok
+[15/280] queries/tpch/sqlstorm_slope/reference/26382.sql  (run_id 6CCE35E8CAEA3E89)
+  ok
+[16/280] queries/tpch/sqlstorm_slope/reference/14523.sql  (run_id 73EC8B467B9F2A45)
+  ok
+[17/280] queries/tpch/sqlstorm_slope/reference/6127.sql  (run_id EF2DB0DAF4933070)
+  ok
+[18/280] queries/tpch/sqlstorm_slope/reference/9307.sql  (run_id 63EA4154E073FC00)
+  ok
+[19/280] queries/tpch/sqlstorm_slope/reference/15338.sql  (run_id 91D70FF24F51E843)
+  ok
+[20/280] queries/tpch/sqlstorm_slope/reference/14616.sql  (run_id D989C632EA2E0AFB)
+  ok
+[21/280] queries/tpch/sqlstorm_slope/reference/11767.sql  (run_id 526658A735F74629)
+  ok
+[22/280] queries/tpch/sqlstorm_slope/reference/2950.sql  (run_id 34106CA6FF6733FF)
+  ok
+[23/280] queries/tpch/sqlstorm_slope/reference/26387.sql  (run_id 7C899240AE7FB9ED)
+  ok
+[24/280] queries/tpch/sqlstorm_slope/reference/5561.sql  (run_id F45B8588883CD30A)
+  ok
+[25/280] queries/tpch/sqlstorm_slope/reference/32103.sql  (run_id D377075960B7F6A7)
+  ok
+[26/280] queries/tpch/sqlstorm_slope/reference/32103.sql  (run_id CCA96BADE10096E3)
+  ok
+[27/280] queries/tpch/sqlstorm_slope/reference/29659.sql  (run_id 71DC8DC080DAB8D3)
+  ok
+[28/280] queries/tpch/sqlstorm_slope/reference/7925.sql  (run_id 457E3323A0D9C528)
+  ok
+[29/280] queries/tpch/sqlstorm_slope/reference/26382.sql  (run_id E4944EA9D87BB332)
+  ok
+[30/280] queries/tpch/sqlstorm_slope/reference/10538.sql  (run_id F5CE91BE38505AE8)
+  ok
+[31/280] queries/tpch/sqlstorm_slope/reference/5820.sql  (run_id DA5A045CA23F3650)
+  ok
+[32/280] queries/tpch/sqlstorm_slope/reference/10945.sql  (run_id 1FE6283F6E374F2E)
+  ok
+[33/280] queries/tpch/sqlstorm_slope/reference/17087.sql  (run_id CABECF8880AB65F1)
+  ok
+[34/280] queries/tpch/sqlstorm_slope/reference/28614.sql  (run_id FF9BF0C48490387C)
+  ok
+[35/280] queries/tpch/sqlstorm_slope/reference/5554.sql  (run_id 20C6A04225D5EF99)
+  ok
+[36/280] queries/tpch/sqlstorm_slope/reference/28614.sql  (run_id 461A0ADB47B24777)
+  ok
+[37/280] queries/tpch/sqlstorm_slope/reference/3396.sql  (run_id D38BD05C680A5DDF)
+  ok
+[38/280] queries/tpch/sqlstorm_slope/reference/3396.sql  (run_id 5EE2FA5D4127E253)
+  ok
+[39/280] queries/tpch/sqlstorm_slope/reference/3396.sql  (run_id A5D1EFA75A53F163)
+  ok
+[40/280] queries/tpch/sqlstorm_slope/reference/11750.sql  (run_id 2F30613B20923806)
+  ok
+[41/280] queries/tpch/sqlstorm_slope/reference/5554.sql  (run_id FE795DD0E6A3281D)
+  ok
+[42/280] queries/tpch/sqlstorm_slope/reference/14616.sql  (run_id 8DE8862DE893B660)
+  ok
+[43/280] queries/tpch/sqlstorm_slope/reference/9307.sql  (run_id F978FF2ABCB29D55)
+  ok
+[44/280] queries/tpch/sqlstorm_slope/reference/17087.sql  (run_id 4656353F76336C39)
+  ok
+[45/280] queries/tpch/sqlstorm_slope/reference/10945.sql  (run_id BAB6BE4B019267E6)
+  ok
+[46/280] queries/tpch/sqlstorm_slope/reference/8865.sql  (run_id EEFE9D1617B21AC7)
+  ok
+[47/280] queries/tpch/sqlstorm_slope/reference/5554.sql  (run_id 5DF7FA8E8B3CE37F)
+  ok
+[48/280] queries/tpch/sqlstorm_slope/reference/27574.sql  (run_id B131A2284E3C0528)
+  ok
+[49/280] queries/tpch/sqlstorm_slope/reference/7925.sql  (run_id 2D4CA7E5A1BE128F)
+  ok
+[50/280] queries/tpch/sqlstorm_slope/reference/11750.sql  (run_id 27516C30041DA1F3)
+  ok
+[51/280] queries/tpch/sqlstorm_slope/reference/27574.sql  (run_id 013ED96D357556FA)
+  ok
+[52/280] queries/tpch/sqlstorm_slope/reference/1022.sql  (run_id 46CC468958784B4C)
+  ok
+[53/280] queries/tpch/sqlstorm_slope/reference/17087.sql  (run_id B5CE737738FA3BFB)
+  ok
+[54/280] queries/tpch/sqlstorm_slope/reference/8411.sql  (run_id A77021B3E936ACDF)
+  ok
+[55/280] queries/tpch/sqlstorm_slope/reference/26387.sql  (run_id BE5E41E1DEC6891F)
+  ok
+[56/280] queries/tpch/sqlstorm_slope/reference/7925.sql  (run_id 90D1D27968CA709F)
+  ok
+[57/280] queries/tpch/sqlstorm_slope/reference/10538.sql  (run_id D6D563F5DC8CE599)
+  ok
+[58/280] queries/tpch/sqlstorm_slope/reference/14616.sql  (run_id 1F28DEFC11E7CE7C)
+  ok
+[59/280] queries/tpch/sqlstorm_slope/reference/15598.sql  (run_id 72192BDC2FAE6865)
+  ok
+[60/280] queries/tpch/sqlstorm_slope/reference/5561.sql  (run_id 34EDE509C2931944)
+  ok
+[61/280] queries/tpch/sqlstorm_slope/reference/11767.sql  (run_id 25D033E1E9DA7835)
+  ok
+[62/280] queries/tpch/sqlstorm_slope/reference/14523.sql  (run_id 7D0DFC458DEB6BEE)
+  ok
+[63/280] queries/tpch/sqlstorm_slope/reference/11767.sql  (run_id 56389A59E47C808F)
+  ok
+[64/280] queries/tpch/sqlstorm_slope/reference/6127.sql  (run_id 348C30436D9551BB)
+  ok
+[65/280] queries/tpch/sqlstorm_slope/reference/5116.sql  (run_id 7E1BC014189E2FF8)
+  ok
+[66/280] queries/tpch/sqlstorm_slope/reference/17087.sql  (run_id 413A8D9E99EE8F8D)
+  ok
+[67/280] queries/tpch/sqlstorm_slope/reference/14616.sql  (run_id B8670E94A5A13958)
+  ok
+[68/280] queries/tpch/sqlstorm_slope/reference/1022.sql  (run_id 4CBB08ACB5DBB0B6)
+  ok
+[69/280] queries/tpch/sqlstorm_slope/reference/26387.sql  (run_id 9D1CC009CBF4E10F)
+  ok
+[70/280] queries/tpch/sqlstorm_slope/reference/8411.sql  (run_id CC1945B061FED2DE)
+  ok
+[71/280] queries/tpch/sqlstorm_slope/reference/8411.sql  (run_id FB5733B49BCFD732)
+  ok
+[72/280] queries/tpch/sqlstorm_slope/reference/32103.sql  (run_id E2364DF9553424C2)
+  ok
+[73/280] queries/tpch/sqlstorm_slope/reference/1022.sql  (run_id 5C5EE13740B7F2CA)
+  ok
+[74/280] queries/tpch/sqlstorm_slope/reference/5561.sql  (run_id BF8A073ED2D0A1B0)
+  ok
+[75/280] queries/tpch/sqlstorm_slope/reference/8411.sql  (run_id E15CE447E3C161D1)
+  ok
+[76/280] queries/tpch/sqlstorm_slope/reference/6127.sql  (run_id 906ABA6E9BE83E7F)
+  ok
+[77/280] queries/tpch/sqlstorm_slope/reference/5554.sql  (run_id F831471B87ED4062)
+  ok
+[78/280] queries/tpch/sqlstorm_slope/reference/9307.sql  (run_id 4A4D560E74E3E9BD)
+  ok
+[79/280] queries/tpch/sqlstorm_slope/reference/10945.sql  (run_id 960A67AB66F699FA)
+  ok
+[80/280] queries/tpch/sqlstorm_slope/reference/7925.sql  (run_id 90619691A7B05172)
+  ok
+[81/280] queries/tpch/sqlstorm_slope/reference/28614.sql  (run_id 6025E7F55C8C3B74)
+  ok
+[82/280] queries/tpch/sqlstorm_slope/reference/8033.sql  (run_id AA620F7686F6B347)
+  ok
+[83/280] queries/tpch/sqlstorm_slope/reference/7925.sql  (run_id 93BB1FC8C12E55D8)
+  ok
+[84/280] queries/tpch/sqlstorm_slope/reference/3396.sql  (run_id 638FCF5CA2F8CC17)
+  ok
+[85/280] queries/tpch/sqlstorm_slope/reference/15338.sql  (run_id 630AEE2CA83F5881)
+  ok
+[86/280] queries/tpch/sqlstorm_slope/reference/5561.sql  (run_id 7DBD63F345242F89)
+  ok
+[87/280] queries/tpch/sqlstorm_slope/reference/9307.sql  (run_id 697F2F4DA302B8D3)
+  ok
+[88/280] queries/tpch/sqlstorm_slope/reference/6127.sql  (run_id B663504DFC95BE62)
+  ok
+[89/280] queries/tpch/sqlstorm_slope/reference/9307.sql  (run_id 419CF06704395949)
+  ok
+[90/280] queries/tpch/sqlstorm_slope/reference/8865.sql  (run_id 890D5D33323F3B1C)
+  ok
+[91/280] queries/tpch/sqlstorm_slope/reference/32103.sql  (run_id 2A918514B4CF82C7)
+  ok
+[92/280] queries/tpch/sqlstorm_slope/reference/10538.sql  (run_id 04CC829F8BA75533)
+  ok
+[93/280] queries/tpch/sqlstorm_slope/reference/11767.sql  (run_id 6B6E7C0ECD19B0D5)
+  ok
+[94/280] queries/tpch/sqlstorm_slope/reference/27574.sql  (run_id 7E423542DD51AA90)
+  ok
+[95/280] queries/tpch/sqlstorm_slope/reference/6127.sql  (run_id D170C2CC1057E0E5)
+  ok
+[96/280] queries/tpch/sqlstorm_slope/reference/10538.sql  (run_id 7163835A811861DC)
+  ok
+[97/280] queries/tpch/sqlstorm_slope/reference/7925.sql  (run_id 4ABD3BF5B50C2354)
+  ok
+[98/280] queries/tpch/sqlstorm_slope/reference/29659.sql  (run_id E5AE839D41DA67AF)
+  ok
+[99/280] queries/tpch/sqlstorm_slope/reference/1022.sql  (run_id EC99CD990E3CF892)
+  ok
+[100/280] queries/tpch/sqlstorm_slope/reference/28614.sql  (run_id 62A3918299DF6834)
+  ok
+[101/280] queries/tpch/sqlstorm_slope/reference/10538.sql  (run_id 02AE15810E846DEF)
+  ok
+[102/280] queries/tpch/sqlstorm_slope/reference/26382.sql  (run_id F739F6712B547E31)
+  ok
+[103/280] queries/tpch/sqlstorm_slope/reference/8865.sql  (run_id 117A878F320993ED)
+  ok
+[104/280] queries/tpch/sqlstorm_slope/reference/28614.sql  (run_id 2A466ED2FFE4B1CE)
+  ok
+[105/280] queries/tpch/sqlstorm_slope/reference/9307.sql  (run_id CAA21010FF7EDCED)
+  ok
+[106/280] queries/tpch/sqlstorm_slope/reference/6127.sql  (run_id 534D531313F306B7)
+  ok
+[107/280] queries/tpch/sqlstorm_slope/reference/1022.sql  (run_id BEC0FDF37988E0E5)
+  ok
+[108/280] queries/tpch/sqlstorm_slope/reference/14616.sql  (run_id 774C652377EAA1A4)
+  ok
+[109/280] queries/tpch/sqlstorm_slope/reference/10945.sql  (run_id 60D0CFBFE53B1DA1)
+  ok
+[110/280] queries/tpch/sqlstorm_slope/reference/27574.sql  (run_id FA36A5C96D49A7A2)
+  ok
+[111/280] queries/tpch/sqlstorm_slope/reference/2950.sql  (run_id C62A551239C538DF)
+  ok
+[112/280] queries/tpch/sqlstorm_slope/reference/8033.sql  (run_id 02EE62F0B4782004)
+  ok
+[113/280] queries/tpch/sqlstorm_slope/reference/11767.sql  (run_id 449D262D22401ADC)
+  ok
+[114/280] queries/tpch/sqlstorm_slope/reference/28614.sql  (run_id C0A42DDD1E556896)
+  ok
+[115/280] queries/tpch/sqlstorm_slope/reference/15598.sql  (run_id 7ED582ED3064BE78)
+  ok
+[116/280] queries/tpch/sqlstorm_slope/reference/27574.sql  (run_id 6A0A30C2275AC347)
+  ok
+[117/280] queries/tpch/sqlstorm_slope/reference/27574.sql  (run_id C2D4126E5267A0A4)
+  ok
+[118/280] queries/tpch/sqlstorm_slope/reference/10538.sql  (run_id 466FF9E4CB774958)
+  ok
+[119/280] queries/tpch/sqlstorm_slope/reference/3396.sql  (run_id 2209E74BBF92D21B)
+  ok
+[120/280] queries/tpch/sqlstorm_slope/reference/15598.sql  (run_id C16253FAA8F05DFA)
+  ok
+[121/280] queries/tpch/sqlstorm_slope/reference/8411.sql  (run_id DE6A242CC3553518)
+  ok
+[122/280] queries/tpch/sqlstorm_slope/reference/11750.sql  (run_id 4607B6ACDD19423A)
+  ok
+[123/280] queries/tpch/sqlstorm_slope/reference/1022.sql  (run_id E1DDFB75D82FA554)
+  ok
+[124/280] queries/tpch/sqlstorm_slope/reference/14616.sql  (run_id 463D248E7B52B8C7)
+  ok
+[125/280] queries/tpch/sqlstorm_slope/reference/26382.sql  (run_id 76AEFF56D9B0F4B9)
+  ok
+[126/280] queries/tpch/sqlstorm_slope/reference/32103.sql  (run_id 99A42F7C24C1B9B5)
+  ok
+[127/280] queries/tpch/sqlstorm_slope/reference/5820.sql  (run_id 0A761DAF446C14D9)
+  ok
+[128/280] queries/tpch/sqlstorm_slope/reference/8033.sql  (run_id E0A5B9679FCC6E29)
+  ok
+[129/280] queries/tpch/sqlstorm_slope/reference/26382.sql  (run_id 27B7642A5C9DBF14)
+  ok
+[130/280] queries/tpch/sqlstorm_slope/reference/14523.sql  (run_id 5D72FF105A97B200)
+  ok
+[131/280] queries/tpch/sqlstorm_slope/reference/14523.sql  (run_id CA136A400E860595)
+  ok
+[132/280] queries/tpch/sqlstorm_slope/reference/1022.sql  (run_id E6022634B6E27141)
+  ok
+[133/280] queries/tpch/sqlstorm_slope/reference/29659.sql  (run_id B3192BA10E7814BD)
+  ok
+[134/280] queries/tpch/sqlstorm_slope/reference/2950.sql  (run_id 678980BF4BC93142)
+  ok
+[135/280] queries/tpch/sqlstorm_slope/reference/5554.sql  (run_id 29B69FA0F7D389E0)
+  ok
+[136/280] queries/tpch/sqlstorm_slope/reference/27574.sql  (run_id E5534C4963D94A1A)
+  ok
+[137/280] queries/tpch/sqlstorm_slope/reference/10538.sql  (run_id 450E340550C430BA)
+  ok
+[138/280] queries/tpch/sqlstorm_slope/reference/26387.sql  (run_id 2E8461D2A11C0CD7)
+  ok
+[139/280] queries/tpch/sqlstorm_slope/reference/5561.sql  (run_id 8F298C47840DDB58)
+  ok
+[140/280] queries/tpch/sqlstorm_slope/reference/17087.sql  (run_id D94D9834868FD257)
+  ok
+[141/280] queries/tpch/sqlstorm_slope/reference/27574.sql  (run_id 180D3A4F39814E6E)
+  ok
+[142/280] queries/tpch/sqlstorm_slope/reference/5820.sql  (run_id F0937B78B0D33536)
+  ok
+[143/280] queries/tpch/sqlstorm_slope/reference/14523.sql  (run_id 7EE82E56A66C70D6)
+  ok
+[144/280] queries/tpch/sqlstorm_slope/reference/10538.sql  (run_id 24B38F5E431354D9)
+  ok
+[145/280] queries/tpch/sqlstorm_slope/reference/29659.sql  (run_id B1725D84C66B9924)
+  ok
+[146/280] queries/tpch/sqlstorm_slope/reference/8865.sql  (run_id 4B36358C806D9883)
+  ok
+[147/280] queries/tpch/sqlstorm_slope/reference/15338.sql  (run_id 821682262A25161D)
+  ok
+[148/280] queries/tpch/sqlstorm_slope/reference/7925.sql  (run_id 1DD1EEF556F0DD55)
+  ok
+[149/280] queries/tpch/sqlstorm_slope/reference/28614.sql  (run_id 8EEFE33B291D02C0)
+  ok
+[150/280] queries/tpch/sqlstorm_slope/reference/8411.sql  (run_id 9C1B8B41BBC3886D)
+  ok
+[151/280] queries/tpch/sqlstorm_slope/reference/10538.sql  (run_id 7764E01703D114A3)
+  ok
+[152/280] queries/tpch/sqlstorm_slope/reference/8865.sql  (run_id 2612B2958AA449E9)
+  ok
+[153/280] queries/tpch/sqlstorm_slope/reference/14523.sql  (run_id D18172A7D8812201)
+  ok
+[154/280] queries/tpch/sqlstorm_slope/reference/26387.sql  (run_id B4EB78F6464F22F3)
+  ok
+[155/280] queries/tpch/sqlstorm_slope/reference/26387.sql  (run_id 116C0765ADF11F8B)
+  ok
+[156/280] queries/tpch/sqlstorm_slope/reference/15338.sql  (run_id 4601CCBB65F2C933)
+  ok
+[157/280] queries/tpch/sqlstorm_slope/reference/5554.sql  (run_id F502E26E5490B0A9)
+  ok
+[158/280] queries/tpch/sqlstorm_slope/reference/2950.sql  (run_id 2208CD1183B21F14)
+  ok
+[159/280] queries/tpch/sqlstorm_slope/reference/8033.sql  (run_id D0F9EDBBB8B70969)
+  ok
+[160/280] queries/tpch/sqlstorm_slope/reference/15338.sql  (run_id DBCD0BDAFD2116F5)
+  ok
+[161/280] queries/tpch/sqlstorm_slope/reference/8411.sql  (run_id 5A23792D97147080)
+  ok
+[162/280] queries/tpch/sqlstorm_slope/reference/32103.sql  (run_id 1168B07B8E9830F4)
+  ok
+[163/280] queries/tpch/sqlstorm_slope/reference/9307.sql  (run_id F86AB4B02C81BDF8)
+  ok
+[164/280] queries/tpch/sqlstorm_slope/reference/15598.sql  (run_id 595DA07A0444FCB4)
+  ok
+[165/280] queries/tpch/sqlstorm_slope/reference/32103.sql  (run_id 4A897FA3E28962AB)
+  ok
+[166/280] queries/tpch/sqlstorm_slope/reference/14616.sql  (run_id FFBFFC60A38F8300)
+  ok
+[167/280] queries/tpch/sqlstorm_slope/reference/14523.sql  (run_id C62E8A6B865BD76F)
+  ok
+[168/280] queries/tpch/sqlstorm_slope/reference/5116.sql  (run_id 836C1F7887A3D577)
+  ok
+[169/280] queries/tpch/sqlstorm_slope/reference/15598.sql  (run_id B6F3DFA7B6A421CE)
+  ok
+[170/280] queries/tpch/sqlstorm_slope/reference/5116.sql  (run_id 44BBBD0E528C255F)
+  ok
+[171/280] queries/tpch/sqlstorm_slope/reference/5554.sql  (run_id 55B416029DE0A88B)
+  ok
+[172/280] queries/tpch/sqlstorm_slope/reference/5554.sql  (run_id 378BAA3700F5A995)
+  ok
+[173/280] queries/tpch/sqlstorm_slope/reference/5561.sql  (run_id B4BA27216F704015)
+  ok
+[174/280] queries/tpch/sqlstorm_slope/reference/5561.sql  (run_id EA007A0FF8C2F29A)
+  ok
+[175/280] queries/tpch/sqlstorm_slope/reference/14616.sql  (run_id 6308FD9F251792DD)
+  ok
+[176/280] queries/tpch/sqlstorm_slope/reference/26387.sql  (run_id 123E9742738A56E9)
+  ok
+[177/280] queries/tpch/sqlstorm_slope/reference/9307.sql  (run_id B3DC679DBEF80395)
+  ok
+[178/280] queries/tpch/sqlstorm_slope/reference/17087.sql  (run_id E3C1AC74755206E3)
+  ok
+[179/280] queries/tpch/sqlstorm_slope/reference/5561.sql  (run_id AEBC89CB053D7D4E)
+  ok
+[180/280] queries/tpch/sqlstorm_slope/reference/5116.sql  (run_id 58421C31FF5DC292)
+  ok
+[181/280] queries/tpch/sqlstorm_slope/reference/11767.sql  (run_id 6E39156A39A51F3B)
+  ok
+[182/280] queries/tpch/sqlstorm_slope/reference/10945.sql  (run_id 50AAA4AE269CF784)
+  ok
+[183/280] queries/tpch/sqlstorm_slope/reference/26382.sql  (run_id CCAB2739A1267E15)
+  ok
+[184/280] queries/tpch/sqlstorm_slope/reference/9307.sql  (run_id 7F9DEFAF4C41BDC7)
+  ok
+[185/280] queries/tpch/sqlstorm_slope/reference/7925.sql  (run_id A5511F3F63C853D5)
+  ok
+[186/280] queries/tpch/sqlstorm_slope/reference/5820.sql  (run_id E592F98015D16359)
+  ok
+[187/280] queries/tpch/sqlstorm_slope/reference/5561.sql  (run_id 5EAE72808C709435)
+  ok
+[188/280] queries/tpch/sqlstorm_slope/reference/8411.sql  (run_id BEB277A2E8C74BFE)
+  ok
+[189/280] queries/tpch/sqlstorm_slope/reference/32103.sql  (run_id 07E6DD49A403FD6A)
+  ok
+[190/280] queries/tpch/sqlstorm_slope/reference/14523.sql  (run_id 8310270216A79347)
+  ok
+[191/280] queries/tpch/sqlstorm_slope/reference/17087.sql  (run_id 1393C6563F5DF082)
+  ok
+[192/280] queries/tpch/sqlstorm_slope/reference/2950.sql  (run_id 7056392502236FC3)
+  ok
+[193/280] queries/tpch/sqlstorm_slope/reference/14616.sql  (run_id 53AE4ABABE582269)
+  ok
+[194/280] queries/tpch/sqlstorm_slope/reference/15338.sql  (run_id 5B2D6B548E188B67)
+  ok
+[195/280] queries/tpch/sqlstorm_slope/reference/2950.sql  (run_id F5AB97D764BCC82B)
+  ok
+[196/280] queries/tpch/sqlstorm_slope/reference/3396.sql  (run_id A77EE7D01EA69DBC)
+  ok
+[197/280] queries/tpch/sqlstorm_slope/reference/3396.sql  (run_id EA645C35EDB53036)
+  ok
+[198/280] queries/tpch/sqlstorm_slope/reference/15598.sql  (run_id C61AADDA13CBFDD4)
+  ok
+[199/280] queries/tpch/sqlstorm_slope/reference/26382.sql  (run_id A4C53651F3A57285)
+  ok
+[200/280] queries/tpch/sqlstorm_slope/reference/5116.sql  (run_id 3F38C6E7056B5EFE)
+  ok
+[201/280] queries/tpch/sqlstorm_slope/reference/28614.sql  (run_id F53027D721CA5B29)
+  ok
+[202/280] queries/tpch/sqlstorm_slope/reference/8865.sql  (run_id 431B00DFA7122E86)
+  ok
+[203/280] queries/tpch/sqlstorm_slope/reference/1022.sql  (run_id 6BA7388B5A9F9E06)
+  ok
+[204/280] queries/tpch/sqlstorm_slope/reference/29659.sql  (run_id E2A39554C30545DA)
+  ok
+[205/280] queries/tpch/sqlstorm_slope/reference/29659.sql  (run_id F3B65678295497C5)
+  ok
+[206/280] queries/tpch/sqlstorm_slope/reference/17087.sql  (run_id B298EAD1255971D6)
+  ok
+[207/280] queries/tpch/sqlstorm_slope/reference/7925.sql  (run_id 49D63B28135C1D6E)
+  ok
+[208/280] queries/tpch/sqlstorm_slope/reference/1022.sql  (run_id B89084F0DC4F215A)
+  ok
+[209/280] queries/tpch/sqlstorm_slope/reference/11767.sql  (run_id 33DB12ACAAB7BE41)
+  ok
+[210/280] queries/tpch/sqlstorm_slope/reference/10945.sql  (run_id 115B1765A192C822)
+  ok
+[211/280] queries/tpch/sqlstorm_slope/reference/5820.sql  (run_id CA52C48B520A962B)
+  ok
+[212/280] queries/tpch/sqlstorm_slope/reference/8411.sql  (run_id 6FAC898FF61CAF68)
+  ok
+[213/280] queries/tpch/sqlstorm_slope/reference/26382.sql  (run_id 03081D0E6739CD3F)
+  ok
+[214/280] queries/tpch/sqlstorm_slope/reference/15598.sql  (run_id F21523F20D1FF4B6)
+  ok
+[215/280] queries/tpch/sqlstorm_slope/reference/17087.sql  (run_id 60A18F6F07FC0325)
+  ok
+[216/280] queries/tpch/sqlstorm_slope/reference/15338.sql  (run_id CDF622F3B48308AD)
+  ok
+[217/280] queries/tpch/sqlstorm_slope/reference/27574.sql  (run_id C4EC18638C6E790A)
+  ok
+[218/280] queries/tpch/sqlstorm_slope/reference/5820.sql  (run_id 49DD260A408B19BB)
+  ok
+[219/280] queries/tpch/sqlstorm_slope/reference/14616.sql  (run_id A2FF26B41B7ED706)
+  ok
+[220/280] queries/tpch/sqlstorm_slope/reference/14523.sql  (run_id 162CCD7E0D667287)
+  ok
+[221/280] queries/tpch/sqlstorm_slope/reference/26382.sql  (run_id 1E1C7F675A3CC911)
+  ok
+[222/280] queries/tpch/sqlstorm_slope/reference/5116.sql  (run_id A5426377EC382BC6)
+  ok
+[223/280] queries/tpch/sqlstorm_slope/reference/9307.sql  (run_id 4ADCDDB7C1F63C15)
+  ok
+[224/280] queries/tpch/sqlstorm_slope/reference/29659.sql  (run_id 552AA97A8A168F7D)
+  ok
+[225/280] queries/tpch/sqlstorm_slope/reference/26387.sql  (run_id AA7013A27B234E1D)
+  ok
+[226/280] queries/tpch/sqlstorm_slope/reference/8865.sql  (run_id FD9F588CB22B98AE)
+  ok
+[227/280] queries/tpch/sqlstorm_slope/reference/3396.sql  (run_id B127CD6B24260D05)
+  ok
+[228/280] queries/tpch/sqlstorm_slope/reference/3396.sql  (run_id 6A5A7CB3836FCC11)
+  ok
+[229/280] queries/tpch/sqlstorm_slope/reference/10945.sql  (run_id 0E4E2A1745C231F8)
+  ok
+[230/280] queries/tpch/sqlstorm_slope/reference/6127.sql  (run_id 7CB8A7036D3AF432)
+  ok
+[231/280] queries/tpch/sqlstorm_slope/reference/29659.sql  (run_id 4C7737D3838022B1)
+  ok
+[232/280] queries/tpch/sqlstorm_slope/reference/15338.sql  (run_id 83DAFE76F7757C1E)
+  ok
+[233/280] queries/tpch/sqlstorm_slope/reference/11750.sql  (run_id 7EC5B94A7C191AFD)
+  ok
+[234/280] queries/tpch/sqlstorm_slope/reference/5116.sql  (run_id B86A161EEAEABC4D)
+  ok
+[235/280] queries/tpch/sqlstorm_slope/reference/8033.sql  (run_id A8C1865B5F2A5CBD)
+  ok
+[236/280] queries/tpch/sqlstorm_slope/reference/8865.sql  (run_id E9F65CF9076AE43A)
+  ok
+[237/280] queries/tpch/sqlstorm_slope/reference/11750.sql  (run_id 4D80FF6E7F53AF0E)
+  ok
+[238/280] queries/tpch/sqlstorm_slope/reference/5561.sql  (run_id BCA8EE5A50495FC5)
+  ok
+[239/280] queries/tpch/sqlstorm_slope/reference/10538.sql  (run_id 4F92262188771ACD)
+  ok
+[240/280] queries/tpch/sqlstorm_slope/reference/11750.sql  (run_id 69559FBD322A67E6)
+  ok
+[241/280] queries/tpch/sqlstorm_slope/reference/15338.sql  (run_id F8945FB5FADECEF1)
+  ok
+[242/280] queries/tpch/sqlstorm_slope/reference/6127.sql  (run_id 2F9C69F16F1FED2A)
+  ok
+[243/280] queries/tpch/sqlstorm_slope/reference/2950.sql  (run_id 77CF6F753D6098F1)
+  ok
+[244/280] queries/tpch/sqlstorm_slope/reference/11750.sql  (run_id F297A7F0C5F99A60)
+  ok
+[245/280] queries/tpch/sqlstorm_slope/reference/11750.sql  (run_id 30E0B1844EC6C346)
+  ok
+[246/280] queries/tpch/sqlstorm_slope/reference/11767.sql  (run_id BC1A315AE76CE82C)
+  ok
+[247/280] queries/tpch/sqlstorm_slope/reference/5820.sql  (run_id BCDCBF4F37E9F881)
+  ok
+[248/280] queries/tpch/sqlstorm_slope/reference/27574.sql  (run_id FF3D976A3289FE75)
+  ok
+[249/280] queries/tpch/sqlstorm_slope/reference/32103.sql  (run_id B2D009FB6AF2C47A)
+  ok
+[250/280] queries/tpch/sqlstorm_slope/reference/6127.sql  (run_id 4ACBC453E42D6F77)
+  ok
+[251/280] queries/tpch/sqlstorm_slope/reference/5116.sql  (run_id 1F4AE724E6051CDC)
+  ok
+[252/280] queries/tpch/sqlstorm_slope/reference/6127.sql  (run_id 9DE81E42E2A35BEA)
+  ok
+[253/280] queries/tpch/sqlstorm_slope/reference/7925.sql  (run_id EC9DFD85386DD3B2)
+  ok
+[254/280] queries/tpch/sqlstorm_slope/reference/15598.sql  (run_id 353CBFC6782840C0)
+  ok
+[255/280] queries/tpch/sqlstorm_slope/reference/2950.sql  (run_id DADEB4C5CA2586E4)
+  ok
+[256/280] queries/tpch/sqlstorm_slope/reference/11767.sql  (run_id 6817556C701246A6)
+  ok
+[257/280] queries/tpch/sqlstorm_slope/reference/5554.sql  (run_id 483BBD11E64BE8AF)
+  ok
+[258/280] queries/tpch/sqlstorm_slope/reference/11750.sql  (run_id 6119D76195376C5C)
+  ok
+[259/280] queries/tpch/sqlstorm_slope/reference/11750.sql  (run_id 9A92EB901186439A)
+  ok
+[260/280] queries/tpch/sqlstorm_slope/reference/5554.sql  (run_id 061B9F1E97C32393)
+  ok
+[261/280] queries/tpch/sqlstorm_slope/reference/14523.sql  (run_id 7DA1B0E448F81828)
+  ok
+[262/280] queries/tpch/sqlstorm_slope/reference/10945.sql  (run_id 218341E5A5907825)
+  ok
+[263/280] queries/tpch/sqlstorm_slope/reference/8411.sql  (run_id BFB590EF3F5651A2)
+  ok
+[264/280] queries/tpch/sqlstorm_slope/reference/2950.sql  (run_id 110D59951F3DBAE8)
+  ok
+[265/280] queries/tpch/sqlstorm_slope/reference/29659.sql  (run_id 6FB12E9A88F030FB)
+  ok
+[266/280] queries/tpch/sqlstorm_slope/reference/10945.sql  (run_id 880FDEDE8F5605B9)
+  ok
+[267/280] queries/tpch/sqlstorm_slope/reference/26387.sql  (run_id 072D808CD3EA9932)
+  ok
+[268/280] queries/tpch/sqlstorm_slope/reference/32103.sql  (run_id 3DA5189C8CE72CB7)
+  ok
+[269/280] queries/tpch/sqlstorm_slope/reference/3396.sql  (run_id BE796BA4CA90E365)
+  ok
+[270/280] queries/tpch/sqlstorm_slope/reference/28614.sql  (run_id 07BE4863F1CC41BB)
+  ok
+[271/280] queries/tpch/sqlstorm_slope/reference/17087.sql  (run_id E2F8A43440EB594F)
+  ok
+[272/280] queries/tpch/sqlstorm_slope/reference/8033.sql  (run_id C3626EE323469B0E)
+  ok
+[273/280] queries/tpch/sqlstorm_slope/reference/15598.sql  (run_id 844EEC24578FA4FC)
+  ok
+[274/280] queries/tpch/sqlstorm_slope/reference/2950.sql  (run_id 8D0DBD9FB483333C)
+  ok
+[275/280] queries/tpch/sqlstorm_slope/reference/5820.sql  (run_id 8B1443013615BBF2)
+  ok
+[276/280] queries/tpch/sqlstorm_slope/reference/28614.sql  (run_id 909BE5CC44E0F59F)
+  ok
+[277/280] queries/tpch/sqlstorm_slope/reference/8033.sql  (run_id 9762EF45C1E5AF3B)
+  ok
+[278/280] queries/tpch/sqlstorm_slope/reference/8865.sql  (run_id C6D8F0EDE8BA9E19)
+  ok
+[279/280] queries/tpch/sqlstorm_slope/reference/8033.sql  (run_id 5E31B47AB471AF67)
+  ok
+[280/280] queries/tpch/sqlstorm_slope/reference/5116.sql  (run_id C7B85E17A52146BE)
+  ok
+clock_control: no_turbo restored to 0
+clock_control: governor restored to powersave
+clock_control: max_freq restored to 3600000 kHz
+run_id:        reference_20260921T230207Z
+started_utc:   2026-09-21T23:02:08Z
+finished_utc:  2026-09-22T11:03:54Z
+total_runtime: 12:01:46  (43306 seconds)   avg_per_entry: 154s
+entries:       280   ok: 280   failed: 0
+-- parameters --
+pg:                 18
+db:                 tpch_idx
+queries_dir:        queries/tpch/sqlstorm_slope/reference
+queries:            28
+repeats:            1
+batch_sizes:        1 2 4 8 16
+runs_per_size:      1
+warmup:             2
+batch_cap_slow:     none (slow_copy_sec 1)
+statement_timeout:  60s
+workers:            planner default
+port:               5434
+logs_root:          logs/slope_sample/warm_stepup
+run_dir:            logs/slope_sample/warm_stepup/reference_20260921T230207Z
+order_file:         logs/slope_sample/order_reference.txt
+saved_order:        logs/slope_sample/warm_stepup/reference_20260921T230207Z/run_order_reference_20260921T230207Z.txt
+-- thermal / clock --
+thermal_policy:     gate T_LO=55 T_HI=60 PREHEAT_MAX_S=60 COOLDOWN_MAX_S=120
+fix_clock:          1
+clock_max_khz:      2500000
+clock_no_turbo: 0
+clock_governor: performance
+clock_min_freq_khz: 400000
+clock_max_freq_khz: 2500000
+rapl_pl1_w:         22.0
+rapl_pl1_tau_s:     27.98
+rapl_pl2_w:         44.0
+dmesg_throttle_msgs: 0 during run (0 total)
+
+warm step-up done: 280 ok, 0 failed of 280 entries in 12:01:46
+  results dir: logs/slope_sample/warm_stepup/reference_20260921T230207Z/  (query_timing_tpch_idx.csv, ..., summary.txt)
+  order: logs/slope_sample/warm_stepup/reference_20260921T230207Z/run_order_reference_20260921T230207Z.txt   console: logs/slope_sample/warm_stepup/reference_20260921T230207Z/console.log
+== breadth tier 11:03:54Z
+==> replaying saved order: logs/slope_sample/order_breadth.txt
+==> run_id=breadth_20260921T230207Z  order (666 entries) -> logs/slope_sample/warm_stepup/breadth_20260921T230207Z/run_order_breadth_20260921T230207Z.txt
+warm step-up: PG18  DB=tpch_idx  DIR=queries/tpch/sqlstorm_slope/breadth  BATCH_SIZES='1 2 4 8 16'  WARMUP=2  RUNS=1  REPEATS=1
+  thermal: gate T_LO=55 T_HI=60 PREHEAT_MAX_S=60 COOLDOWN_MAX_S=120   fix_clock: 1 (ceiling 2500000)   batch cap: 8
+  logs -> logs/slope_sample/warm_stepup/breadth_20260921T230207Z/  (666 entries)
+clock_control: no_turbo=0 (ceiling 2500000 kHz is a turbo bin)
+clock_control: governor=performance (was powersave)
+clock_control: max_freq=2500000 kHz on 8 CPUs
+[1/666] queries/tpch/sqlstorm_slope/breadth/7992.sql  (run_id 7955A7B80E479148)
+  ok
+[2/666] queries/tpch/sqlstorm_slope/breadth/30607.sql  (run_id 0941A84A1E41B61F)
+  ok
+[3/666] queries/tpch/sqlstorm_slope/breadth/11716.sql  (run_id C1FF6E6DEC1565DC)
+  ok
+[4/666] queries/tpch/sqlstorm_slope/breadth/12677.sql  (run_id 274A86EE33D93F64)
+  ok
+[5/666] queries/tpch/sqlstorm_slope/breadth/25945.sql  (run_id F65EF2E4E1720E6D)
+  ok
+[6/666] queries/tpch/sqlstorm_slope/breadth/33655.sql  (run_id 6DB3F5BB26403923)
+  ok
+[7/666] queries/tpch/sqlstorm_slope/breadth/2888.sql  (run_id BC19EB86D35FC231)
+  ok
+[8/666] queries/tpch/sqlstorm_slope/breadth/10143.sql  (run_id 4D1E7680F8151F02)
+  ok
+[9/666] queries/tpch/sqlstorm_slope/breadth/13690.sql  (run_id 9378F4F5BC7D168B)
+  ok
+[10/666] queries/tpch/sqlstorm_slope/breadth/28057.sql  (run_id 1C60280C9D1AE2A9)
+  ok
+[11/666] queries/tpch/sqlstorm_slope/breadth/10013.sql  (run_id 7ACA6BA464F5D2E3)
+  ok
+[12/666] queries/tpch/sqlstorm_slope/breadth/27308.sql  (run_id BD191E779DD57B8F)
+  ok
+[13/666] queries/tpch/sqlstorm_slope/breadth/12992.sql  (run_id EFB786FC354BE0B4)
+  ok
+[14/666] queries/tpch/sqlstorm_slope/breadth/21378.sql  (run_id DDE6FA43D6DA8FBE)
+  ok
+[15/666] queries/tpch/sqlstorm_slope/breadth/13170.sql  (run_id 07D3AF9843022868)
+  ok
+[16/666] queries/tpch/sqlstorm_slope/breadth/12604.sql  (run_id E0412881E04F2BBF)
+  ok
+[17/666] queries/tpch/sqlstorm_slope/breadth/4276.sql  (run_id 36330E616C15665A)
+  ok
+[18/666] queries/tpch/sqlstorm_slope/breadth/28042.sql  (run_id 8AAA75FF1650A6E0)
+  ok
+[19/666] queries/tpch/sqlstorm_slope/breadth/7845.sql  (run_id 4B46BABCAAC70A6F)
+  ok
+[20/666] queries/tpch/sqlstorm_slope/breadth/25195.sql  (run_id BFEA14CCC6493005)
+  ok
+[21/666] queries/tpch/sqlstorm_slope/breadth/26544.sql  (run_id 0B7DCBBFD950E9B4)
+  ok
+[22/666] queries/tpch/sqlstorm_slope/breadth/25945.sql  (run_id B55B920B4901E2AC)
+  ok
+[23/666] queries/tpch/sqlstorm_slope/breadth/27308.sql  (run_id 4302C4652CAFE262)
+  ok
+[24/666] queries/tpch/sqlstorm_slope/breadth/10237.sql  (run_id B0FBE76656E2B5C3)
+  ok
+[25/666] queries/tpch/sqlstorm_slope/breadth/13196.sql  (run_id 2722FC050410A6FF)
+  ok
+[26/666] queries/tpch/sqlstorm_slope/breadth/13447.sql  (run_id C2A853AF72A26C2B)
+  ok
+[27/666] queries/tpch/sqlstorm_slope/breadth/5015.sql  (run_id 318F89065C096A4A)
+  ok
+[28/666] queries/tpch/sqlstorm_slope/breadth/17094.sql  (run_id 0EEFD5CBF16B29DB)
+  ok
+[29/666] queries/tpch/sqlstorm_slope/breadth/26100.sql  (run_id BF79EB53477A7675)
+  ok
+[30/666] queries/tpch/sqlstorm_slope/breadth/29188.sql  (run_id 4FE2CE2A3A56D129)
+  ok
+[31/666] queries/tpch/sqlstorm_slope/breadth/7428.sql  (run_id 9F43C8B011FC2891)
+  ok
+[32/666] queries/tpch/sqlstorm_slope/breadth/11394.sql  (run_id 3D86DEA18220B061)
+  ok
+[33/666] queries/tpch/sqlstorm_slope/breadth/30607.sql  (run_id 6142494CB0C5334B)
+  ok
+[34/666] queries/tpch/sqlstorm_slope/breadth/10488.sql  (run_id 64E997A53757EC8E)
+  ok
+[35/666] queries/tpch/sqlstorm_slope/breadth/29616.sql  (run_id 889620737ED93BE2)
+  ok
+[36/666] queries/tpch/sqlstorm_slope/breadth/17094.sql  (run_id 732D0B6121685E71)
+  ok
+[37/666] queries/tpch/sqlstorm_slope/breadth/24422.sql  (run_id 2C9F847670A09EFF)
+  ok
+[38/666] queries/tpch/sqlstorm_slope/breadth/4496.sql  (run_id 168FA480C9F2CF61)
+  ok
+[39/666] queries/tpch/sqlstorm_slope/breadth/11888.sql  (run_id 9192B57002EFBEDC)
+  ok
+[40/666] queries/tpch/sqlstorm_slope/breadth/30319.sql  (run_id AB3F37B4366C096C)
+  ok
+[41/666] queries/tpch/sqlstorm_slope/breadth/27577.sql  (run_id 837AAD644A7D26D8)
+  ok
+[42/666] queries/tpch/sqlstorm_slope/breadth/4626.sql  (run_id F12B38321D84C814)
+  ok
+[43/666] queries/tpch/sqlstorm_slope/breadth/13280.sql  (run_id 34681056A2954D74)
+  ok
+[44/666] queries/tpch/sqlstorm_slope/breadth/18060.sql  (run_id 3DB61AF110B58928)
+  ok
+[45/666] queries/tpch/sqlstorm_slope/breadth/1396.sql  (run_id 9829601F6BC63C06)
+  ok
+[46/666] queries/tpch/sqlstorm_slope/breadth/25773.sql  (run_id 3226C2194D203CD1)
+  ok
+[47/666] queries/tpch/sqlstorm_slope/breadth/2186.sql  (run_id 7FC1C92EDADF1E52)
+  ok
+[48/666] queries/tpch/sqlstorm_slope/breadth/10218.sql  (run_id 0202B9314BADC936)
+  ok
+[49/666] queries/tpch/sqlstorm_slope/breadth/7408.sql  (run_id 3D44E3B23A050FB7)
+  ok
+[50/666] queries/tpch/sqlstorm_slope/breadth/11875.sql  (run_id 9B9BED33AAA16BB4)
+  ok
+[51/666] queries/tpch/sqlstorm_slope/breadth/12127.sql  (run_id 460DE807AB210D4A)
+  ok
+[52/666] queries/tpch/sqlstorm_slope/breadth/7999.sql  (run_id 68FD85DAF8ED3E01)
+  ok
+[53/666] queries/tpch/sqlstorm_slope/breadth/12066.sql  (run_id F2EBF2AD2ECEC552)
+  ok
+[54/666] queries/tpch/sqlstorm_slope/breadth/25195.sql  (run_id DB64B16A31671704)
+  ok
+[55/666] queries/tpch/sqlstorm_slope/breadth/5071.sql  (run_id 27CC66A6122FFF0F)
+  ok
+[56/666] queries/tpch/sqlstorm_slope/breadth/14917.sql  (run_id B81A6E10F2FB0FFE)
+  ok
+[57/666] queries/tpch/sqlstorm_slope/breadth/129.sql  (run_id 862ABAF53A9D56EB)
+  ok
+[58/666] queries/tpch/sqlstorm_slope/breadth/14529.sql  (run_id F61ED82794194CAA)
+  ok
+[59/666] queries/tpch/sqlstorm_slope/breadth/18032.sql  (run_id 62B2E2B0C841F544)
+  ok
+[60/666] queries/tpch/sqlstorm_slope/breadth/11720.sql  (run_id A22E67BA195CB8B2)
+  ok
+[61/666] queries/tpch/sqlstorm_slope/breadth/5951.sql  (run_id 6B6D6C78A264CD7E)
+  ok
+[62/666] queries/tpch/sqlstorm_slope/breadth/8694.sql  (run_id 181C5F735BC810B7)
+  ok
+[63/666] queries/tpch/sqlstorm_slope/breadth/27580.sql  (run_id 7909D8D0932EA924)
+  ok
+[64/666] queries/tpch/sqlstorm_slope/breadth/27798.sql  (run_id 1983A5D30CE10C29)
+  ok
+[65/666] queries/tpch/sqlstorm_slope/breadth/14529.sql  (run_id 339674144F1E6F16)
+  ok
+[66/666] queries/tpch/sqlstorm_slope/breadth/7909.sql  (run_id 8138AA6BF1241784)
+  ok
+[67/666] queries/tpch/sqlstorm_slope/breadth/27386.sql  (run_id C511680B521EDBF4)
+  ok
+[68/666] queries/tpch/sqlstorm_slope/breadth/1028.sql  (run_id EDCA44905E7282B6)
+  ok
+[69/666] queries/tpch/sqlstorm_slope/breadth/14043.sql  (run_id 164A763D037CBA2C)
+  ok
+[70/666] queries/tpch/sqlstorm_slope/breadth/129.sql  (run_id 74A8D4ADFFECE4A0)
+  ok
+[71/666] queries/tpch/sqlstorm_slope/breadth/27777.sql  (run_id 8C80F93CFCD17754)
+  ok
+[72/666] queries/tpch/sqlstorm_slope/breadth/26396.sql  (run_id 43F7C26430E436C2)
+  ok
+[73/666] queries/tpch/sqlstorm_slope/breadth/4765.sql  (run_id 253CE8A9719D4923)
+  ok
+[74/666] queries/tpch/sqlstorm_slope/breadth/11504.sql  (run_id F3C373F641DCDD28)
+  ok
+[75/666] queries/tpch/sqlstorm_slope/breadth/8694.sql  (run_id 15F2595565910FED)
+  ok
+[76/666] queries/tpch/sqlstorm_slope/breadth/14101.sql  (run_id 7C6F77F9BA9DA7D7)
+  ok
+[77/666] queries/tpch/sqlstorm_slope/breadth/26423.sql  (run_id 6B37CCD33FD1CFA7)
+  ok
+[78/666] queries/tpch/sqlstorm_slope/breadth/342.sql  (run_id 1F244223B0A7E9EF)
+  ok
+[79/666] queries/tpch/sqlstorm_slope/breadth/27948.sql  (run_id F68C18E0DF68316D)
+  ok
+[80/666] queries/tpch/sqlstorm_slope/breadth/12049.sql  (run_id 5F19F1EE640824B7)
+  ok
+[81/666] queries/tpch/sqlstorm_slope/breadth/12604.sql  (run_id 88A0CB06C3C642E1)
+  ok
+[82/666] queries/tpch/sqlstorm_slope/breadth/27580.sql  (run_id 00D598ECA010C4D1)
+  ok
+[83/666] queries/tpch/sqlstorm_slope/breadth/4276.sql  (run_id B63C32FA78F206CE)
+  ok
+[84/666] queries/tpch/sqlstorm_slope/breadth/4445.sql  (run_id 51D634F32DEA0579)
+  ok
+[85/666] queries/tpch/sqlstorm_slope/breadth/13074.sql  (run_id C2E22F5CCB6483B0)
+  ok
+[86/666] queries/tpch/sqlstorm_slope/breadth/10237.sql  (run_id 55BF6598BEC059B0)
+  ok
+[87/666] queries/tpch/sqlstorm_slope/breadth/33217.sql  (run_id 629B3B00E92A20EF)
+  ok
+[88/666] queries/tpch/sqlstorm_slope/breadth/7464.sql  (run_id A887CCB98540470E)
+  ok
+[89/666] queries/tpch/sqlstorm_slope/breadth/1707.sql  (run_id 5BEC6C14B0211B6D)
+  ok
+[90/666] queries/tpch/sqlstorm_slope/breadth/27777.sql  (run_id 779AA70A071FD3EF)
+  ok
+[91/666] queries/tpch/sqlstorm_slope/breadth/25517.sql  (run_id 7BA69E8C412DB42C)
+  ok
+[92/666] queries/tpch/sqlstorm_slope/breadth/4445.sql  (run_id 726A14E93F5E16CD)
+  ok
+[93/666] queries/tpch/sqlstorm_slope/breadth/26842.sql  (run_id F291A3A66A54D985)
+  ok
+[94/666] queries/tpch/sqlstorm_slope/breadth/28487.sql  (run_id 5A1A61B4E9E35A33)
+  ok
+[95/666] queries/tpch/sqlstorm_slope/breadth/2888.sql  (run_id B091520845F1FE3C)
+  ok
+[96/666] queries/tpch/sqlstorm_slope/breadth/834.sql  (run_id 01728B4843D6DE38)
+  ok
+[97/666] queries/tpch/sqlstorm_slope/breadth/12380.sql  (run_id DE6889BADD0FA03B)
+  ok
+[98/666] queries/tpch/sqlstorm_slope/breadth/7845.sql  (run_id BAD055ED5A344724)
+  ok
+[99/666] queries/tpch/sqlstorm_slope/breadth/28067.sql  (run_id D0B2258D1ADD878E)
+  ok
+[100/666] queries/tpch/sqlstorm_slope/breadth/26572.sql  (run_id D0C944E1E167F617)
+  ok
+[101/666] queries/tpch/sqlstorm_slope/breadth/11626.sql  (run_id 5608EBF8901830A1)
+  ok
+[102/666] queries/tpch/sqlstorm_slope/breadth/23438.sql  (run_id 1FFAD59F1B823DF7)
+  ok
+[103/666] queries/tpch/sqlstorm_slope/breadth/14199.sql  (run_id 705D8B2B9E153600)
+  ok
+[104/666] queries/tpch/sqlstorm_slope/breadth/2988.sql  (run_id 286D95D1C7B8A36C)
+  ok
+[105/666] queries/tpch/sqlstorm_slope/breadth/11349.sql  (run_id A1B4EB33187AC34B)
+  ok
+[106/666] queries/tpch/sqlstorm_slope/breadth/27163.sql  (run_id 677486BBC22E97DB)
+  ok
+[107/666] queries/tpch/sqlstorm_slope/breadth/11418.sql  (run_id 3E0324C592BDD1E0)
+  ok
+[108/666] queries/tpch/sqlstorm_slope/breadth/4186.sql  (run_id 7101419389BEF166)
+  ok
+[109/666] queries/tpch/sqlstorm_slope/breadth/28042.sql  (run_id 94EF60F8889F0D49)
+  ok
+[110/666] queries/tpch/sqlstorm_slope/breadth/28057.sql  (run_id 0F324F0FCDEC900E)
+  ok
+[111/666] queries/tpch/sqlstorm_slope/breadth/2862.sql  (run_id 99967A4C8F9A7F69)
+  ok
+[112/666] queries/tpch/sqlstorm_slope/breadth/3286.sql  (run_id 3CFFAD054CB1CAB2)
+  ok
+[113/666] queries/tpch/sqlstorm_slope/breadth/29821.sql  (run_id 6B920733921FCDD6)
+  ok
+[114/666] queries/tpch/sqlstorm_slope/breadth/3259.sql  (run_id F83B5AB90494FDD6)
+  ok
+[115/666] queries/tpch/sqlstorm_slope/breadth/2988.sql  (run_id F0E1E78A65048ADD)
+  ok
+[116/666] queries/tpch/sqlstorm_slope/breadth/25027.sql  (run_id DDD25D64D4CCA5CD)
+  ok
+[117/666] queries/tpch/sqlstorm_slope/breadth/6700.sql  (run_id CB18481CB8DB6872)
+  ok
+[118/666] queries/tpch/sqlstorm_slope/breadth/13280.sql  (run_id 16CDF64B9931DAD9)
+  ok
+[119/666] queries/tpch/sqlstorm_slope/breadth/27828.sql  (run_id 137966E07CED4D6B)
+  ok
+[120/666] queries/tpch/sqlstorm_slope/breadth/25757.sql  (run_id E9F72D0108390B90)
+  ok
+[121/666] queries/tpch/sqlstorm_slope/breadth/18986.sql  (run_id CDA3C82A0086F4C0)
+  ok
+[122/666] queries/tpch/sqlstorm_slope/breadth/13204.sql  (run_id 1253978E45E51E8A)
+  ok
+[123/666] queries/tpch/sqlstorm_slope/breadth/11034.sql  (run_id 92DE438B0BE2062B)
+  ok
+[124/666] queries/tpch/sqlstorm_slope/breadth/1629.sql  (run_id 8165F6AAF5BBEA43)
+  ok
+[125/666] queries/tpch/sqlstorm_slope/breadth/29043.sql  (run_id 6960D5FDEE0C1378)
+  ok
+[126/666] queries/tpch/sqlstorm_slope/breadth/12430.sql  (run_id 8739C43A36FE47EA)
+  ok
+[127/666] queries/tpch/sqlstorm_slope/breadth/7981.sql  (run_id 0460C39D492EC8B5)
+  ok
+[128/666] queries/tpch/sqlstorm_slope/breadth/6019.sql  (run_id 5D8DD60FDD0AF066)
+  ok
+[129/666] queries/tpch/sqlstorm_slope/breadth/14101.sql  (run_id 2ECDB1A9300A4B79)
+  ok
+[130/666] queries/tpch/sqlstorm_slope/breadth/26100.sql  (run_id 7B8E7B549E418D4A)
+  ok
+[131/666] queries/tpch/sqlstorm_slope/breadth/5015.sql  (run_id 929FB1803A8223A3)
+  ok
+[132/666] queries/tpch/sqlstorm_slope/breadth/1934.sql  (run_id 3E7421D1615ACEEC)
+  ok
+[133/666] queries/tpch/sqlstorm_slope/breadth/9031.sql  (run_id C4C513C34AB404DA)
+  ok
+[134/666] queries/tpch/sqlstorm_slope/breadth/7408.sql  (run_id FD4533BB086B199F)
+  ok
+[135/666] queries/tpch/sqlstorm_slope/breadth/29774.sql  (run_id 558790539CD000BF)
+  ok
+[136/666] queries/tpch/sqlstorm_slope/breadth/1028.sql  (run_id 7BCAB5EFB4931108)
+  ok
+[137/666] queries/tpch/sqlstorm_slope/breadth/26100.sql  (run_id AD256D1D6DE15170)
+  ok
+[138/666] queries/tpch/sqlstorm_slope/breadth/15906.sql  (run_id 0DE7831D85E93EFD)
+  ok
+[139/666] queries/tpch/sqlstorm_slope/breadth/10414.sql  (run_id 439DE8F9ECF794E3)
+  ok
+[140/666] queries/tpch/sqlstorm_slope/breadth/11875.sql  (run_id CC73DA8D5392DC07)
+  ok
+[141/666] queries/tpch/sqlstorm_slope/breadth/26705.sql  (run_id 15FC32A84484F2BA)
+  ok
+[142/666] queries/tpch/sqlstorm_slope/breadth/34917.sql  (run_id 4659E75B6F014F14)
+  ok
+[143/666] queries/tpch/sqlstorm_slope/breadth/31494.sql  (run_id 34165E91D3E310BA)
+  ok
+[144/666] queries/tpch/sqlstorm_slope/breadth/15906.sql  (run_id 0FC54D34E6128A55)
+  ok
+[145/666] queries/tpch/sqlstorm_slope/breadth/6671.sql  (run_id EE8A9616C08C1D75)
+  ok
+[146/666] queries/tpch/sqlstorm_slope/breadth/6154.sql  (run_id FEAC203A36A883B1)
+  ok
+[147/666] queries/tpch/sqlstorm_slope/breadth/21010.sql  (run_id 86C25C6D04D8C960)
+  ok
+[148/666] queries/tpch/sqlstorm_slope/breadth/3259.sql  (run_id 7F959ECE021A9A59)
+  ok
+[149/666] queries/tpch/sqlstorm_slope/breadth/342.sql  (run_id E8EB009AEDB78DD1)
+  ok
+[150/666] queries/tpch/sqlstorm_slope/breadth/27647.sql  (run_id EA1A5F006C443885)
+  ok
+[151/666] queries/tpch/sqlstorm_slope/breadth/4335.sql  (run_id 8E6C31EC591179F0)
+  ok
+[152/666] queries/tpch/sqlstorm_slope/breadth/25859.sql  (run_id CCF5BC7CE2C1C868)
+  ok
+[153/666] queries/tpch/sqlstorm_slope/breadth/6019.sql  (run_id FE65391A04D688D1)
+  ok
+[154/666] queries/tpch/sqlstorm_slope/breadth/3286.sql  (run_id 2626DB2D769DC62E)
+  ok
+[155/666] queries/tpch/sqlstorm_slope/breadth/3286.sql  (run_id 593E97D4D7A9FD1F)
+  ok
+[156/666] queries/tpch/sqlstorm_slope/breadth/14777.sql  (run_id 61459EC22E69A0EA)
+  ok
+[157/666] queries/tpch/sqlstorm_slope/breadth/28067.sql  (run_id 211D3B8218BED58D)
+  ok
+[158/666] queries/tpch/sqlstorm_slope/breadth/25859.sql  (run_id F4ACC17ECED8FE6A)
+  ok
+[159/666] queries/tpch/sqlstorm_slope/breadth/7283.sql  (run_id D852F648C2FF7A23)
+  ok
+[160/666] queries/tpch/sqlstorm_slope/breadth/4186.sql  (run_id 91640321DBFDD17E)
+  ok
+[161/666] queries/tpch/sqlstorm_slope/breadth/12051.sql  (run_id CF9115E90F77D003)
+  ok
+[162/666] queries/tpch/sqlstorm_slope/breadth/12066.sql  (run_id 06219760C90E3B88)
+  ok
+[163/666] queries/tpch/sqlstorm_slope/breadth/10129.sql  (run_id F9CAC20BDBCCDA73)
+  ok
+[164/666] queries/tpch/sqlstorm_slope/breadth/6781.sql  (run_id DDC449ACD4DB413F)
+  ok
+[165/666] queries/tpch/sqlstorm_slope/breadth/10237.sql  (run_id 854722464838BE9A)
+  ok
+[166/666] queries/tpch/sqlstorm_slope/breadth/6781.sql  (run_id DA7BC42CFCC0C837)
+  ok
+[167/666] queries/tpch/sqlstorm_slope/breadth/7464.sql  (run_id D78C298AD7428356)
+  ok
+[168/666] queries/tpch/sqlstorm_slope/breadth/26544.sql  (run_id EE05BC224B0B6CC0)
+  ok
+[169/666] queries/tpch/sqlstorm_slope/breadth/8682.sql  (run_id BE962019EE2B79C0)
+  ok
+[170/666] queries/tpch/sqlstorm_slope/breadth/4765.sql  (run_id D6B1AD7744877BD0)
+  ok
+[171/666] queries/tpch/sqlstorm_slope/breadth/5951.sql  (run_id 03E9EE96F6324274)
+  ok
+[172/666] queries/tpch/sqlstorm_slope/breadth/20436.sql  (run_id 5EA5B5B4EAF42C96)
+  ok
+[173/666] queries/tpch/sqlstorm_slope/breadth/25027.sql  (run_id 26C0EE2150C29880)
+  ok
+[174/666] queries/tpch/sqlstorm_slope/breadth/33703.sql  (run_id 1249CFF66FCAAFD7)
+  ok
+[175/666] queries/tpch/sqlstorm_slope/breadth/13204.sql  (run_id F454C8DAE660F89C)
+  ok
+[176/666] queries/tpch/sqlstorm_slope/breadth/1576.sql  (run_id DB676EADEA227F23)
+  ok
+[177/666] queries/tpch/sqlstorm_slope/breadth/11626.sql  (run_id A1187137C1447EE0)
+  ok
+[178/666] queries/tpch/sqlstorm_slope/breadth/26559.sql  (run_id 9AB9685336F59A6F)
+  ok
+[179/666] queries/tpch/sqlstorm_slope/breadth/28601.sql  (run_id 1D2ABE775F567D15)
+  ok
+[180/666] queries/tpch/sqlstorm_slope/breadth/9037.sql  (run_id D0AFD8ADEC34908C)
+  ok
+[181/666] queries/tpch/sqlstorm_slope/breadth/21378.sql  (run_id C15727B992C08E91)
+  ok
+[182/666] queries/tpch/sqlstorm_slope/breadth/11720.sql  (run_id E4E5529AA0A9F9AA)
+  ok
+[183/666] queries/tpch/sqlstorm_slope/breadth/26572.sql  (run_id AE58BDFFAE25AA24)
+  ok
+[184/666] queries/tpch/sqlstorm_slope/breadth/25600.sql  (run_id D9FF9624B1342EC6)
+  ok
+[185/666] queries/tpch/sqlstorm_slope/breadth/27828.sql  (run_id 839F30C1245F1864)
+  ok
+[186/666] queries/tpch/sqlstorm_slope/breadth/20247.sql  (run_id 14C5C298B4EF7A97)
+  ok
+[187/666] queries/tpch/sqlstorm_slope/breadth/12066.sql  (run_id 6EB00001BD5E025F)
+  ok
+[188/666] queries/tpch/sqlstorm_slope/breadth/26544.sql  (run_id 9E408364D0B01287)
+  ok
+[189/666] queries/tpch/sqlstorm_slope/breadth/7405.sql  (run_id 52774C19CB61B4A6)
+  ok
+[190/666] queries/tpch/sqlstorm_slope/breadth/17679.sql  (run_id 36DB882C87B13583)
+  ok
+[191/666] queries/tpch/sqlstorm_slope/breadth/29233.sql  (run_id 91D70E4E37FC4DC3)
+  ok
+[192/666] queries/tpch/sqlstorm_slope/breadth/4626.sql  (run_id 5733C0725C4E1D11)
+  ok
+[193/666] queries/tpch/sqlstorm_slope/breadth/7992.sql  (run_id 405740D33B43FACE)
+  ok
+[194/666] queries/tpch/sqlstorm_slope/breadth/28042.sql  (run_id 30BAFD13326DC5A9)
+  ok
+[195/666] queries/tpch/sqlstorm_slope/breadth/16563.sql  (run_id 4EBCFDF474E6435D)
+  ok
+[196/666] queries/tpch/sqlstorm_slope/breadth/19673.sql  (run_id 1844E9A4085BD5A0)
+  ok
+[197/666] queries/tpch/sqlstorm_slope/breadth/25773.sql  (run_id 243FC5D83AAEDE34)
+  ok
+[198/666] queries/tpch/sqlstorm_slope/breadth/25120.sql  (run_id C66D3C22211782D9)
+  ok
+[199/666] queries/tpch/sqlstorm_slope/breadth/13690.sql  (run_id D28DB24F58C00247)
+  ok
+[200/666] queries/tpch/sqlstorm_slope/breadth/26842.sql  (run_id 6DEE6F9823677363)
+  ok
+[201/666] queries/tpch/sqlstorm_slope/breadth/32529.sql  (run_id 0898C87161616494)
+  ok
+[202/666] queries/tpch/sqlstorm_slope/breadth/24422.sql  (run_id 8FFF730EC823EF28)
+  ok
+[203/666] queries/tpch/sqlstorm_slope/breadth/27647.sql  (run_id BE6163D88D4F4688)
+  ok
+[204/666] queries/tpch/sqlstorm_slope/breadth/27203.sql  (run_id AB7EBCE257EE4783)
+  ok
+[205/666] queries/tpch/sqlstorm_slope/breadth/33383.sql  (run_id F36BCDDC914551F2)
+  ok
+[206/666] queries/tpch/sqlstorm_slope/breadth/13170.sql  (run_id F773C4FEF83A4DC8)
+  ok
+[207/666] queries/tpch/sqlstorm_slope/breadth/177.sql  (run_id 8499515D5134FBCE)
+  ok
+[208/666] queries/tpch/sqlstorm_slope/breadth/34917.sql  (run_id 01ECCC271F436211)
+  ok
+[209/666] queries/tpch/sqlstorm_slope/breadth/30223.sql  (run_id 36403EC00E3418A4)
+  ok
+[210/666] queries/tpch/sqlstorm_slope/breadth/4216.sql  (run_id E6FA5A8D59AF3086)
+  ok
+[211/666] queries/tpch/sqlstorm_slope/breadth/11442.sql  (run_id 7C7AD416C4C838A0)
+  ok
+[212/666] queries/tpch/sqlstorm_slope/breadth/25600.sql  (run_id 72E087E5ECFF7BA2)
+  ok
+[213/666] queries/tpch/sqlstorm_slope/breadth/8619.sql  (run_id 14759002A36A87A8)
+  ok
+[214/666] queries/tpch/sqlstorm_slope/breadth/11716.sql  (run_id B8A009445E1994C2)
+  ok
+[215/666] queries/tpch/sqlstorm_slope/breadth/5071.sql  (run_id FA3641B15E2ABD1C)
+  ok
+[216/666] queries/tpch/sqlstorm_slope/breadth/9323.sql  (run_id 28EBF48B02380340)
+  ok
+[217/666] queries/tpch/sqlstorm_slope/breadth/15671.sql  (run_id 0A1E7E1CA81D9BF3)
+  ok
+[218/666] queries/tpch/sqlstorm_slope/breadth/4663.sql  (run_id B9760B8510C41965)
+  ok
+[219/666] queries/tpch/sqlstorm_slope/breadth/11335.sql  (run_id 03B56CE7E4BD1678)
+  ok
+[220/666] queries/tpch/sqlstorm_slope/breadth/6671.sql  (run_id 8BA2853B9860BD6A)
+  ok
+[221/666] queries/tpch/sqlstorm_slope/breadth/11888.sql  (run_id 0D1FB746F14E4643)
+  ok
+[222/666] queries/tpch/sqlstorm_slope/breadth/177.sql  (run_id C1DB967CFF813C39)
+  ok
+[223/666] queries/tpch/sqlstorm_slope/breadth/26034.sql  (run_id 856BC0AB8C6BB4C7)
+  ok
+[224/666] queries/tpch/sqlstorm_slope/breadth/32319.sql  (run_id 066ABD0C51886020)
+  ok
+[225/666] queries/tpch/sqlstorm_slope/breadth/10042.sql  (run_id 7D96B3382D724407)
+  ok
+[226/666] queries/tpch/sqlstorm_slope/breadth/29233.sql  (run_id D119AB164F817E03)
+  ok
+[227/666] queries/tpch/sqlstorm_slope/breadth/10129.sql  (run_id 2271A618B1B21356)
+  ok
+[228/666] queries/tpch/sqlstorm_slope/breadth/26396.sql  (run_id DD069A17F4918FA2)
+  ok
+[229/666] queries/tpch/sqlstorm_slope/breadth/22254.sql  (run_id 52890E2922B70382)
+  ok
+[230/666] queries/tpch/sqlstorm_slope/breadth/11198.sql  (run_id 227E3780A1C8E75C)
+  ok
+[231/666] queries/tpch/sqlstorm_slope/breadth/27384.sql  (run_id D8AE23DE476D6CED)
+  ok
+[232/666] queries/tpch/sqlstorm_slope/breadth/11504.sql  (run_id 260043C8DE20D601)
+  ok
+[233/666] queries/tpch/sqlstorm_slope/breadth/20901.sql  (run_id 4A59EBD100F61165)
+  ok
+[234/666] queries/tpch/sqlstorm_slope/breadth/4216.sql  (run_id 69C5F80C41436176)
+  ok
+[235/666] queries/tpch/sqlstorm_slope/breadth/26559.sql  (run_id F9623B6773A173D1)
+  ok
+[236/666] queries/tpch/sqlstorm_slope/breadth/11875.sql  (run_id 4E1EF06F637FD251)
+  ok
+[237/666] queries/tpch/sqlstorm_slope/breadth/12604.sql  (run_id BEA75B72E371FD26)
+  ok
+[238/666] queries/tpch/sqlstorm_slope/breadth/10015.sql  (run_id 7CED97061CFDD5B1)
+  ok
+[239/666] queries/tpch/sqlstorm_slope/breadth/7408.sql  (run_id 83157BEA54B0C04B)
+  ok
+[240/666] queries/tpch/sqlstorm_slope/breadth/14053.sql  (run_id 2DF2D4F55C27E818)
+  ok
+[241/666] queries/tpch/sqlstorm_slope/breadth/25195.sql  (run_id AD16A1EA56F6AC98)
+  ok
+[242/666] queries/tpch/sqlstorm_slope/breadth/25600.sql  (run_id 8135C85B981D1269)
+  ok
+[243/666] queries/tpch/sqlstorm_slope/breadth/5961.sql  (run_id BE0D850BC335829E)
+  ok
+[244/666] queries/tpch/sqlstorm_slope/breadth/4216.sql  (run_id C8F93B73F7805DAE)
+  ok
+[245/666] queries/tpch/sqlstorm_slope/breadth/29043.sql  (run_id 614A12783BEE5E80)
+  ok
+[246/666] queries/tpch/sqlstorm_slope/breadth/16293.sql  (run_id 741EF7473FDF4654)
+  ok
+[247/666] queries/tpch/sqlstorm_slope/breadth/28434.sql  (run_id 6CBD4B46759B5BC8)
+  ok
+[248/666] queries/tpch/sqlstorm_slope/breadth/4445.sql  (run_id 31019790CFB1C7F6)
+  ok
+[249/666] queries/tpch/sqlstorm_slope/breadth/9959.sql  (run_id 8374EFEEE42C1FDD)
+  ok
+[250/666] queries/tpch/sqlstorm_slope/breadth/29383.sql  (run_id 7BAF72CA27762139)
+  ok
+[251/666] queries/tpch/sqlstorm_slope/breadth/10075.sql  (run_id 5168F33BF056DBFF)
+  ok
+[252/666] queries/tpch/sqlstorm_slope/breadth/5015.sql  (run_id D1FB6F34787B3352)
+  ok
+[253/666] queries/tpch/sqlstorm_slope/breadth/11034.sql  (run_id FB9DC2DFE4367111)
+  ok
+[254/666] queries/tpch/sqlstorm_slope/breadth/11350.sql  (run_id 6E259354246B2D63)
+  ok
+[255/666] queries/tpch/sqlstorm_slope/breadth/4335.sql  (run_id BB6ABC9D8B70EDBB)
+  ok
+[256/666] queries/tpch/sqlstorm_slope/breadth/25027.sql  (run_id 4C51B5E150ACD8D9)
+  ok
+[257/666] queries/tpch/sqlstorm_slope/breadth/14199.sql  (run_id EF3F8592A4C660ED)
+  ok
+[258/666] queries/tpch/sqlstorm_slope/breadth/15671.sql  (run_id 906E5573ACE884BB)
+  ok
+[259/666] queries/tpch/sqlstorm_slope/breadth/14145.sql  (run_id 70AF1F2DD86E4CB1)
+  ok
+[260/666] queries/tpch/sqlstorm_slope/breadth/7428.sql  (run_id 918F01777CB079E4)
+  ok
+[261/666] queries/tpch/sqlstorm_slope/breadth/14621.sql  (run_id 27D905C49BF550BE)
+  ok
+[262/666] queries/tpch/sqlstorm_slope/breadth/10129.sql  (run_id E0502A2953508468)
+  ok
+[263/666] queries/tpch/sqlstorm_slope/breadth/7075.sql  (run_id DC3C9BACE750DB91)
+  ok
+[264/666] queries/tpch/sqlstorm_slope/breadth/33703.sql  (run_id 5EE5C0CA01E3CBBB)
+  ok
+[265/666] queries/tpch/sqlstorm_slope/breadth/5940.sql  (run_id 30BC6F9577B175F0)
+  ok
+[266/666] queries/tpch/sqlstorm_slope/breadth/11442.sql  (run_id 94FE9C719EFA712D)
+  ok
+[267/666] queries/tpch/sqlstorm_slope/breadth/28069.sql  (run_id 4FD01885B5C651E1)
+  ok
+[268/666] queries/tpch/sqlstorm_slope/breadth/13447.sql  (run_id EFC9C52781E98036)
+  ok
+[269/666] queries/tpch/sqlstorm_slope/breadth/9031.sql  (run_id 285577479147858D)
+  ok
+[270/666] queries/tpch/sqlstorm_slope/breadth/10649.sql  (run_id 0275D6709041B7E4)
+  ok
+[271/666] queries/tpch/sqlstorm_slope/breadth/3259.sql  (run_id 5607668A47742272)
+  ok
+[272/666] queries/tpch/sqlstorm_slope/breadth/9706.sql  (run_id 80A015D73A9E3949)
+  ok
+[273/666] queries/tpch/sqlstorm_slope/breadth/29616.sql  (run_id 42F3D5CC32498CC4)
+  ok
+[274/666] queries/tpch/sqlstorm_slope/breadth/13074.sql  (run_id 528BF8B04DACE086)
+  ok
+[275/666] queries/tpch/sqlstorm_slope/breadth/14621.sql  (run_id 81D0D10D0688368A)
+  ok
+[276/666] queries/tpch/sqlstorm_slope/breadth/1396.sql  (run_id E9FC310AAE41B106)
+  ok
+[277/666] queries/tpch/sqlstorm_slope/breadth/15102.sql  (run_id 5706B3E1DA6F643D)
+  ok
+[278/666] queries/tpch/sqlstorm_slope/breadth/23438.sql  (run_id 54A192BFAD5E37CC)
+  ok
+[279/666] queries/tpch/sqlstorm_slope/breadth/14145.sql  (run_id A54B10FA6CC5B46D)
+  ok
+[280/666] queries/tpch/sqlstorm_slope/breadth/11198.sql  (run_id 55EEAF2F21974D58)
+  ok
+[281/666] queries/tpch/sqlstorm_slope/breadth/21341.sql  (run_id E501F4BADF828E2A)
+  ok
+[282/666] queries/tpch/sqlstorm_slope/breadth/9037.sql  (run_id 920F3D868A003506)
+  ok
+[283/666] queries/tpch/sqlstorm_slope/breadth/11350.sql  (run_id 7119AD0801DBF86A)
+  ok
+[284/666] queries/tpch/sqlstorm_slope/breadth/27384.sql  (run_id 0A5CD97FCA544F48)
+  ok
+[285/666] queries/tpch/sqlstorm_slope/breadth/177.sql  (run_id A4B791C4022957E4)
+  ok
+[286/666] queries/tpch/sqlstorm_slope/breadth/5142.sql  (run_id DB16807834170F6D)
+  ok
+[287/666] queries/tpch/sqlstorm_slope/breadth/27948.sql  (run_id 24C70E470A2249E6)
+  ok
+[288/666] queries/tpch/sqlstorm_slope/breadth/10042.sql  (run_id 2860F40C0486CE83)
+  ok
+[289/666] queries/tpch/sqlstorm_slope/breadth/12988.sql  (run_id 8A55102D5C3E0948)
+  ok
+[290/666] queries/tpch/sqlstorm_slope/breadth/11442.sql  (run_id 02855E509C392660)
+  ok
+[291/666] queries/tpch/sqlstorm_slope/breadth/8101.sql  (run_id A9540835538C52F7)
+  ok
+[292/666] queries/tpch/sqlstorm_slope/breadth/27384.sql  (run_id 7C5FB9815688C1E8)
+  ok
+[293/666] queries/tpch/sqlstorm_slope/breadth/1707.sql  (run_id 51D7FA147EC566C8)
+  ok
+[294/666] queries/tpch/sqlstorm_slope/breadth/5142.sql  (run_id F38A6E911D0EFEA7)
+  ok
+[295/666] queries/tpch/sqlstorm_slope/breadth/11888.sql  (run_id 1EF7478150E36B1E)
+  ok
+[296/666] queries/tpch/sqlstorm_slope/breadth/21759.sql  (run_id C9F964E1E3BBEC4F)
+  ok
+[297/666] queries/tpch/sqlstorm_slope/breadth/10488.sql  (run_id 54D4410C529E8802)
+  ok
+[298/666] queries/tpch/sqlstorm_slope/breadth/23849.sql  (run_id CD9FCEA55F706F96)
+  ok
+[299/666] queries/tpch/sqlstorm_slope/breadth/10222.sql  (run_id B3F73143F3A631D6)
+  ok
+[300/666] queries/tpch/sqlstorm_slope/breadth/31494.sql  (run_id 2844CEC16C8F7DF8)
+  ok
+[301/666] queries/tpch/sqlstorm_slope/breadth/20247.sql  (run_id C656933FB678E0FB)
+  ok
+[302/666] queries/tpch/sqlstorm_slope/breadth/11349.sql  (run_id EFA1B2A95C72EE0C)
+  ok
+[303/666] queries/tpch/sqlstorm_slope/breadth/8544.sql  (run_id 7730C38FDB666B22)
+  ok
+[304/666] queries/tpch/sqlstorm_slope/breadth/20247.sql  (run_id 3E11C4C0C5E9C356)
+  ok
+[305/666] queries/tpch/sqlstorm_slope/breadth/27203.sql  (run_id D8881ED0AAAAEEA3)
+  ok
+[306/666] queries/tpch/sqlstorm_slope/breadth/1576.sql  (run_id BE450F01CDD0B5C6)
+  ok
+[307/666] queries/tpch/sqlstorm_slope/breadth/30223.sql  (run_id 97A7EEB8D70B3FE0)
+  ok
+[308/666] queries/tpch/sqlstorm_slope/breadth/14145.sql  (run_id D93B98C24B148C3D)
+  ok
+[309/666] queries/tpch/sqlstorm_slope/breadth/12988.sql  (run_id 87658C48EA8E3EF4)
+  ok
+[310/666] queries/tpch/sqlstorm_slope/breadth/21341.sql  (run_id 450B7D3A2491A1E7)
+  ok
+[311/666] queries/tpch/sqlstorm_slope/breadth/12677.sql  (run_id 8D679C07B38409AB)
+  ok
+[312/666] queries/tpch/sqlstorm_slope/breadth/26572.sql  (run_id 61C5751B99E0F105)
+  ok
+[313/666] queries/tpch/sqlstorm_slope/breadth/21378.sql  (run_id 39DA399A697D01D3)
+  ok
+[314/666] queries/tpch/sqlstorm_slope/breadth/7992.sql  (run_id 55B6796748D7BB07)
+  ok
+[315/666] queries/tpch/sqlstorm_slope/breadth/8544.sql  (run_id 2F26FAA42C1A3DB5)
+  ok
+[316/666] queries/tpch/sqlstorm_slope/breadth/29774.sql  (run_id 4C509035480A7B6F)
+  ok
+[317/666] queries/tpch/sqlstorm_slope/breadth/16293.sql  (run_id 6A223E8AE39F1A0A)
+  ok
+[318/666] queries/tpch/sqlstorm_slope/breadth/11335.sql  (run_id 99FB63270D69EB7D)
+  ok
+[319/666] queries/tpch/sqlstorm_slope/breadth/10075.sql  (run_id 9D5AB1B87F9311B8)
+  ok
+[320/666] queries/tpch/sqlstorm_slope/breadth/32319.sql  (run_id 85E2ACDF134C5B59)
+  ok
+[321/666] queries/tpch/sqlstorm_slope/breadth/29627.sql  (run_id CF72E0B059A92341)
+  ok
+[322/666] queries/tpch/sqlstorm_slope/breadth/4335.sql  (run_id 13CA81396CD9A973)
+  ok
+[323/666] queries/tpch/sqlstorm_slope/breadth/14917.sql  (run_id 6D0A574DD6D04D64)
+  ok
+[324/666] queries/tpch/sqlstorm_slope/breadth/9147.sql  (run_id 5B26716C8C87E9BF)
+  ok
+[325/666] queries/tpch/sqlstorm_slope/breadth/505.sql  (run_id 953D610F2244DCE7)
+  ok
+[326/666] queries/tpch/sqlstorm_slope/breadth/30678.sql  (run_id D4459CF39BC8FCA3)
+  ok
+[327/666] queries/tpch/sqlstorm_slope/breadth/20436.sql  (run_id D90A1A1BC9A3EF2E)
+  ok
+[328/666] queries/tpch/sqlstorm_slope/breadth/16900.sql  (run_id 0740B79285C0EDAF)
+  ok
+[329/666] queries/tpch/sqlstorm_slope/breadth/6700.sql  (run_id 7C71A5561509C665)
+  ok
+[330/666] queries/tpch/sqlstorm_slope/breadth/13280.sql  (run_id 394066073F0D523C)
+  ok
+[331/666] queries/tpch/sqlstorm_slope/breadth/29774.sql  (run_id DBEE5472AA016E60)
+  ok
+[332/666] queries/tpch/sqlstorm_slope/breadth/20901.sql  (run_id CF2BF106423550AA)
+  ok
+[333/666] queries/tpch/sqlstorm_slope/breadth/5940.sql  (run_id 9BA63825E28BB316)
+  ok
+[334/666] queries/tpch/sqlstorm_slope/breadth/11626.sql  (run_id 63EEC44852C7C29D)
+  ok
+[335/666] queries/tpch/sqlstorm_slope/breadth/10649.sql  (run_id 13FF7CCC9C46BCC1)
+  ok
+[336/666] queries/tpch/sqlstorm_slope/breadth/1934.sql  (run_id F8D982FF33A25961)
+  ok
+[337/666] queries/tpch/sqlstorm_slope/breadth/13177.sql  (run_id 681AFA5C02955957)
+  ok
+[338/666] queries/tpch/sqlstorm_slope/breadth/6154.sql  (run_id 2FE021021D7050BC)
+  ok
+[339/666] queries/tpch/sqlstorm_slope/breadth/22254.sql  (run_id 9799987489AB6CA9)
+  ok
+[340/666] queries/tpch/sqlstorm_slope/breadth/27068.sql  (run_id 84CD6746C28CB9C3)
+  ok
+[341/666] queries/tpch/sqlstorm_slope/breadth/21759.sql  (run_id 50E5DAC5A7009600)
+  ok
+[342/666] queries/tpch/sqlstorm_slope/breadth/17006.sql  (run_id 34697A06F6741A2D)
+  ok
+[343/666] queries/tpch/sqlstorm_slope/breadth/10143.sql  (run_id 0EABF243B14FAAD7)
+  ok
+[344/666] queries/tpch/sqlstorm_slope/breadth/3463.sql  (run_id CD6D7A00D349FB65)
+  ok
+[345/666] queries/tpch/sqlstorm_slope/breadth/7872.sql  (run_id 4BCDE21A188D8BBD)
+  ok
+[346/666] queries/tpch/sqlstorm_slope/breadth/3463.sql  (run_id 6458D4194E589D24)
+  ok
+[347/666] queries/tpch/sqlstorm_slope/breadth/1629.sql  (run_id 561592C8A403A56F)
+  ok
+[348/666] queries/tpch/sqlstorm_slope/breadth/13196.sql  (run_id F5901DCE09CF5D0E)
+  ok
+[349/666] queries/tpch/sqlstorm_slope/breadth/505.sql  (run_id 21EE768C1D95851E)
+  ok
+[350/666] queries/tpch/sqlstorm_slope/breadth/7872.sql  (run_id 0A234A379DAAD240)
+  ok
+[351/666] queries/tpch/sqlstorm_slope/breadth/10459.sql  (run_id AE873A684E34386B)
+  ok
+[352/666] queries/tpch/sqlstorm_slope/breadth/28069.sql  (run_id BDA59ACB9766E4E7)
+  ok
+[353/666] queries/tpch/sqlstorm_slope/breadth/14777.sql  (run_id F1DC994A40DB62F2)
+  ok
+[354/666] queries/tpch/sqlstorm_slope/breadth/15102.sql  (run_id 3A78DFED09BAAC5E)
+  ok
+[355/666] queries/tpch/sqlstorm_slope/breadth/23619.sql  (run_id 98F5070505FDB7ED)
+  ok
+[356/666] queries/tpch/sqlstorm_slope/breadth/8101.sql  (run_id 2C6869B7A15BDE42)
+  ok
+[357/666] queries/tpch/sqlstorm_slope/breadth/8101.sql  (run_id 5C702B486151A96A)
+  ok
+[358/666] queries/tpch/sqlstorm_slope/breadth/18060.sql  (run_id A1907955683DEA94)
+  ok
+[359/666] queries/tpch/sqlstorm_slope/breadth/26396.sql  (run_id D0457228947714C4)
+  ok
+[360/666] queries/tpch/sqlstorm_slope/breadth/10649.sql  (run_id 5D876A928818FE20)
+  ok
+[361/666] queries/tpch/sqlstorm_slope/breadth/20436.sql  (run_id 70F1EB5D91750B4A)
+  ok
+[362/666] queries/tpch/sqlstorm_slope/breadth/6671.sql  (run_id D7CFB477DCCB2620)
+  ok
+[363/666] queries/tpch/sqlstorm_slope/breadth/6781.sql  (run_id 9039F4C6A7EE5BD5)
+  ok
+[364/666] queries/tpch/sqlstorm_slope/breadth/11418.sql  (run_id 2CBED17B37FCEA48)
+  ok
+[365/666] queries/tpch/sqlstorm_slope/breadth/26705.sql  (run_id BD11152D1F17A0FF)
+  ok
+[366/666] queries/tpch/sqlstorm_slope/breadth/27068.sql  (run_id 23DF1D09B4252A72)
+  ok
+[367/666] queries/tpch/sqlstorm_slope/breadth/1552.sql  (run_id 3ACB8A048AC10566)
+  ok
+[368/666] queries/tpch/sqlstorm_slope/breadth/29383.sql  (run_id C00C3575E921D422)
+  ok
+[369/666] queries/tpch/sqlstorm_slope/breadth/10075.sql  (run_id BF5683E3E7B67D96)
+  ok
+[370/666] queries/tpch/sqlstorm_slope/breadth/26061.sql  (run_id 350EFBCA0E567D02)
+  ok
+[371/666] queries/tpch/sqlstorm_slope/breadth/7909.sql  (run_id D36D3B7446B0C808)
+  ok
+[372/666] queries/tpch/sqlstorm_slope/breadth/18032.sql  (run_id AAFC8886BFABB3A8)
+  ok
+[373/666] queries/tpch/sqlstorm_slope/breadth/14002.sql  (run_id 671B0A7350E60226)
+  ok
+[374/666] queries/tpch/sqlstorm_slope/breadth/21010.sql  (run_id 8CB5AF930D45A574)
+  ok
+[375/666] queries/tpch/sqlstorm_slope/breadth/1576.sql  (run_id 8E8AE9AF56442BF7)
+  ok
+[376/666] queries/tpch/sqlstorm_slope/breadth/10015.sql  (run_id 6CF94DC29256FC7C)
+  ok
+[377/666] queries/tpch/sqlstorm_slope/breadth/10218.sql  (run_id C40B6D9397B06A88)
+  ok
+[378/666] queries/tpch/sqlstorm_slope/breadth/8619.sql  (run_id 181F22BAD6623C5C)
+  ok
+[379/666] queries/tpch/sqlstorm_slope/breadth/17679.sql  (run_id 9A16E63748B46968)
+  ok
+[380/666] queries/tpch/sqlstorm_slope/breadth/29233.sql  (run_id DDD5169980050740)
+  ok
+[381/666] queries/tpch/sqlstorm_slope/breadth/13074.sql  (run_id 4292E366C1EC3381)
+  ok
+[382/666] queries/tpch/sqlstorm_slope/breadth/5142.sql  (run_id 0427D65D1EECC6EB)
+  ok
+[383/666] queries/tpch/sqlstorm_slope/breadth/20901.sql  (run_id 744FBCA28534CF3D)
+  ok
+[384/666] queries/tpch/sqlstorm_slope/breadth/8544.sql  (run_id B0DF81CF99651CAF)
+  ok
+[385/666] queries/tpch/sqlstorm_slope/breadth/4765.sql  (run_id 21D29370649BFD78)
+  ok
+[386/666] queries/tpch/sqlstorm_slope/breadth/342.sql  (run_id 0A8626636CD87624)
+  ok
+[387/666] queries/tpch/sqlstorm_slope/breadth/25773.sql  (run_id AF8FB2A4A870FFB9)
+  ok
+[388/666] queries/tpch/sqlstorm_slope/breadth/13781.sql  (run_id 300A85DF7FFB8DCF)
+  ok
+[389/666] queries/tpch/sqlstorm_slope/breadth/21341.sql  (run_id BB93B548A56DA62B)
+  ok
+[390/666] queries/tpch/sqlstorm_slope/breadth/6019.sql  (run_id AEC76DEA14CD1F83)
+  ok
+[391/666] queries/tpch/sqlstorm_slope/breadth/14529.sql  (run_id 07BB53E77CE349F8)
+  ok
+[392/666] queries/tpch/sqlstorm_slope/breadth/28069.sql  (run_id 34ECE43B327EFD75)
+  ok
+[393/666] queries/tpch/sqlstorm_slope/breadth/14053.sql  (run_id DB42FA4CBBE3DC4B)
+  ok
+[394/666] queries/tpch/sqlstorm_slope/breadth/33383.sql  (run_id A6AB1B6D6306ADE0)
+  ok
+[395/666] queries/tpch/sqlstorm_slope/breadth/9706.sql  (run_id 05FCBA3A18B31719)
+  ok
+[396/666] queries/tpch/sqlstorm_slope/breadth/25945.sql  (run_id 81A76818CDB54131)
+  ok
+[397/666] queries/tpch/sqlstorm_slope/breadth/17679.sql  (run_id F32DB024DACDD7FC)
+  ok
+[398/666] queries/tpch/sqlstorm_slope/breadth/26423.sql  (run_id 89DC38331CFF2B94)
+  ok
+[399/666] queries/tpch/sqlstorm_slope/breadth/33217.sql  (run_id 9B34E9A9900A5CF2)
+  ok
+[400/666] queries/tpch/sqlstorm_slope/breadth/13690.sql  (run_id BEC14FD29C78ED74)
+  ok
+[401/666] queries/tpch/sqlstorm_slope/breadth/129.sql  (run_id FD386EDDB4D12B11)
+  ok
+[402/666] queries/tpch/sqlstorm_slope/breadth/12127.sql  (run_id A9785ECEC183C54F)
+  ok
+[403/666] queries/tpch/sqlstorm_slope/breadth/9959.sql  (run_id F23212889A1A5557)
+  ok
+[404/666] queries/tpch/sqlstorm_slope/breadth/13781.sql  (run_id CA5E0294616E5172)
+  ok
+[405/666] queries/tpch/sqlstorm_slope/breadth/13177.sql  (run_id 445B3AE4BCC5035E)
+  ok
+[406/666] queries/tpch/sqlstorm_slope/breadth/7283.sql  (run_id 30A8EA557F9148DD)
+  ok
+[407/666] queries/tpch/sqlstorm_slope/breadth/14043.sql  (run_id 4F1D97D7B1ADD541)
+  ok
+[408/666] queries/tpch/sqlstorm_slope/breadth/27798.sql  (run_id 0CC23E72179B3312)
+  ok
+[409/666] queries/tpch/sqlstorm_slope/breadth/18986.sql  (run_id E7ECE0FFF1F0151C)
+  ok
+[410/666] queries/tpch/sqlstorm_slope/breadth/14917.sql  (run_id 777EBF7A8366508F)
+  ok
+[411/666] queries/tpch/sqlstorm_slope/breadth/1396.sql  (run_id ABBE4B6D1A0FF5D4)
+  ok
+[412/666] queries/tpch/sqlstorm_slope/breadth/27068.sql  (run_id 9CAA68D5DD39AB3C)
+  ok
+[413/666] queries/tpch/sqlstorm_slope/breadth/27828.sql  (run_id B83945AEB1D62F56)
+  ok
+[414/666] queries/tpch/sqlstorm_slope/breadth/32060.sql  (run_id E1A05337C3DDBBAD)
+  ok
+[415/666] queries/tpch/sqlstorm_slope/breadth/12239.sql  (run_id E9B1660D72144CE3)
+  ok
+[416/666] queries/tpch/sqlstorm_slope/breadth/10488.sql  (run_id 226247B1C14A4A36)
+  ok
+[417/666] queries/tpch/sqlstorm_slope/breadth/12239.sql  (run_id 7079F42D51CA1724)
+  ok
+[418/666] queries/tpch/sqlstorm_slope/breadth/4137.sql  (run_id E9DF72E2BC133325)
+  ok
+[419/666] queries/tpch/sqlstorm_slope/breadth/16236.sql  (run_id E6B0DF64C345AF3C)
+  ok
+[420/666] queries/tpch/sqlstorm_slope/breadth/3102.sql  (run_id 47CFC319616B386F)
+  ok
+[421/666] queries/tpch/sqlstorm_slope/breadth/18637.sql  (run_id 4A8FBF66D9193C41)
+  ok
+[422/666] queries/tpch/sqlstorm_slope/breadth/14101.sql  (run_id D9A8E7D034C2765B)
+  ok
+[423/666] queries/tpch/sqlstorm_slope/breadth/7283.sql  (run_id C077D27E3C18DE86)
+  ok
+[424/666] queries/tpch/sqlstorm_slope/breadth/4439.sql  (run_id C4ECA1D34EE4FD81)
+  ok
+[425/666] queries/tpch/sqlstorm_slope/breadth/4496.sql  (run_id 36A3E1A9567D69C3)
+  ok
+[426/666] queries/tpch/sqlstorm_slope/breadth/10414.sql  (run_id 245CAEC8A8BD21B9)
+  ok
+[427/666] queries/tpch/sqlstorm_slope/breadth/14002.sql  (run_id 972FFB5530F6A2A1)
+  ok
+[428/666] queries/tpch/sqlstorm_slope/breadth/26842.sql  (run_id 46320F875EB0A1AD)
+  ok
+[429/666] queries/tpch/sqlstorm_slope/breadth/14043.sql  (run_id 2EC3DFCD396617C0)
+  ok
+[430/666] queries/tpch/sqlstorm_slope/breadth/12992.sql  (run_id DB9E241BDC89199B)
+  ok
+[431/666] queries/tpch/sqlstorm_slope/breadth/13918.sql  (run_id A5FC348ED0DEF5FE)
+  ok
+[432/666] queries/tpch/sqlstorm_slope/breadth/9959.sql  (run_id 91FC7908D80E37D7)
+  ok
+[433/666] queries/tpch/sqlstorm_slope/breadth/27163.sql  (run_id 207CC060E26B8CE6)
+  ok
+[434/666] queries/tpch/sqlstorm_slope/breadth/3102.sql  (run_id 333103B1C653404D)
+  ok
+[435/666] queries/tpch/sqlstorm_slope/breadth/23849.sql  (run_id 17780C7B1B192972)
+  ok
+[436/666] queries/tpch/sqlstorm_slope/breadth/12380.sql  (run_id E21261245B704857)
+  ok
+[437/666] queries/tpch/sqlstorm_slope/breadth/10459.sql  (run_id 5561B368F26E2292)
+  ok
+[438/666] queries/tpch/sqlstorm_slope/breadth/15102.sql  (run_id 1E329C67958653C8)
+  ok
+[439/666] queries/tpch/sqlstorm_slope/breadth/10013.sql  (run_id 75B7F87123763E7B)
+  ok
+[440/666] queries/tpch/sqlstorm_slope/breadth/30319.sql  (run_id 8054A2EEDCF7F3F4)
+  ok
+[441/666] queries/tpch/sqlstorm_slope/breadth/5043.sql  (run_id 6B152AB2F91DAB3B)
+  ok
+[442/666] queries/tpch/sqlstorm_slope/breadth/21201.sql  (run_id C3684611173F5339)
+  ok
+[443/666] queries/tpch/sqlstorm_slope/breadth/9323.sql  (run_id 5C2FAA5B7960DF3C)
+  ok
+[444/666] queries/tpch/sqlstorm_slope/breadth/5043.sql  (run_id 846A3F25553823B2)
+  ok
+[445/666] queries/tpch/sqlstorm_slope/breadth/18032.sql  (run_id B46A7FF84CBB33AF)
+  ok
+[446/666] queries/tpch/sqlstorm_slope/breadth/17006.sql  (run_id D70429A203008734)
+  ok
+[447/666] queries/tpch/sqlstorm_slope/breadth/4626.sql  (run_id 4243A76FF18010CF)
+  ok
+[448/666] queries/tpch/sqlstorm_slope/breadth/7346.sql  (run_id 02E2024699318A5E)
+  ok
+[449/666] queries/tpch/sqlstorm_slope/breadth/29188.sql  (run_id 3B352D8FFA2B8345)
+  ok
+[450/666] queries/tpch/sqlstorm_slope/breadth/27948.sql  (run_id B442F9C2209B2466)
+  ok
+[451/666] queries/tpch/sqlstorm_slope/breadth/13918.sql  (run_id 2A9E68394B4B8352)
+  ok
+[452/666] queries/tpch/sqlstorm_slope/breadth/28487.sql  (run_id 573CA9A032BA7D0C)
+  ok
+[453/666] queries/tpch/sqlstorm_slope/breadth/12239.sql  (run_id A4EFF1A411AF75D5)
+  ok
+[454/666] queries/tpch/sqlstorm_slope/breadth/16563.sql  (run_id 9FD2E79F86753E02)
+  ok
+[455/666] queries/tpch/sqlstorm_slope/breadth/1934.sql  (run_id F9A43A4AB3A47F94)
+  ok
+[456/666] queries/tpch/sqlstorm_slope/breadth/18637.sql  (run_id C77C8B22C2DE18E7)
+  ok
+[457/666] queries/tpch/sqlstorm_slope/breadth/27163.sql  (run_id 57A1F5AFB6144986)
+  ok
+[458/666] queries/tpch/sqlstorm_slope/breadth/25120.sql  (run_id A741A518D4B8B6B7)
+  ok
+[459/666] queries/tpch/sqlstorm_slope/breadth/13781.sql  (run_id 519DAD8EA6512773)
+  ok
+[460/666] queries/tpch/sqlstorm_slope/breadth/31494.sql  (run_id AE6D495F9D064B6A)
+  ok
+[461/666] queries/tpch/sqlstorm_slope/breadth/11394.sql  (run_id 6D804450222152A2)
+  ok
+[462/666] queries/tpch/sqlstorm_slope/breadth/11034.sql  (run_id 023640ABA35D85BC)
+  ok
+[463/666] queries/tpch/sqlstorm_slope/breadth/12992.sql  (run_id E1BE215C7254E7BA)
+  ok
+[464/666] queries/tpch/sqlstorm_slope/breadth/11335.sql  (run_id B5D0435380F8C62F)
+  ok
+[465/666] queries/tpch/sqlstorm_slope/breadth/16236.sql  (run_id 7492BFC9586BB150)
+  ok
+[466/666] queries/tpch/sqlstorm_slope/breadth/27386.sql  (run_id 5914BB6CE0E5BA43)
+  ok
+[467/666] queries/tpch/sqlstorm_slope/breadth/12380.sql  (run_id 667D0F3EC5E8B311)
+  ok
+[468/666] queries/tpch/sqlstorm_slope/breadth/10218.sql  (run_id AFFA3D2977156950)
+  ok
+[469/666] queries/tpch/sqlstorm_slope/breadth/25517.sql  (run_id BB4B38127517EC58)
+  ok
+[470/666] queries/tpch/sqlstorm_slope/breadth/32529.sql  (run_id BBA31C36F998A876)
+  ok
+[471/666] queries/tpch/sqlstorm_slope/breadth/2186.sql  (run_id 09109EE200EEE96D)
+  ok
+[472/666] queries/tpch/sqlstorm_slope/breadth/2862.sql  (run_id 8C31A09850F778FA)
+  ok
+[473/666] queries/tpch/sqlstorm_slope/breadth/1028.sql  (run_id 51238A108A36EAF7)
+  ok
+[474/666] queries/tpch/sqlstorm_slope/breadth/3102.sql  (run_id 08E300E23173509E)
+  ok
+[475/666] queries/tpch/sqlstorm_slope/breadth/25757.sql  (run_id 217F27BA7E3D142A)
+  ok
+[476/666] queries/tpch/sqlstorm_slope/breadth/4137.sql  (run_id 01B4D2D9C1C0EFE7)
+  ok
+[477/666] queries/tpch/sqlstorm_slope/breadth/4663.sql  (run_id 7903E4D56BAC165E)
+  ok
+[478/666] queries/tpch/sqlstorm_slope/breadth/10013.sql  (run_id 96C562E84C131A05)
+  ok
+[479/666] queries/tpch/sqlstorm_slope/breadth/27203.sql  (run_id D2155E4687E0ACF4)
+  ok
+[480/666] queries/tpch/sqlstorm_slope/breadth/33703.sql  (run_id C73702DACDA3FDB9)
+  ok
+[481/666] queries/tpch/sqlstorm_slope/breadth/20160.sql  (run_id 24CDAEA4AEA26F93)
+  ok
+[482/666] queries/tpch/sqlstorm_slope/breadth/16900.sql  (run_id 72B423637965A319)
+  ok
+[483/666] queries/tpch/sqlstorm_slope/breadth/20177.sql  (run_id 469BD82AC9061E56)
+  ok
+[484/666] queries/tpch/sqlstorm_slope/breadth/33655.sql  (run_id 9EA3B3D00050ADA3)
+  ok
+[485/666] queries/tpch/sqlstorm_slope/breadth/9706.sql  (run_id B38C2CC5801F525D)
+  ok
+[486/666] queries/tpch/sqlstorm_slope/breadth/27308.sql  (run_id 5E5D696DB6B57A12)
+  ok
+[487/666] queries/tpch/sqlstorm_slope/breadth/4186.sql  (run_id BBFD168C28A2E425)
+  ok
+[488/666] queries/tpch/sqlstorm_slope/breadth/28716.sql  (run_id B7F8BA5F61EDA8A2)
+  ok
+[489/666] queries/tpch/sqlstorm_slope/breadth/13196.sql  (run_id BA4E59CDC6FAC06B)
+  ok
+[490/666] queries/tpch/sqlstorm_slope/breadth/29188.sql  (run_id 1EEA0A81BCAD4A5D)
+  ok
+[491/666] queries/tpch/sqlstorm_slope/breadth/29627.sql  (run_id AA4DD00508A35B78)
+  ok
+[492/666] queries/tpch/sqlstorm_slope/breadth/8619.sql  (run_id 223438C70DB9DD19)
+  ok
+[493/666] queries/tpch/sqlstorm_slope/breadth/7464.sql  (run_id F9A5AD48D60D2828)
+  ok
+[494/666] queries/tpch/sqlstorm_slope/breadth/4137.sql  (run_id 0B3C0B0431D4A515)
+  ok
+[495/666] queries/tpch/sqlstorm_slope/breadth/28434.sql  (run_id 86B19936EE5CBD74)
+  ok
+[496/666] queries/tpch/sqlstorm_slope/breadth/5940.sql  (run_id C52C02048CC8953D)
+  ok
+[497/666] queries/tpch/sqlstorm_slope/breadth/7075.sql  (run_id B4425CEA4E4BFF26)
+  ok
+[498/666] queries/tpch/sqlstorm_slope/breadth/4439.sql  (run_id 31C36A9F4C07661E)
+  ok
+[499/666] queries/tpch/sqlstorm_slope/breadth/15671.sql  (run_id 1AAD60D296E8524F)
+  ok
+[500/666] queries/tpch/sqlstorm_slope/breadth/26061.sql  (run_id 9183DF9CD848E807)
+  ok
+[501/666] queries/tpch/sqlstorm_slope/breadth/5961.sql  (run_id 44DFA438AC4E00D1)
+  ok
+[502/666] queries/tpch/sqlstorm_slope/breadth/7346.sql  (run_id A62DAFBB889B38A0)
+  ok
+[503/666] queries/tpch/sqlstorm_slope/breadth/2988.sql  (run_id 1EB3139938153BD7)
+  ok
+[504/666] queries/tpch/sqlstorm_slope/breadth/16900.sql  (run_id CDBB0F40B4B7D069)
+  ok
+[505/666] queries/tpch/sqlstorm_slope/breadth/30223.sql  (run_id 38A9AB127C06386E)
+  ok
+[506/666] queries/tpch/sqlstorm_slope/breadth/3285.sql  (run_id 4F9D590905E65A32)
+  ok
+[507/666] queries/tpch/sqlstorm_slope/breadth/16563.sql  (run_id C38911081C74824B)
+  ok
+[508/666] queries/tpch/sqlstorm_slope/breadth/10459.sql  (run_id 93B6A1900614E84C)
+  ok
+[509/666] queries/tpch/sqlstorm_slope/breadth/28601.sql  (run_id 51149E64B648F4A6)
+  ok
+[510/666] queries/tpch/sqlstorm_slope/breadth/18821.sql  (run_id EED23A8D021084CA)
+  ok
+[511/666] queries/tpch/sqlstorm_slope/breadth/10015.sql  (run_id DDBF6FF4A92F3B14)
+  ok
+[512/666] queries/tpch/sqlstorm_slope/breadth/2888.sql  (run_id E8597E8FAD12F5C4)
+  ok
+[513/666] queries/tpch/sqlstorm_slope/breadth/20160.sql  (run_id 92C022792F2E7CAE)
+  ok
+[514/666] queries/tpch/sqlstorm_slope/breadth/19673.sql  (run_id B7BC4D9311756208)
+  ok
+[515/666] queries/tpch/sqlstorm_slope/breadth/2862.sql  (run_id 175EFD017C5D797A)
+  ok
+[516/666] queries/tpch/sqlstorm_slope/breadth/505.sql  (run_id 4D2ADE74A4F474DA)
+  ok
+[517/666] queries/tpch/sqlstorm_slope/breadth/26034.sql  (run_id BD1692DC06AD1415)
+  ok
+[518/666] queries/tpch/sqlstorm_slope/breadth/28716.sql  (run_id EF53EBDE11460228)
+  ok
+[519/666] queries/tpch/sqlstorm_slope/breadth/30378.sql  (run_id BC718CE5AA063AF9)
+  ok
+[520/666] queries/tpch/sqlstorm_slope/breadth/21201.sql  (run_id 114D1589429C00E1)
+  ok
+[521/666] queries/tpch/sqlstorm_slope/breadth/23438.sql  (run_id 041EA9FB86BEFBC3)
+  ok
+[522/666] queries/tpch/sqlstorm_slope/breadth/11504.sql  (run_id EDE0555666F64B2D)
+  ok
+[523/666] queries/tpch/sqlstorm_slope/breadth/5951.sql  (run_id A18A7816477D870B)
+  ok
+[524/666] queries/tpch/sqlstorm_slope/breadth/34917.sql  (run_id D9F75EDA1E5C0215)
+  ok
+[525/666] queries/tpch/sqlstorm_slope/breadth/7909.sql  (run_id 3664FCC40021C0A5)
+  ok
+[526/666] queries/tpch/sqlstorm_slope/breadth/3285.sql  (run_id 39AF517C7AF72006)
+  ok
+[527/666] queries/tpch/sqlstorm_slope/breadth/19673.sql  (run_id AD117334FCB307E7)
+  ok
+[528/666] queries/tpch/sqlstorm_slope/breadth/7405.sql  (run_id 4AF5A8D570A152C3)
+  ok
+[529/666] queries/tpch/sqlstorm_slope/breadth/28601.sql  (run_id 093EBA37A607E3ED)
+  ok
+[530/666] queries/tpch/sqlstorm_slope/breadth/22254.sql  (run_id 50C42A00CF7EF751)
+  ok
+[531/666] queries/tpch/sqlstorm_slope/breadth/21201.sql  (run_id 12F30E3296D60E2F)
+  ok
+[532/666] queries/tpch/sqlstorm_slope/breadth/14777.sql  (run_id 7A7E6C58C54CB45E)
+  ok
+[533/666] queries/tpch/sqlstorm_slope/breadth/30678.sql  (run_id C8910B9A372E4A31)
+  ok
+[534/666] queries/tpch/sqlstorm_slope/breadth/4663.sql  (run_id FDB10FC0C47B4EB7)
+  ok
+[535/666] queries/tpch/sqlstorm_slope/breadth/10042.sql  (run_id 4BE669CD59CB39A3)
+  ok
+[536/666] queries/tpch/sqlstorm_slope/breadth/7075.sql  (run_id DB612E70DF1397E4)
+  ok
+[537/666] queries/tpch/sqlstorm_slope/breadth/12988.sql  (run_id D67129E270EBD108)
+  ok
+[538/666] queries/tpch/sqlstorm_slope/breadth/8682.sql  (run_id DCADEDEB8E12A47E)
+  ok
+[539/666] queries/tpch/sqlstorm_slope/breadth/25517.sql  (run_id C4FF643C514E293B)
+  ok
+[540/666] queries/tpch/sqlstorm_slope/breadth/13204.sql  (run_id 7FC86B281D636DD2)
+  ok
+[541/666] queries/tpch/sqlstorm_slope/breadth/8064.sql  (run_id CA5A51F9CE950F2D)
+  ok
+[542/666] queries/tpch/sqlstorm_slope/breadth/27647.sql  (run_id EE604689AB7DEA12)
+  ok
+[543/666] queries/tpch/sqlstorm_slope/breadth/3463.sql  (run_id FA72BEAC9005F4C8)
+  ok
+[544/666] queries/tpch/sqlstorm_slope/breadth/23619.sql  (run_id F834C1EBF058918B)
+  ok
+[545/666] queries/tpch/sqlstorm_slope/breadth/18060.sql  (run_id 4CDB9388DF7FCDA8)
+  ok
+[546/666] queries/tpch/sqlstorm_slope/breadth/27777.sql  (run_id 28EEA5FF5C793F07)
+  ok
+[547/666] queries/tpch/sqlstorm_slope/breadth/12677.sql  (run_id DC3CCA6FDDF07B2B)
+  ok
+[548/666] queries/tpch/sqlstorm_slope/breadth/7428.sql  (run_id FEBD8834901FFBCA)
+  ok
+[549/666] queries/tpch/sqlstorm_slope/breadth/20160.sql  (run_id 7270B18021BF83FF)
+  ok
+[550/666] queries/tpch/sqlstorm_slope/breadth/29616.sql  (run_id 9AD56D9FCE201FD4)
+  ok
+[551/666] queries/tpch/sqlstorm_slope/breadth/29821.sql  (run_id 41CF3E48BCBE17FC)
+  ok
+[552/666] queries/tpch/sqlstorm_slope/breadth/13177.sql  (run_id 3C459C8C12C38E96)
+  ok
+[553/666] queries/tpch/sqlstorm_slope/breadth/10222.sql  (run_id E1E563198E0E1078)
+  ok
+[554/666] queries/tpch/sqlstorm_slope/breadth/7872.sql  (run_id 1645A28ABBBD444C)
+  ok
+[555/666] queries/tpch/sqlstorm_slope/breadth/7346.sql  (run_id F5DFA259F4972C2A)
+  ok
+[556/666] queries/tpch/sqlstorm_slope/breadth/10143.sql  (run_id A9FB33B0B9D76A1C)
+  ok
+[557/666] queries/tpch/sqlstorm_slope/breadth/30607.sql  (run_id E5A5A998357C1A7A)
+  ok
+[558/666] queries/tpch/sqlstorm_slope/breadth/26705.sql  (run_id F2100CD0AE9897CB)
+  ok
+[559/666] queries/tpch/sqlstorm_slope/breadth/7999.sql  (run_id 417E048830E032C4)
+  ok
+[560/666] queries/tpch/sqlstorm_slope/breadth/27470.sql  (run_id 84EED332C2C8CD6C)
+  ok
+[561/666] queries/tpch/sqlstorm_slope/breadth/32529.sql  (run_id 69E6E9D7E34DA44E)
+  ok
+[562/666] queries/tpch/sqlstorm_slope/breadth/3285.sql  (run_id C38E250EF23184A9)
+  ok
+[563/666] queries/tpch/sqlstorm_slope/breadth/11349.sql  (run_id D1EE72CE3C48E91F)
+  ok
+[564/666] queries/tpch/sqlstorm_slope/breadth/28057.sql  (run_id 0A6E51EA340E1A5C)
+  ok
+[565/666] queries/tpch/sqlstorm_slope/breadth/33383.sql  (run_id 30BEF69CB3A16971)
+  ok
+[566/666] queries/tpch/sqlstorm_slope/breadth/28067.sql  (run_id 0D2523172BE9278F)
+  ok
+[567/666] queries/tpch/sqlstorm_slope/breadth/26061.sql  (run_id A53B33997294DBBF)
+  ok
+[568/666] queries/tpch/sqlstorm_slope/breadth/29043.sql  (run_id CDB2E43598BDB11C)
+  ok
+[569/666] queries/tpch/sqlstorm_slope/breadth/10222.sql  (run_id 2650D66365878161)
+  ok
+[570/666] queries/tpch/sqlstorm_slope/breadth/16293.sql  (run_id 70D9BDDECCF57A63)
+  ok
+[571/666] queries/tpch/sqlstorm_slope/breadth/6700.sql  (run_id 046F86D1DEB8203E)
+  ok
+[572/666] queries/tpch/sqlstorm_slope/breadth/17006.sql  (run_id A98876D0446507AF)
+  ok
+[573/666] queries/tpch/sqlstorm_slope/breadth/27386.sql  (run_id 57AA5763AA71C010)
+  ok
+[574/666] queries/tpch/sqlstorm_slope/breadth/30678.sql  (run_id 42AA0188C8FFDD5C)
+  ok
+[575/666] queries/tpch/sqlstorm_slope/breadth/257.sql  (run_id 8059406E3B35298F)
+  ok
+[576/666] queries/tpch/sqlstorm_slope/breadth/23619.sql  (run_id 8613513F1A4F3EA5)
+  ok
+[577/666] queries/tpch/sqlstorm_slope/breadth/25120.sql  (run_id 4C86926C0002EA5B)
+  ok
+[578/666] queries/tpch/sqlstorm_slope/breadth/12051.sql  (run_id 68D4269246B42320)
+  ok
+[579/666] queries/tpch/sqlstorm_slope/breadth/12430.sql  (run_id 7601111AE94CB7EF)
+  ok
+[580/666] queries/tpch/sqlstorm_slope/breadth/32060.sql  (run_id 28D1E6277AA8D343)
+  ok
+[581/666] queries/tpch/sqlstorm_slope/breadth/9323.sql  (run_id E1C16F871E9596F0)
+  ok
+[582/666] queries/tpch/sqlstorm_slope/breadth/30319.sql  (run_id F798653C605C7588)
+  ok
+[583/666] queries/tpch/sqlstorm_slope/breadth/5071.sql  (run_id B9E49BF387BDC92D)
+  ok
+[584/666] queries/tpch/sqlstorm_slope/breadth/25859.sql  (run_id 132C7BD8B7656FCD)
+  ok
+[585/666] queries/tpch/sqlstorm_slope/breadth/30378.sql  (run_id E8B88D98020DB873)
+  ok
+[586/666] queries/tpch/sqlstorm_slope/breadth/10414.sql  (run_id 138387C9E5DC1608)
+  ok
+[587/666] queries/tpch/sqlstorm_slope/breadth/21759.sql  (run_id BF5767612FA95191)
+  ok
+[588/666] queries/tpch/sqlstorm_slope/breadth/23849.sql  (run_id E69C5F6107F7E001)
+  ok
+[589/666] queries/tpch/sqlstorm_slope/breadth/24422.sql  (run_id DF4D8FB7D9F5C315)
+  ok
+[590/666] queries/tpch/sqlstorm_slope/breadth/8682.sql  (run_id 59A75F7DFC0862C7)
+  ok
+[591/666] queries/tpch/sqlstorm_slope/breadth/16236.sql  (run_id D5C465DAD8BEC531)
+  ok
+[592/666] queries/tpch/sqlstorm_slope/breadth/9147.sql  (run_id 7E6747D84BEE8CB1)
+  ok
+[593/666] queries/tpch/sqlstorm_slope/breadth/7981.sql  (run_id 6C747C75BDD98827)
+  ok
+[594/666] queries/tpch/sqlstorm_slope/breadth/32319.sql  (run_id 5D5E1A909D6E1643)
+  ok
+[595/666] queries/tpch/sqlstorm_slope/breadth/27580.sql  (run_id 2B7A51DFD49D6A2D)
+  ok
+[596/666] queries/tpch/sqlstorm_slope/breadth/4439.sql  (run_id 598B9F5382F240B6)
+  ok
+[597/666] queries/tpch/sqlstorm_slope/breadth/29383.sql  (run_id 954EC7B53D1467CD)
+  ok
+[598/666] queries/tpch/sqlstorm_slope/breadth/1707.sql  (run_id 2C5131903111C53E)
+  ok
+[599/666] queries/tpch/sqlstorm_slope/breadth/28487.sql  (run_id D8634E2AA0FCFB5A)
+  ok
+[600/666] queries/tpch/sqlstorm_slope/breadth/13447.sql  (run_id 3B42A19E9C4E09E0)
+  ok
+[601/666] queries/tpch/sqlstorm_slope/breadth/8064.sql  (run_id 3BE8988B807E001D)
+  ok
+[602/666] queries/tpch/sqlstorm_slope/breadth/1552.sql  (run_id 5C78DC1E2DD4B03C)
+  ok
+[603/666] queries/tpch/sqlstorm_slope/breadth/257.sql  (run_id 94C7F3452D78617C)
+  ok
+[604/666] queries/tpch/sqlstorm_slope/breadth/8064.sql  (run_id 69A1B9E9A5808EC2)
+  ok
+[605/666] queries/tpch/sqlstorm_slope/breadth/12049.sql  (run_id AD7C019DC5B0640E)
+  ok
+[606/666] queries/tpch/sqlstorm_slope/breadth/4496.sql  (run_id 2E7BFFE79BB0E2F4)
+  ok
+[607/666] queries/tpch/sqlstorm_slope/breadth/7999.sql  (run_id 3E48894BE6A94B47)
+  ok
+[608/666] queries/tpch/sqlstorm_slope/breadth/14002.sql  (run_id 2E6EC3BAD24DCCFF)
+  ok
+[609/666] queries/tpch/sqlstorm_slope/breadth/834.sql  (run_id 9774D66A1E64FDBA)
+  ok
+[610/666] queries/tpch/sqlstorm_slope/breadth/6154.sql  (run_id 8D84F41EB25FA972)
+  ok
+[611/666] queries/tpch/sqlstorm_slope/breadth/5961.sql  (run_id 528D5C961ED59BCA)
+  ok
+[612/666] queries/tpch/sqlstorm_slope/breadth/15906.sql  (run_id 2D2D96B085C62740)
+  ok
+[613/666] queries/tpch/sqlstorm_slope/breadth/32060.sql  (run_id 1C1CEF8B852256D9)
+  ok
+[614/666] queries/tpch/sqlstorm_slope/breadth/11720.sql  (run_id 9BCBF22EB15EE825)
+  ok
+[615/666] queries/tpch/sqlstorm_slope/breadth/21010.sql  (run_id 10DE46E65B5F1ACB)
+  ok
+[616/666] queries/tpch/sqlstorm_slope/breadth/12430.sql  (run_id C2F465FFD5610607)
+  ok
+[617/666] queries/tpch/sqlstorm_slope/breadth/5043.sql  (run_id BD5C0A7DF61F12AF)
+  ok
+[618/666] queries/tpch/sqlstorm_slope/breadth/257.sql  (run_id 40F2D3C00F120E6A)
+  ok
+[619/666] queries/tpch/sqlstorm_slope/breadth/29821.sql  (run_id AAA1206ED9D4BAAC)
+  ok
+[620/666] queries/tpch/sqlstorm_slope/breadth/1629.sql  (run_id 2AAECE62DF3F6FE5)
+  ok
+[621/666] queries/tpch/sqlstorm_slope/breadth/9147.sql  (run_id B160025EB1551745)
+  ok
+[622/666] queries/tpch/sqlstorm_slope/breadth/12127.sql  (run_id 47F320FA1D3FC660)
+  ok
+[623/666] queries/tpch/sqlstorm_slope/breadth/26559.sql  (run_id 48A46E239B2CE904)
+  ok
+[624/666] queries/tpch/sqlstorm_slope/breadth/27577.sql  (run_id 54425A96358B585E)
+  ok
+[625/666] queries/tpch/sqlstorm_slope/breadth/20177.sql  (run_id 5CC41BBD3A821BB0)
+  ok
+[626/666] queries/tpch/sqlstorm_slope/breadth/14199.sql  (run_id 24117DFC3FD62234)
+  ok
+[627/666] queries/tpch/sqlstorm_slope/breadth/18637.sql  (run_id BAC7E3E1032A084E)
+  ok
+[628/666] queries/tpch/sqlstorm_slope/breadth/7981.sql  (run_id B36F8F3B017560A1)
+  ok
+[629/666] queries/tpch/sqlstorm_slope/breadth/14053.sql  (run_id 228B4B08435CCBB9)
+  ok
+[630/666] queries/tpch/sqlstorm_slope/breadth/28716.sql  (run_id E6BB452C8FC0AB14)
+  ok
+[631/666] queries/tpch/sqlstorm_slope/breadth/7845.sql  (run_id 985371BAF1186D32)
+  ok
+[632/666] queries/tpch/sqlstorm_slope/breadth/25757.sql  (run_id 212DB0383D3F3C01)
+  ok
+[633/666] queries/tpch/sqlstorm_slope/breadth/18986.sql  (run_id 1271B20A6782EF80)
+  ok
+[634/666] queries/tpch/sqlstorm_slope/breadth/1552.sql  (run_id 3CE5BECABBD6CAB7)
+  ok
+[635/666] queries/tpch/sqlstorm_slope/breadth/11716.sql  (run_id B95053448191D9F6)
+  ok
+[636/666] queries/tpch/sqlstorm_slope/breadth/26034.sql  (run_id 10719C3A0271D289)
+  ok
+[637/666] queries/tpch/sqlstorm_slope/breadth/27470.sql  (run_id F8E8B0CC3D2AFA2E)
+  ok
+[638/666] queries/tpch/sqlstorm_slope/breadth/33655.sql  (run_id 2ED207F451105371)
+  ok
+[639/666] queries/tpch/sqlstorm_slope/breadth/11418.sql  (run_id 49BEB3C16731777A)
+  ok
+[640/666] queries/tpch/sqlstorm_slope/breadth/14621.sql  (run_id 7016B523742D3DBE)
+  ok
+[641/666] queries/tpch/sqlstorm_slope/breadth/26423.sql  (run_id BCCA65729FBA20F3)
+  ok
+[642/666] queries/tpch/sqlstorm_slope/breadth/28434.sql  (run_id 5D6B8E6CD0E2A545)
+  ok
+[643/666] queries/tpch/sqlstorm_slope/breadth/12049.sql  (run_id 987829013F51548F)
+  ok
+[644/666] queries/tpch/sqlstorm_slope/breadth/12051.sql  (run_id 2D64DD9675600847)
+  ok
+[645/666] queries/tpch/sqlstorm_slope/breadth/17094.sql  (run_id 0EEB476CD96E8398)
+  ok
+[646/666] queries/tpch/sqlstorm_slope/breadth/33217.sql  (run_id 8334EF680857E998)
+  ok
+[647/666] queries/tpch/sqlstorm_slope/breadth/4276.sql  (run_id 2FCBBB0F1413740A)
+  ok
+[648/666] queries/tpch/sqlstorm_slope/breadth/9037.sql  (run_id C239AC42D301CECF)
+  ok
+[649/666] queries/tpch/sqlstorm_slope/breadth/2186.sql  (run_id 6FABCB376035253A)
+  ok
+[650/666] queries/tpch/sqlstorm_slope/breadth/18821.sql  (run_id F8ADED9DBAC366BF)
+  ok
+[651/666] queries/tpch/sqlstorm_slope/breadth/13918.sql  (run_id 2E7C3F5EC495EDC7)
+  ok
+[652/666] queries/tpch/sqlstorm_slope/breadth/20177.sql  (run_id F8F5F88351A9B8E5)
+  ok
+[653/666] queries/tpch/sqlstorm_slope/breadth/7405.sql  (run_id CDBD80ED1C936A4D)
+  ok
+[654/666] queries/tpch/sqlstorm_slope/breadth/11394.sql  (run_id 6AE0C3C0FB042FFF)
+  ok
+[655/666] queries/tpch/sqlstorm_slope/breadth/27470.sql  (run_id 8CBCBF9E5840BE2E)
+  ok
+[656/666] queries/tpch/sqlstorm_slope/breadth/30378.sql  (run_id 2059EFE9C49F87EB)
+  ok
+[657/666] queries/tpch/sqlstorm_slope/breadth/18821.sql  (run_id 9D55A4ED75C70408)
+  ok
+[658/666] queries/tpch/sqlstorm_slope/breadth/13170.sql  (run_id 0714CB5CDB8D967C)
+  ok
+[659/666] queries/tpch/sqlstorm_slope/breadth/27577.sql  (run_id 2AAD2B072A8F4F30)
+  ok
+[660/666] queries/tpch/sqlstorm_slope/breadth/11350.sql  (run_id 3EDEB1AE175B0D27)
+  ok
+[661/666] queries/tpch/sqlstorm_slope/breadth/8694.sql  (run_id 7FCCDD1F82163292)
+  ok
+[662/666] queries/tpch/sqlstorm_slope/breadth/29627.sql  (run_id 46478BE5B5FF3474)
+  ok
+[663/666] queries/tpch/sqlstorm_slope/breadth/27798.sql  (run_id C12DE74BE52972E6)
+  ok
+[664/666] queries/tpch/sqlstorm_slope/breadth/834.sql  (run_id ACA1E6446E286BB8)
+  ok
+[665/666] queries/tpch/sqlstorm_slope/breadth/11198.sql  (run_id F79330F291368486)
+  ok
+[666/666] queries/tpch/sqlstorm_slope/breadth/9031.sql  (run_id E15D37C2B3EEEB01)
+  ok
+clock_control: no_turbo restored to 0
+clock_control: governor restored to powersave
+clock_control: max_freq restored to 3600000 kHz
+run_id:        breadth_20260921T230207Z
+started_utc:   2026-09-22T11:03:56Z
+finished_utc:  2026-09-23T06:42:07Z
+total_runtime: 19:38:11  (70691 seconds)   avg_per_entry: 106s
+entries:       666   ok: 666   failed: 0
+-- parameters --
+pg:                 18
+db:                 tpch_idx
+queries_dir:        queries/tpch/sqlstorm_slope/breadth
+queries:            222
+repeats:            1
+batch_sizes:        1 2 4 8 16
+runs_per_size:      1
+warmup:             2
+batch_cap_slow:     8 (slow_copy_sec 6)
+statement_timeout:  60s
+workers:            planner default
+port:               5434
+logs_root:          logs/slope_sample/warm_stepup
+run_dir:            logs/slope_sample/warm_stepup/breadth_20260921T230207Z
+order_file:         logs/slope_sample/order_breadth.txt
+saved_order:        logs/slope_sample/warm_stepup/breadth_20260921T230207Z/run_order_breadth_20260921T230207Z.txt
+-- thermal / clock --
+thermal_policy:     gate T_LO=55 T_HI=60 PREHEAT_MAX_S=60 COOLDOWN_MAX_S=120
+fix_clock:          1
+clock_max_khz:      2500000
+clock_no_turbo: 0
+clock_governor: performance
+clock_min_freq_khz: 400000
+clock_max_freq_khz: 2500000
+rapl_pl1_w:         22.0
+rapl_pl1_tau_s:     27.98
+rapl_pl2_w:         44.0
+dmesg_throttle_msgs: 0 during run (0 total)
+
+warm step-up done: 666 ok, 0 failed of 666 entries in 19:38:11
+  results dir: logs/slope_sample/warm_stepup/breadth_20260921T230207Z/  (query_timing_tpch_idx.csv, ..., summary.txt)
+  order: logs/slope_sample/warm_stepup/breadth_20260921T230207Z/run_order_breadth_20260921T230207Z.txt   console: logs/slope_sample/warm_stepup/breadth_20260921T230207Z/console.log
+== done 06:42:07Z: reference exit 0, breadth exit 0
+===== detach.sh end 2026-09-23T06:42:07Z  exit 0  duration 31:40:00

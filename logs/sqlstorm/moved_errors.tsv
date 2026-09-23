@@ -1,0 +1,347 @@
+queries/tpch/SQLStorm/1025.sql	FULL JOIN is only supported with merge-joinable or hash-joinable join conditions
+queries/tpch/SQLStorm/1449.sql	FULL JOIN is only supported with merge-joinable or hash-joinable join conditions
+queries/tpch/SQLStorm/1637.sql	FULL JOIN is only supported with merge-joinable or hash-joinable join conditions
+queries/tpch/SQLStorm/1741.sql	function string_agg(character) does not exist
+queries/tpch/SQLStorm/1807.sql	column "o.o_orderstatus" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/1910.sql	FULL JOIN is only supported with merge-joinable or hash-joinable join conditions
+queries/tpch/SQLStorm/1914.sql	function string_agg(character varying) does not exist
+queries/tpch/SQLStorm/20001.sql	function string_agg(character) does not exist
+queries/tpch/SQLStorm/20024.sql	column "p.p_retailprice" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/20096.sql	recursive query "supplierhierarchy" column 5 has type character varying(255) in non-recursive term but type character varying overall
+queries/tpch/SQLStorm/20222.sql	FULL JOIN is only supported with merge-joinable or hash-joinable join conditions
+queries/tpch/SQLStorm/20261.sql	column "s.s_acctbal" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/20262.sql	column "s.s_acctbal" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/20297.sql	recursive query "supplier_tree" column 3 has type numeric(15,2) in non-recursive term but type numeric overall
+queries/tpch/SQLStorm/20358.sql	FULL JOIN is only supported with merge-joinable or hash-joinable join conditions
+queries/tpch/SQLStorm/20472.sql	column "s.s_nationkey" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/20515.sql	recursive query "supplierhierarchy" column 4 has type text in non-recursive term but type integer overall
+queries/tpch/SQLStorm/20541.sql	FULL JOIN is only supported with merge-joinable or hash-joinable join conditions
+queries/tpch/SQLStorm/20545.sql	column "s.s_acctbal" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/20581.sql	recursive query "supplierhierarchy" column 3 has type numeric(15,2) in non-recursive term but type numeric overall
+queries/tpch/SQLStorm/20634.sql	FULL JOIN is only supported with merge-joinable or hash-joinable join conditions
+queries/tpch/SQLStorm/20689.sql	recursive query "orderdetail" column 3 has type numeric(15,2) in non-recursive term but type numeric overall
+queries/tpch/SQLStorm/20743.sql	function string_agg(text) does not exist
+queries/tpch/SQLStorm/20775.sql	FULL JOIN is only supported with merge-joinable or hash-joinable join conditions
+queries/tpch/SQLStorm/20851.sql	column "c.c_mktsegment" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/20886.sql	FULL JOIN is only supported with merge-joinable or hash-joinable join conditions
+queries/tpch/SQLStorm/20907.sql	FULL JOIN is only supported with merge-joinable or hash-joinable join conditions
+queries/tpch/SQLStorm/20932.sql	function string_agg(text) does not exist
+queries/tpch/SQLStorm/20960.sql	recursive reference to query "priceanalysis" must not appear within a subquery
+queries/tpch/SQLStorm/20963.sql	column "o.o_totalprice" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/2100.sql	function string_agg(character) does not exist
+queries/tpch/SQLStorm/21050.sql	column "o.o_orderdate" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/21068.sql	recursive query "part_price_data" column 2 has type numeric(15,2) in non-recursive term but type numeric overall
+queries/tpch/SQLStorm/21173.sql	column "o.o_totalprice" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/21182.sql	column "o.o_orderstatus" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/21235.sql	function string_agg(text) does not exist
+queries/tpch/SQLStorm/21256.sql	column "o.o_orderdate" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/21313.sql	column "o.o_totalprice" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/21372.sql	FULL JOIN is only supported with merge-joinable or hash-joinable join conditions
+queries/tpch/SQLStorm/21551.sql	function string_agg(character varying) does not exist
+queries/tpch/SQLStorm/21556.sql	FULL JOIN is only supported with merge-joinable or hash-joinable join conditions
+queries/tpch/SQLStorm/2169.sql	FULL JOIN is only supported with merge-joinable or hash-joinable join conditions
+queries/tpch/SQLStorm/21702.sql	column "avg_high_value" does not exist
+queries/tpch/SQLStorm/21714.sql	column "s.s_nationkey" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/21737.sql	recursive query "supplierhierarchy" column 5 has type character varying(55) in non-recursive term but type character varying overall
+queries/tpch/SQLStorm/21769.sql	more than one row returned by a subquery used as an expression
+queries/tpch/SQLStorm/21782.sql	column "profitability" does not exist
+queries/tpch/SQLStorm/21873.sql	recursive query "supplier_hierarchy" column 4 has type text in non-recursive term but type integer overall
+queries/tpch/SQLStorm/21988.sql	recursive query "suppliercte" column 4 has type numeric(15,2) in non-recursive term but type numeric overall
+queries/tpch/SQLStorm/22043.sql	column "c.c_nationkey" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/22064.sql	column "p.p_size" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/22084.sql	FULL JOIN is only supported with merge-joinable or hash-joinable join conditions
+queries/tpch/SQLStorm/22087.sql	recursive query "supply_chain" column 3 has type integer in non-recursive term but type numeric overall
+queries/tpch/SQLStorm/22124.sql	column "s.s_acctbal" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/22135.sql	recursive query "suppliercte" column 3 has type numeric(15,2) in non-recursive term but type numeric overall
+queries/tpch/SQLStorm/22149.sql	recursive query "supplier_hierarchy" column 3 has type numeric(15,2) in non-recursive term but type numeric overall
+queries/tpch/SQLStorm/22175.sql	recursive query "supplier_hierarchy" column 4 has type numeric(15,2) in non-recursive term but type numeric overall
+queries/tpch/SQLStorm/22203.sql	column "s.s_nationkey" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/22208.sql	column "o.o_orderstatus" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/22325.sql	column "o.o_orderdate" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/22382.sql	aggregate functions are not allowed in a recursive query's recursive term
+queries/tpch/SQLStorm/22395.sql	column "p.p_size" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/22439.sql	function string_agg(text) does not exist
+queries/tpch/SQLStorm/22473.sql	recursive query "supplierhierarchy" column 4 has type character varying(255) in non-recursive term but type character varying overall
+queries/tpch/SQLStorm/22500.sql	column "n.n_name" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/22546.sql	column "o.o_orderdate" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/22574.sql	FULL JOIN is only supported with merge-joinable or hash-joinable join conditions
+queries/tpch/SQLStorm/22620.sql	function string_agg(character varying) does not exist
+queries/tpch/SQLStorm/22659.sql	recursive query "supplierbalance" column 3 has type numeric(15,2) in non-recursive term but type numeric overall
+queries/tpch/SQLStorm/22704.sql	column "ps.ps_availqty" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/22718.sql	recursive query "supplierhierarchy" column 5 has type character varying(255) in non-recursive term but type character varying overall
+queries/tpch/SQLStorm/22731.sql	column "ps.ps_availqty" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/22739.sql	recursive query "supplierhierarchy" column 5 has type character varying(100) in non-recursive term but type character varying overall
+queries/tpch/SQLStorm/22964.sql	column "o.o_orderdate" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/2299.sql	recursive query "supplierhierarchy" column 5 has type character varying(100) in non-recursive term but type character varying overall
+queries/tpch/SQLStorm/23037.sql	column "c.c_acctbal" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/23078.sql	function string_agg(character varying) does not exist
+queries/tpch/SQLStorm/23082.sql	column "o.o_orderdate" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/23124.sql	FULL JOIN is only supported with merge-joinable or hash-joinable join conditions
+queries/tpch/SQLStorm/23148.sql	recursive query "supplierhierarchy" column 4 has type character varying(255) in non-recursive term but type character varying overall
+queries/tpch/SQLStorm/23166.sql	column "c.c_nationkey" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/23168.sql	recursive query "part_hierarchy" column 4 has type numeric(15,2) in non-recursive term but type numeric overall
+queries/tpch/SQLStorm/23172.sql	recursive query "supplier_hierarchy" column 4 has type numeric(15,2) in non-recursive term but type numeric overall
+queries/tpch/SQLStorm/23190.sql	column "o.o_orderdate" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/23265.sql	recursive query "ordertree" column 4 has type numeric(15,2) in non-recursive term but type numeric overall
+queries/tpch/SQLStorm/23277.sql	recursive query "part_hierarchy" column 2 has type character varying(55) in non-recursive term but type character varying overall
+queries/tpch/SQLStorm/23425.sql	column "o.o_orderdate" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/23490.sql	FULL JOIN is only supported with merge-joinable or hash-joinable join conditions
+queries/tpch/SQLStorm/23616.sql	recursive query "supp_info" column 4 has type numeric(15,2) in non-recursive term but type numeric overall
+queries/tpch/SQLStorm/23691.sql	FULL JOIN is only supported with merge-joinable or hash-joinable join conditions
+queries/tpch/SQLStorm/23713.sql	column "c.c_name" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/23765.sql	recursive query "supplierhierarchy" column 2 has type character(25) in non-recursive term but type bpchar overall
+queries/tpch/SQLStorm/23787.sql	column "p.p_retailprice" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/23840.sql	column "o.o_orderdate" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/23993.sql	recursive query "supplier_hierarchy" column 6 has type character varying(100) in non-recursive term but type character varying overall
+queries/tpch/SQLStorm/23999.sql	column "o.o_orderstatus" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/24001.sql	function string_agg(text) does not exist
+queries/tpch/SQLStorm/24002.sql	recursive query "customerhierarchy" column 3 has type numeric(15,2) in non-recursive term but type numeric overall
+queries/tpch/SQLStorm/24030.sql	recursive query "supplierhierarchy" column 4 has type character varying(100) in non-recursive term but type character varying overall
+queries/tpch/SQLStorm/24107.sql	function year(date) does not exist
+queries/tpch/SQLStorm/24114.sql	column "s.s_nationkey" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/24142.sql	FULL JOIN is only supported with merge-joinable or hash-joinable join conditions
+queries/tpch/SQLStorm/24174.sql	FULL JOIN is only supported with merge-joinable or hash-joinable join conditions
+queries/tpch/SQLStorm/24190.sql	column "o.o_orderstatus" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/24200.sql	FULL JOIN is only supported with merge-joinable or hash-joinable join conditions
+queries/tpch/SQLStorm/24289.sql	function string_agg(character) does not exist
+queries/tpch/SQLStorm/24297.sql	recursive query "supplier_hierarchy" column 4 has type numeric(15,2) in non-recursive term but type numeric overall
+queries/tpch/SQLStorm/2432.sql	column "c.c_nationkey" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/24408.sql	FULL JOIN is only supported with merge-joinable or hash-joinable join conditions
+queries/tpch/SQLStorm/24428.sql	function string_agg(text) does not exist
+queries/tpch/SQLStorm/24455.sql	FULL JOIN is only supported with merge-joinable or hash-joinable join conditions
+queries/tpch/SQLStorm/24464.sql	invalid reference to FROM-clause entry for table "s"
+queries/tpch/SQLStorm/24523.sql	recursive query "cte_orders" column 2 has type numeric(15,2) in non-recursive term but type numeric overall
+queries/tpch/SQLStorm/24575.sql	recursive query "supplierhierarchy" column 2 has type character(25) in non-recursive term but type bpchar overall
+queries/tpch/SQLStorm/24600.sql	column "o.o_orderstatus" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/24633.sql	recursive reference to query "nation_sales" must not appear within a subquery
+queries/tpch/SQLStorm/24643.sql	column "o.o_orderdate" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/24691.sql	column "c.c_mktsegment" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/24797.sql	recursive query "supplier_hierarchy" column 6 has type text in non-recursive term but type integer overall
+queries/tpch/SQLStorm/24868.sql	FULL JOIN is only supported with merge-joinable or hash-joinable join conditions
+queries/tpch/SQLStorm/24872.sql	recursive query "recursive_suppliers" column 4 has type numeric(15,2) in non-recursive term but type numeric overall
+queries/tpch/SQLStorm/24917.sql	recursive query "supplierhierarchy" column 3 has type numeric(15,2) in non-recursive term but type numeric overall
+queries/tpch/SQLStorm/24995.sql	recursive query "part_hierarchy" column 6 has type character varying(255) in non-recursive term but type character varying overall
+queries/tpch/SQLStorm/25021.sql	function string_agg(text) does not exist
+queries/tpch/SQLStorm/25022.sql	numeric field overflow
+queries/tpch/SQLStorm/25110.sql	column "p.p_comment" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/25282.sql	column "p.p_retailprice" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/25312.sql	function string_agg(text) does not exist
+queries/tpch/SQLStorm/25781.sql	column "n.n_name" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/25815.sql	column "p.p_comment" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/25863.sql	function string_agg(text) does not exist
+queries/tpch/SQLStorm/25908.sql	function string_agg(text) does not exist
+queries/tpch/SQLStorm/26064.sql	column "p.p_comment" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/26071.sql	column "p.p_comment" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/26073.sql	function listagg(text, unknown) does not exist
+queries/tpch/SQLStorm/26399.sql	function string_agg(text) does not exist
+queries/tpch/SQLStorm/26404.sql	column "p.p_comment" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/26502.sql	column "ps.ps_availqty" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/2657.sql	column "o.o_totalprice" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/26866.sql	column "o.o_orderstatus" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/26908.sql	column "p.p_comment" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/26910.sql	column "p.p_comment" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/27007.sql	column "p.p_comment" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/27297.sql	column "processed_comment" does not exist
+queries/tpch/SQLStorm/27365.sql	numeric field overflow
+queries/tpch/SQLStorm/27400.sql	invalid reference to FROM-clause entry for table "n"
+queries/tpch/SQLStorm/27408.sql	column "p.p_comment" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/2747.sql	FULL JOIN is only supported with merge-joinable or hash-joinable join conditions
+queries/tpch/SQLStorm/27492.sql	function string_agg(text) does not exist
+queries/tpch/SQLStorm/27510.sql	function string_agg(character) does not exist
+queries/tpch/SQLStorm/2761.sql	column "o.o_orderstatus" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/27796.sql	column "p.p_comment" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/27939.sql	column "o.o_orderstatus" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/28123.sql	function string_agg(text) does not exist
+queries/tpch/SQLStorm/282.sql	FULL JOIN is only supported with merge-joinable or hash-joinable join conditions
+queries/tpch/SQLStorm/28231.sql	recursive query "string_bench" column 2 has type character varying(55) in non-recursive term but type character varying overall
+queries/tpch/SQLStorm/28431.sql	LIKE pattern must not end with escape character
+queries/tpch/SQLStorm/28461.sql	column "o.o_orderstatus" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/28483.sql	column "n.n_name" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/28588.sql	function string_agg(text) does not exist
+queries/tpch/SQLStorm/28636.sql	column "o.o_totalprice" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/28814.sql	column "p.p_retailprice" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/28828.sql	recursive query "stringbenchmark" column 1 has type character varying(55) in non-recursive term but type character varying overall
+queries/tpch/SQLStorm/28929.sql	column "s.s_nationkey" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/29033.sql	column "s.s_name" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/29158.sql	column "p.p_comment" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/29320.sql	column "s.s_phone" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/29649.sql	column "p.p_comment" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/29661.sql	function string_agg(text) does not exist
+queries/tpch/SQLStorm/30099.sql	operator does not exist: integer = text
+queries/tpch/SQLStorm/30105.sql	recursive query "parthierarchy" column 6 has type character varying(100) in non-recursive term but type character varying overall
+queries/tpch/SQLStorm/30142.sql	recursive query "supply_costs" column 4 has type numeric(15,2) in non-recursive term but type numeric overall
+queries/tpch/SQLStorm/30162.sql	recursive query "supplierhierarchy" column 3 has type numeric(15,2) in non-recursive term but type numeric overall
+queries/tpch/SQLStorm/30218.sql	FULL JOIN is only supported with merge-joinable or hash-joinable join conditions
+queries/tpch/SQLStorm/30224.sql	recursive reference to query "salescte" must not appear more than once
+queries/tpch/SQLStorm/30340.sql	recursive query "customerhierarchy" column 4 has type character varying(100) in non-recursive term but type character varying overall
+queries/tpch/SQLStorm/30394.sql	operator does not exist: integer <> text
+queries/tpch/SQLStorm/30396.sql	recursive query "suppliercte" column 3 has type numeric(15,2) in non-recursive term but type numeric overall
+queries/tpch/SQLStorm/30430.sql	recursive query "supplierhierarchy" column 4 has type character varying(255) in non-recursive term but type character varying overall
+queries/tpch/SQLStorm/30432.sql	FULL JOIN is only supported with merge-joinable or hash-joinable join conditions
+queries/tpch/SQLStorm/30453.sql	recursive query "pricetrend" column 3 has type numeric(15,2) in non-recursive term but type numeric overall
+queries/tpch/SQLStorm/30485.sql	recursive query "part_hierarchy" column 8 has type numeric(15,2) in non-recursive term but type numeric overall
+queries/tpch/SQLStorm/30524.sql	column "c.c_name" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/30579.sql	aggregate functions are not allowed in a recursive query's recursive term
+queries/tpch/SQLStorm/30620.sql	recursive query "supplierhierarchy" column 4 has type character varying(100) in non-recursive term but type character varying overall
+queries/tpch/SQLStorm/30648.sql	function string_agg(character varying) does not exist
+queries/tpch/SQLStorm/30651.sql	function string_agg(character varying) does not exist
+queries/tpch/SQLStorm/30669.sql	column "o.o_orderstatus" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/30687.sql	aggregate functions are not allowed in a recursive query's recursive term
+queries/tpch/SQLStorm/3071.sql	FULL JOIN is only supported with merge-joinable or hash-joinable join conditions
+queries/tpch/SQLStorm/30771.sql	column "s.s_name" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/30795.sql	recursive query "suppliercte" column 4 has type text in non-recursive term but type bpchar overall
+queries/tpch/SQLStorm/30801.sql	operator does not exist: integer = text
+queries/tpch/SQLStorm/31036.sql	aggregate functions are not allowed in a recursive query's recursive term
+queries/tpch/SQLStorm/31071.sql	FULL JOIN is only supported with merge-joinable or hash-joinable join conditions
+queries/tpch/SQLStorm/31087.sql	column "o.o_orderstatus" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/31121.sql	column "c.c_nationkey" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/31184.sql	aggregate functions are not allowed in a recursive query's recursive term
+queries/tpch/SQLStorm/3123.sql	FULL JOIN is only supported with merge-joinable or hash-joinable join conditions
+queries/tpch/SQLStorm/31280.sql	recursive query "saleshierarchy" column 2 has type character varying(25) in non-recursive term but type character varying overall
+queries/tpch/SQLStorm/31337.sql	recursive query "supplychain" column 5 has type numeric(15,2) in non-recursive term but type numeric overall
+queries/tpch/SQLStorm/31353.sql	recursive query "supplierhierarchy" column 4 has type character varying(255) in non-recursive term but type character varying overall
+queries/tpch/SQLStorm/31380.sql	aggregate functions are not allowed in a recursive query's recursive term
+queries/tpch/SQLStorm/31414.sql	operator does not exist: integer = text
+queries/tpch/SQLStorm/31423.sql	aggregate functions are not allowed in a recursive query's recursive term
+queries/tpch/SQLStorm/31424.sql	recursive query "sales_hierarchy" column 3 has type numeric(15,2) in non-recursive term but type numeric overall
+queries/tpch/SQLStorm/31453.sql	column "s.s_nationkey" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/31459.sql	recursive query "orderhierarchy" column 3 has type numeric(15,2) in non-recursive term but type numeric overall
+queries/tpch/SQLStorm/31534.sql	column "s.s_nationkey" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/31590.sql	FULL JOIN is only supported with merge-joinable or hash-joinable join conditions
+queries/tpch/SQLStorm/31593.sql	aggregate functions are not allowed in a recursive query's recursive term
+queries/tpch/SQLStorm/31632.sql	FULL JOIN is only supported with merge-joinable or hash-joinable join conditions
+queries/tpch/SQLStorm/31654.sql	FULL JOIN is only supported with merge-joinable or hash-joinable join conditions
+queries/tpch/SQLStorm/31663.sql	function string_agg(character varying) does not exist
+queries/tpch/SQLStorm/31689.sql	aggregate functions are not allowed in a recursive query's recursive term
+queries/tpch/SQLStorm/31711.sql	recursive query "pricedetails" column 3 has type numeric(15,2) in non-recursive term but type numeric overall
+queries/tpch/SQLStorm/31730.sql	recursive query "supplier_hierarchy" column 4 has type text in non-recursive term but type integer overall
+queries/tpch/SQLStorm/31775.sql	recursive query "suppliercte" column 4 has type numeric(15,2) in non-recursive term but type numeric overall
+queries/tpch/SQLStorm/31809.sql	recursive query "part_hierarchy" column 4 has type numeric(15,2) in non-recursive term but type numeric overall
+queries/tpch/SQLStorm/31820.sql	recursive query "supplierhierarchy" column 4 has type character varying(100) in non-recursive term but type character varying overall
+queries/tpch/SQLStorm/31833.sql	recursive query "parthierarchy" column 4 has type numeric(15,2) in non-recursive term but type numeric overall
+queries/tpch/SQLStorm/31866.sql	recursive query "supplierhierarchy" column 4 has type text in non-recursive term but type integer overall
+queries/tpch/SQLStorm/31909.sql	column "c.c_nationkey" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/31930.sql	column "o.o_orderstatus" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/31954.sql	recursive query "pricehierarchy" column 5 has type numeric(15,2) in non-recursive term but type numeric overall
+queries/tpch/SQLStorm/31974.sql	function string_agg(character varying) does not exist
+queries/tpch/SQLStorm/32006.sql	recursive query "pricehierarchy" column 2 has type numeric(15,2) in non-recursive term but type numeric overall
+queries/tpch/SQLStorm/32039.sql	recursive query "top_suppliers" column 3 has type numeric(15,2) in non-recursive term but type numeric overall
+queries/tpch/SQLStorm/32066.sql	column "o.o_orderstatus" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/32076.sql	column "o.o_orderstatus" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/32169.sql	recursive query "parthierarchy" column 4 has type numeric(15,2) in non-recursive term but type numeric overall
+queries/tpch/SQLStorm/32241.sql	function string_agg(text) does not exist
+queries/tpch/SQLStorm/32293.sql	recursive query "supplierhierarchy" column 4 has type text in non-recursive term but type integer overall
+queries/tpch/SQLStorm/32322.sql	column "s.s_nationkey" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/32396.sql	function string_agg(text) does not exist
+queries/tpch/SQLStorm/32410.sql	recursive query "customercte" column 3 has type numeric(15,2) in non-recursive term but type numeric overall
+queries/tpch/SQLStorm/32447.sql	recursive query "supplierhierarchy" column 5 has type text in non-recursive term but type integer overall
+queries/tpch/SQLStorm/32461.sql	column "p.p_size" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/32478.sql	invalid reference to FROM-clause entry for table "c"
+queries/tpch/SQLStorm/32534.sql	aggregate functions are not allowed in a recursive query's recursive term
+queries/tpch/SQLStorm/32583.sql	recursive query "supplier_hierarchy" column 4 has type text in non-recursive term but type integer overall
+queries/tpch/SQLStorm/32602.sql	recursive query "supplierhierarchy" column 5 has type character varying(255) in non-recursive term but type character varying overall
+queries/tpch/SQLStorm/32620.sql	FULL JOIN is only supported with merge-joinable or hash-joinable join conditions
+queries/tpch/SQLStorm/32725.sql	recursive query "customerhierarchy" column 4 has type numeric(15,2) in non-recursive term but type numeric overall
+queries/tpch/SQLStorm/32748.sql	recursive query "supplier_cte" column 4 has type text in non-recursive term but type integer overall
+queries/tpch/SQLStorm/32749.sql	recursive query "supplierhierarchy" column 5 has type character varying(100) in non-recursive term but type character varying overall
+queries/tpch/SQLStorm/32771.sql	recursive query "supplier_hierarchy" column 3 has type numeric(15,2) in non-recursive term but type numeric overall
+queries/tpch/SQLStorm/32834.sql	recursive query "supplierhierarchy" column 3 has type character varying(255) in non-recursive term but type character varying overall
+queries/tpch/SQLStorm/32856.sql	column "o.o_orderdate" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/3287.sql	column "p.p_retailprice" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/32890.sql	recursive query "supplier_hierarchy" column 5 has type character varying(200) in non-recursive term but type character varying overall
+queries/tpch/SQLStorm/32937.sql	column "o.o_orderstatus" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/32944.sql	recursive query "parthierarchy" column 4 has type character varying(23) in non-recursive term but type character varying overall
+queries/tpch/SQLStorm/32953.sql	recursive query "supplierhierarchy" column 5 has type character varying(255) in non-recursive term but type character varying overall
+queries/tpch/SQLStorm/32962.sql	recursive reference to query "monthlysales" must not appear within a subquery
+queries/tpch/SQLStorm/32963.sql	column "r_regionkey" does not exist
+queries/tpch/SQLStorm/33048.sql	column "o.o_orderstatus" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/33108.sql	recursive query "supplierhierarchy" column 5 has type character varying(100) in non-recursive term but type character varying overall
+queries/tpch/SQLStorm/33193.sql	recursive query "supplier_ledger" column 3 has type numeric(15,2) in non-recursive term but type numeric overall
+queries/tpch/SQLStorm/33203.sql	aggregate functions are not allowed in a recursive query's recursive term
+queries/tpch/SQLStorm/3322.sql	column "o.o_totalprice" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/33253.sql	recursive query "supplierhierarchy" column 4 has type character varying(255) in non-recursive term but type character varying overall
+queries/tpch/SQLStorm/33266.sql	aggregate functions are not allowed in a recursive query's recursive term
+queries/tpch/SQLStorm/33282.sql	FULL JOIN is only supported with merge-joinable or hash-joinable join conditions
+queries/tpch/SQLStorm/33309.sql	column "o.o_orderstatus" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/33355.sql	recursive query "supplier_hierarchy" column 6 has type character varying(100) in non-recursive term but type character varying overall
+queries/tpch/SQLStorm/33374.sql	column "o.o_orderdate" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/33492.sql	column "o.o_orderstatus" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/33580.sql	column "o.o_orderdate" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/33598.sql	recursive query "supplierdepth" column 3 has type text in non-recursive term but type integer overall
+queries/tpch/SQLStorm/33601.sql	column "o.o_orderstatus" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/33616.sql	aggregate functions are not allowed in a recursive query's recursive term
+queries/tpch/SQLStorm/33624.sql	function string_agg(character) does not exist
+queries/tpch/SQLStorm/33657.sql	recursive query "supplierhierarchy" column 2 has type character(25) in non-recursive term but type bpchar overall
+queries/tpch/SQLStorm/33749.sql	recursive query "supplier_hierarchy" column 4 has type text in non-recursive term but type bpchar overall
+queries/tpch/SQLStorm/33773.sql	recursive query "supplierhierarchy" column 5 has type character varying(255) in non-recursive term but type character varying overall
+queries/tpch/SQLStorm/33793.sql	column "o.o_orderstatus" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/33934.sql	recursive query "supplierhierarchy" column 2 has type character(25) in non-recursive term but type bpchar overall
+queries/tpch/SQLStorm/34023.sql	recursive query "part_hierarchy" column 4 has type character varying(23) in non-recursive term but type character varying overall
+queries/tpch/SQLStorm/34044.sql	aggregate functions are not allowed in a recursive query's recursive term
+queries/tpch/SQLStorm/34057.sql	function string_agg(character varying) does not exist
+queries/tpch/SQLStorm/34061.sql	column "p.p_type" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/34071.sql	recursive query "orderhierarchy" column 3 has type numeric(15,2) in non-recursive term but type numeric overall
+queries/tpch/SQLStorm/34090.sql	recursive reference to query "salescte" must not appear within a subquery
+queries/tpch/SQLStorm/34117.sql	aggregate functions are not allowed in a recursive query's recursive term
+queries/tpch/SQLStorm/34152.sql	aggregate functions are not allowed in a recursive query's recursive term
+queries/tpch/SQLStorm/34186.sql	aggregate functions are not allowed in a recursive query's recursive term
+queries/tpch/SQLStorm/34231.sql	aggregate functions are not allowed in a recursive query's recursive term
+queries/tpch/SQLStorm/34249.sql	recursive query "part_hierarchy" column 2 has type character varying(55) in non-recursive term but type character varying overall
+queries/tpch/SQLStorm/3425.sql	FULL JOIN is only supported with merge-joinable or hash-joinable join conditions
+queries/tpch/SQLStorm/34253.sql	function string_agg(text) does not exist
+queries/tpch/SQLStorm/34265.sql	column "c.c_nationkey" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/34285.sql	recursive query "supplierhierarchy" column 4 has type text in non-recursive term but type integer overall
+queries/tpch/SQLStorm/34303.sql	aggregate functions are not allowed in a recursive query's recursive term
+queries/tpch/SQLStorm/34307.sql	aggregate functions are not allowed in a recursive query's recursive term
+queries/tpch/SQLStorm/34339.sql	recursive query "supplychain" column 4 has type numeric(15,2) in non-recursive term but type numeric overall
+queries/tpch/SQLStorm/34352.sql	column "ps.ps_availqty" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/34386.sql	recursive query "sales_hierarchy" column 2 has type character varying(25) in non-recursive term but type character varying overall
+queries/tpch/SQLStorm/34440.sql	column "o.o_orderstatus" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/34504.sql	FULL JOIN is only supported with merge-joinable or hash-joinable join conditions
+queries/tpch/SQLStorm/34517.sql	column "o.o_orderdate" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/34555.sql	recursive query "part_hierarchy" column 4 has type numeric(15,2) in non-recursive term but type numeric overall
+queries/tpch/SQLStorm/34621.sql	column "o.o_orderdate" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/34626.sql	recursive query "supplierhierarchy" column 3 has type numeric(15,2) in non-recursive term but type numeric overall
+queries/tpch/SQLStorm/3473.sql	FULL JOIN is only supported with merge-joinable or hash-joinable join conditions
+queries/tpch/SQLStorm/34857.sql	column "p.p_type" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/34878.sql	aggregate functions are not allowed in a recursive query's recursive term
+queries/tpch/SQLStorm/34942.sql	column "o.o_custkey" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/34951.sql	column "o.o_orderstatus" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/3659.sql	FULL JOIN is only supported with merge-joinable or hash-joinable join conditions
+queries/tpch/SQLStorm/3717.sql	column "s.s_nationkey" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/3723.sql	column "n_nationkey" does not exist
+queries/tpch/SQLStorm/389.sql	FULL JOIN is only supported with merge-joinable or hash-joinable join conditions
+queries/tpch/SQLStorm/3921.sql	FULL JOIN is only supported with merge-joinable or hash-joinable join conditions
+queries/tpch/SQLStorm/4014.sql	column "o.o_orderdate" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/4020.sql	non-integer constant in GROUP BY
+queries/tpch/SQLStorm/4059.sql	FULL JOIN is only supported with merge-joinable or hash-joinable join conditions
+queries/tpch/SQLStorm/4074.sql	FULL JOIN is only supported with merge-joinable or hash-joinable join conditions
+queries/tpch/SQLStorm/4084.sql	column "s.s_acctbal" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/4372.sql	FULL JOIN is only supported with merge-joinable or hash-joinable join conditions
+queries/tpch/SQLStorm/454.sql	FULL JOIN is only supported with merge-joinable or hash-joinable join conditions
+queries/tpch/SQLStorm/4640.sql	FULL JOIN is only supported with merge-joinable or hash-joinable join conditions
+queries/tpch/SQLStorm/4702.sql	FULL JOIN is only supported with merge-joinable or hash-joinable join conditions
+queries/tpch/SQLStorm/473.sql	column "c.c_mktsegment" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/4819.sql	column "s.s_nationkey" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/4866.sql	FULL JOIN is only supported with merge-joinable or hash-joinable join conditions
+queries/tpch/SQLStorm/4938.sql	column "s.s_acctbal" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/4943.sql	column "p.p_retailprice" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/542.sql	more than one row returned by a subquery used as an expression
+queries/tpch/SQLStorm/5447.sql	column "s.s_nationkey" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/560.sql	column "s.s_acctbal" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/6397.sql	column "n.n_name" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/654.sql	FULL JOIN is only supported with merge-joinable or hash-joinable join conditions
+queries/tpch/SQLStorm/6776.sql	column "o.o_totalprice" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/6861.sql	function year(date) does not exist
+queries/tpch/SQLStorm/6888.sql	column "s.s_nationkey" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/6907.sql	column "o.o_custkey" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/7240.sql	column "s.s_nationkey" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/77.sql	column "o.o_orderstatus" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/7903.sql	column "s.s_nationkey" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/8474.sql	column "o.o_orderstatus" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/8617.sql	column "s.s_nationkey" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/92.sql	column "ps.ps_availqty" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/931.sql	FULL JOIN is only supported with merge-joinable or hash-joinable join conditions
+queries/tpch/SQLStorm/961.sql	column "ps.ps_availqty" must appear in the GROUP BY clause or be used in an aggregate function
+queries/tpch/SQLStorm/9620.sql	column "n_nationkey" does not exist
+queries/tpch/SQLStorm/9627.sql	column "s.s_nationkey" must appear in the GROUP BY clause or be used in an aggregate function

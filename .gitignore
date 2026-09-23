@@ -29,3 +29,9 @@ pginstall2.csv
 # SQLStorm TPC-H query set (~17k .sql files), fetched on demand by
 # fetch_sqlstorm_queries.sh from a pinned upstream commit, so not committed here.
 /queries/tpch/SQLStorm/
+# SQLStorm queries moved out after the 2026-09-21 run (lists in logs/sqlstorm/):
+# >15 s at 2.5 GHz -> slow/, rejected by PostgreSQL -> errors/
+/queries/slow/tpch/sqlstorm/
+/queries/errors/tpch/sqlstorm/
+# Copies staged by test/build_slope_sample.py (rebuildable from logs/sqlstorm):
+/queries/tpch/sqlstorm_slope/
