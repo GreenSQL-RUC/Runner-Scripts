@@ -3,7 +3,8 @@
 A self-contained harness for measuring the **wall-clock time and CPU energy
 (RAPL)** of SQL queries on PostgreSQL, across several PostgreSQL major versions,
 several datasets, and a matrix of server tuning parameters. The workload is
-mostly TPC-H (the 53-query variant set, plus the 17k-query SQLStorm suite),
+mostly TPC-H (the 53-query variant set, plus the 17k-query SQLStorm suite, and
+SQLStorm's StackOverflow set),
 plus a few real-world datasets.
 
 Everything is driven through the **`Makefile`** (the single entry point), which
@@ -86,6 +87,25 @@ Quick check that a new query suite runs at all (one warm pass, no restarts):
 make fetch-sqlstorm                                   # 17k SQLStorm queries -> queries/tpch/SQLStorm
 make run DIR=queries/tpch/SQLStorm DB_NAME=tpch_idx WARMUP=1 BATCH_SIZES=1 STATEMENT_TIMEOUT=10
 ```
+
+SQLStorm on the StackOverflow dataset (its own database and query set):
+
+```bash
+make build-stackoverflow                              # 1 GB set -> stackoverflow_1gb + queries/stackoverflow/SQLStorm
+make build-stackoverflow SO_SIZE=12gb                 # or 222gb; SO_DB=<name> to rename, FORCE=1 to rebuild
+make run DIR=queries/stackoverflow/SQLStorm DB_NAME=stackoverflow_1gb WARMUP=1 BATCH_SIZES=1 STATEMENT_TIMEOUT=15
+```
+
+`build/build_stackoverflow.sh` downloads the size's archive into `Data/stackoverflow/`
+(1gb 0.4 GB, 12gb 4.5 GB, 222gb 84 GB; resumable, kept for other clusters,
+`KEEP_ARCHIVE=0` deletes it), loads it with `schema/stackoverflow_schema_nofk.sql`
+(no foreign keys) by streaming each CSV straight into a server-side `COPY`, re-adds
+the primary keys and runs `VACUUM (FREEZE, ANALYZE)`. It checks free disk first.
+The 1gb set loads in under a minute to 1.2 GB. Of the 18,251 upstream queries,
+5,664 are flagged invalid by upstream (`invalid_queries.csv`) and 793 more are
+valid only without PostgreSQL agreeing, so 11,794 are fetched; the per-file
+decision is in `queries/stackoverflow/SQLStorm.selection.csv`
+(`SQLSTORM_QUERY_SET=valid|all` to widen it).
 
 ---
 
@@ -185,7 +205,7 @@ run/              runners (.c) + run drivers (.sh)
 test/             parameter sweeps + plan-consistency checks (.sh)
 build/            data loaders, provisioning, query generators/fetchers
 queries/          ALL SQL (see below)
-schema/           DDL: tpch, index suite, estat, warehouse
+schema/           DDL: tpch, index suite, estat, warehouse, stackoverflow (no-FK)
 logs/             results (CSV); sub-folders per sweep / per warm-stepup run
 plans/ outputs/   EXPLAIN plans / result rows from plan_builder / output_runner
 Data/             raw real-world data + normalisers for estat / warehouse
@@ -237,7 +257,8 @@ Invoke as `make test-<param>` (dashes for underscores):
 | **`build_all.sh`** | The whole data matrix: every scale factor on every cluster, plus the `_idx` clones. Resumable. |
 | **`build_tpch.sh`** / **`build_tpch_indexed.sh`** | One TPC-H DB at a scale factor / its indexed clone (`ixtest_` suite). `SKEW=<z>` builds it from Microsoft Research's Zipfian generator (fetched into `tpch-dbgen-skew/`), e.g. `SKEW=0` + `SKEW=2` for a comparable uniform/skewed pair. |
 | **`build_estat.sh`** / **`build_warehouse.sh`** | Load the Eurostat and warehouse datasets from `Data/`. |
-| **`fetch_sqlstorm_queries.sh`** | Download the SQLStorm TPC-H suite (~17k files) into `queries/tpch/SQLStorm/`, adding the `EXPLAIN` wrapper. `make fetch-sqlstorm`. |
+| **`fetch_sqlstorm_queries.sh`** | Download a SQLStorm query set into `queries/<dataset>/SQLStorm/`, adding the `EXPLAIN` wrapper: TPC-H (~17k files, default) or `SQLSTORM_DATASET=stackoverflow` (valid queries only). `make fetch-sqlstorm`. |
+| **`build_stackoverflow.sh`** | Download and load the SQLStorm StackOverflow database (1gb default, 12gb, 222gb) with the no-FK schema, and fetch its queries. `make build-stackoverflow`. |
 | **`generate_tpch_query_set.py`** | Regenerate `queries/tpch/tpch-queries/` (the 53 variants; slow ones to `queries/slow/`). |
 | **`generate_tpch_core_queries.py`** / **`generate_tpch_function_queries.py`** | Regenerate `queries/tpch/Core/` and `queries/tpch/Functions/`. |
 | **`generate_tpch_write_queries.py`** | Regenerate `queries/write/tpch/`. |
@@ -248,6 +269,7 @@ Invoke as `make test-<param>` (dashes for underscores):
 |---|---|
 | `queries/tpch/tpch-queries/` | The TPC-H set: `q01`–`q22` folders (`q20` absent) with variants (`base.sql`, `v1_materialized.sql`, …) — 53 files, the default `DIR`. |
 | `queries/tpch/SQLStorm/` | The SQLStorm suite (17k files), fetched on demand, git-ignored. |
+| `queries/stackoverflow/SQLStorm/` | SQLStorm's StackOverflow queries (11,794 valid on PostgreSQL), fetched on demand, git-ignored. |
 | `queries/tpch/Core/`, `queries/tpch/Functions/` | Generated operator / function micro-benchmarks. |
 | `queries/estat/`, `queries/warehouse/` | The real-world datasets' queries. |
 | `queries/equivalent/tpch/`, `queries/equivalent/estat/` | Sets of queries that return the **same result** written different ways (plan-consistency / equivalence tests). |
@@ -273,7 +295,8 @@ Invoke as `make test-<param>` (dashes for underscores):
 | `make write` / `write-db` | Cold write benchmark (restart before every execution) / rebuild its scratch DB. |
 | `make index-build` / `index-verify` / `index-drop-db` | The `<db>_idx` clones. |
 | `make partial-archive` | Pull rows out of the live CSVs (`QUERY=` / `RUNID=`). |
-| `make fetch-sqlstorm` | Download the SQLStorm suite. |
+| `make fetch-sqlstorm` | Download a SQLStorm query set (`SQLSTORM_DATASET=tpch\|stackoverflow`). |
+| `make build-stackoverflow` | Download + load the StackOverflow DB and fetch its queries (`SO_SIZE=1gb\|12gb\|222gb`, `SO_DB=`, `FORCE=1`). |
 | `make pg-info` / `check-pg` | Clusters / verify `PGVER` resolves to a port. |
 
 Shared knobs (defaults): `PGVER=18 DB_NAME=tpch DIR=queries/tpch/tpch-queries

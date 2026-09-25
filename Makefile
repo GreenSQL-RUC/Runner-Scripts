@@ -198,7 +198,7 @@ RUNNERS = $(BIN)/query_runner $(BIN)/cold_runner $(BIN)/plan_builder $(BIN)/outp
 .PHONY: all clean help pg-info check-pg run cold warm-stepup matrix matrix-plan \
         plans outputs write write-db index-build index-verify index-drop-db \
         set-parameters reset-parameters partial-archive plan-snapshots \
-        planner-consistency fetch-sqlstorm plans-work-mem test-max-parallel-workers
+        planner-consistency fetch-sqlstorm build-stackoverflow plans-work-mem test-max-parallel-workers
 
 all: $(RUNNERS)
 
@@ -365,9 +365,22 @@ partial-archive:
 	  sudo -n env ROOT="$(ROOT)" QUERY="$(QUERY)" RUNID="$(RUNID)" VER="$(VER)" DB="$(DB)" DRYRUN="$(DRYRUN)" LOGS_DIR="$(LOGS_DIR)" \
 	    bash $(RUN)/archive_partial.sh
 
-# Fetch the SQLStorm TPC-H suite (~17k queries) into queries/tpch/SQLStorm/.
+# Fetch a SQLStorm query set into queries/<dataset>/SQLStorm/:
+# SQLSTORM_DATASET=tpch (~17k, default) or stackoverflow (valid queries only).
+SQLSTORM_DATASET ?= tpch
 fetch-sqlstorm:
-	@bash $(BUILD)/fetch_sqlstorm_queries.sh
+	@SQLSTORM_DATASET="$(SQLSTORM_DATASET)" FORCE="$(FORCE)" bash $(BUILD)/fetch_sqlstorm_queries.sh
+
+# Build the SQLStorm StackOverflow database (download + load, no foreign keys)
+# and fetch its valid query set. SO_SIZE=1gb|12gb|222gb; SO_DB defaults to
+# stackoverflow_<size>. FORCE=1 rebuilds an existing database.
+SO_SIZE ?= 1gb
+SO_DB   ?=
+build-stackoverflow:
+	@$(SUDO_PRIME) || { echo "sudo authentication failed"; exit 1; }; \
+	  sudo -n env FORCE="$(FORCE)" KEEP_ARCHIVE="$(KEEP_ARCHIVE)" DOWNLOAD_ONLY="$(DOWNLOAD_ONLY)" \
+	    SKIP_QUERIES="$(SKIP_QUERIES)" SKIP_DISK_CHECK="$(SKIP_DISK_CHECK)" \
+	    bash $(BUILD)/build_stackoverflow.sh "$(SO_SIZE)" "$(SO_DB)" "$(PGVER)"
 
 help:
 	@echo "targets:"
@@ -386,7 +399,8 @@ help:
 	@echo "  write | write-db         cold write benchmark (restart before every execution) | rebuild its scratch DB"
 	@echo "  index-build | index-verify | index-drop-db   the <db>_idx clones"
 	@echo "  partial-archive          pull rows out of the live CSVs (QUERY= / RUNID=)"
-	@echo "  fetch-sqlstorm           download the SQLStorm suite"
+	@echo "  fetch-sqlstorm           download a SQLStorm query set (SQLSTORM_DATASET=tpch|stackoverflow)"
+	@echo "  build-stackoverflow      download + load the StackOverflow DB and its queries (SO_SIZE=1gb|12gb|222gb)"
 	@echo "  pg-info | check-pg       clusters and which port PGVER resolves to"
 	@echo
 	@echo "knobs (current values):"

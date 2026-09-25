@@ -35,3 +35,10 @@ pginstall2.csv
 /queries/errors/tpch/sqlstorm/
 # Copies staged by test/build_slope_sample.py (rebuildable from logs/sqlstorm):
 /queries/tpch/sqlstorm_slope/
+# SQLStorm StackOverflow query set and its per-file selection list, fetched on
+# demand by fetch_sqlstorm_queries.sh (SQLSTORM_DATASET=stackoverflow).
+/queries/stackoverflow/SQLStorm/
+/queries/stackoverflow/SQLStorm.selection.csv
+# StackOverflow data archives (0.4 / 4.5 / 84 GB), downloaded on demand by
+# build_stackoverflow.sh.
+/Data/stackoverflow/
