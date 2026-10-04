@@ -28,6 +28,8 @@
  *   DB_NAME      database to run against                        (default: tpch)
  *   DB_USER      OS user psql is run as, via sudo               (default: postgres)
  *   MAX_ROWS     rows to keep per query, 0 = unlimited          (default: 1000)
+ *   STATEMENT_TIMEOUT  seconds per query, empty/0 = none; a query that hits it
+ *                is saved with its timeout ERROR and counted as FAILED
  */
 
 #include <stdio.h>
@@ -66,17 +68,28 @@ static const char *env_or(const char *name, const char *fallback) {
  * what selects the version (see the Makefile's PGVER knob); empty means psql's
  * default, 5432. Validated as a non-negative integer before being spliced in.
  */
-static const char *build_psql_env_prefix(const char *port) {
-    static char buf[64];
+static long require_uint(const char *name, const char *v) {
+    char *end;
+    long n = strtol(v, &end, 10);
+    if (*end != '\0' || n < 0) {
+        fprintf(stderr, "%s must be a non-negative integer, got \"%s\"\n", name, v);
+        exit(1);
+    }
+    return n;
+}
+
+static const char *build_psql_env_prefix(const char *port, const char *timeout) {
+    static char buf[128];
+    int n = 0;
     buf[0] = '\0';
-    if (port && *port) {
-        char *end;
-        long n = strtol(port, &end, 10);
-        if (*end != '\0' || n < 0) {
-            fprintf(stderr, "PGPORT must be a non-negative integer, got \"%s\"\n", port);
-            exit(1);
-        }
-        snprintf(buf, sizeof(buf), "env PGPORT=%ld ", n);
+    if (port && *port)
+        n += snprintf(buf + n, sizeof(buf) - n, "PGPORT=%ld ", require_uint("PGPORT", port));
+    if (timeout && *timeout && require_uint("STATEMENT_TIMEOUT", timeout) > 0)
+        n += snprintf(buf + n, sizeof(buf) - n, "PGOPTIONS='-c statement_timeout=%ld000' ",
+                      require_uint("STATEMENT_TIMEOUT", timeout));
+    if (n > 0) {                     /* prefix the assignments with "env " */
+        memmove(buf + 4, buf, (size_t)n + 1);
+        memcpy(buf, "env ", 4);
     }
     return buf;
 }
@@ -266,7 +279,8 @@ int main(void) {
     const char *db_user     = env_or("DB_USER",     DEFAULT_DB_USER);
     /* Which cluster (i.e. which PostgreSQL major) to talk to; empty = 5432. */
     const char *pg_port     = env_or("PGPORT",      "");
-    const char *env_prefix  = build_psql_env_prefix(pg_port);
+    const char *stmt_timeout = env_or("STATEMENT_TIMEOUT", "");
+    const char *env_prefix  = build_psql_env_prefix(pg_port, stmt_timeout);
 
     /* Outputs are written under <OUTPUTS_DIR>/<DB_NAME>/ so different databases
      * on the same query corpus (e.g. tpch vs tpch_idx) do not overwrite each
@@ -288,6 +302,8 @@ int main(void) {
     printf("  DB_NAME     = %s\n", db_name);
     printf("  outputs ->    %s/\n", outputs_base);
     printf("  DB_USER     = %s\n", db_user);
+    if (*stmt_timeout && strcmp(stmt_timeout, "0")) printf("  TIMEOUT     = %s s per query\n", stmt_timeout);
+    else printf("  TIMEOUT     = none\n");
     if (max_rows > 0)
         printf("  MAX_ROWS    = %d rows/query\n\n", max_rows);
     else

@@ -52,6 +52,12 @@
 
 
 
+/* Energy is read from every CPU package (socket) and summed per domain, from
+ * the kernel's powercap interface (/sys/class/powercap/intel-rapl:*) when it is
+ * readable, else straight from the MSRs. Domains, in CSV order:
+ * 0 package, 1 core (PP0), 2 gpu/uncore (PP1), 3 dram. */
+#define RAPL_MAX_ZONES 32
+
 int open_msr(int core);
 long long read_msr(int fd, int which);
 int detect_cpu(void) ;
@@ -60,3 +66,12 @@ void show_power_info(int core);
 void show_power_limit(int core);
 void rapl_before (FILE * , int);
 void rapl_after  (FILE * , int);
+
+/* Snapshot / delta interface (for readings outside rapl_before/after, such as
+ * an idle baseline). raw[] holds RAPL_MAX_ZONES counter values; the delta
+ * corrects each counter's wrap and sums zones into the four domains. */
+void rapl_snapshot(double raw[RAPL_MAX_ZONES]);
+void rapl_delta(const double a[RAPL_MAX_ZONES], const double b[RAPL_MAX_ZONES],
+                double out[4], int present[4]);
+int rapl_packages(void);
+const char *rapl_describe(void);

@@ -43,8 +43,10 @@ drivers. Results are appended to CSV files under `logs/`.
   throttle counts, idle gap and power. The two protocol knobs from
   `run/thermal_runner_brief.md` — `THERMAL_EQUALISE` (temperature-gated start)
   and `FIX_CLOCK` (turbo off + performance governor) — are **off** unless set.
-- **RAPL needs root + the `msr` module.** The Makefile primes `sudo`
-  (`SUDO_PASSWORD`, default `a`) and loads the module.
+- **RAPL needs root.** Energy is read from the kernel's powercap interface
+  (`/sys/class/powercap/intel-rapl:*`, root-only) and summed over every CPU
+  package; without it the runners fall back to the Intel MSRs (`msr` module).
+  The Makefile primes `sudo` (`SUDO_PASSWORD`, default `a`) and loads the module.
 - **PostgreSQL version == port.** Each installed major (PG15/16/17/18 by default) runs its own
   `main` cluster on its own port; `PGVER` selects the version, the port is looked
   up. Every CSV row carries `pg_version`.
@@ -176,9 +178,11 @@ sudo bash build/build_tpch.sh <sf> <db> <ver>       # always drops + recreates
 as root; otherwise `sudo apt install -y build-essential git`.
 
 ### `make run` fails with a RAPL / `msr` error
-The runners need Intel RAPL MSRs and the `msr` module (`sudo modprobe msr`; the
-Makefile attempts this). On VMs and non-Intel CPUs the MSRs are unavailable —
-data loading, `make plans` and `make outputs` still work.
+The runners read RAPL from `/sys/class/powercap/intel-rapl:*` (as root), or
+failing that from the Intel MSRs with the `msr` module (`sudo modprobe msr`;
+the Makefile attempts this). The runner prints which it used (`RAPL: powercap, 1
+package, domains: ...`). VMs usually expose neither — data loading, `make
+plans` and `make outputs` still work.
 
 ### `sudo` keeps prompting / "sudo authentication failed"
 The Makefile primes sudo with `SUDO_PASSWORD` (default `a`):
@@ -221,7 +225,8 @@ archive/ matrix_logs/ old/ tpch-dbgen/   run artifacts, prior project, upstream 
 | **`plan_builder.c`** | Saves each query's `EXPLAIN ANALYZE` plan to `plans/<db>/…`. `APPEND=1` appends a dated snapshot section instead of replacing, and reports whether the plan **shape** changed vs the previous snapshot (consistency testing). |
 | **`output_runner.c`** | Saves each query's result rows to `outputs/<db>/…` (strips a leading `EXPLAIN`). Correctness companion to `plan_builder`. |
 | **`write_runner.c`** | The **cold write** runner for mutating SQL (`queries/write/`), only against a scratch `*_write` DB. Per execution: run the file's SETUP (above `@MEASURE`), quiesce (autovacuum off on `w_*`, `CHECKPOINT`), drop caches + restart the cluster, then time only the `@MEASURE` section (RAPL, psql `\timing`, WAL bytes). No warm-up, no batching: a write cannot be repeated warm without drifting. Writes `write_cold_<db>.csv`. |
-| **`rapl.c` / `rapl.h`** | Intel RAPL MSR reader (package / core / gpu / dram joules). |
+| **`rapl.c` / `rapl.h`** | RAPL reader (package / core / gpu-uncore / dram joules): kernel powercap zones, else the Intel MSRs; every CPU package summed, per-counter wrap corrected, DRAM in its own unit. Also a snapshot/delta API (the idle baseline). |
+| **`node_info.sh`** | The machine's identity (host, CPU, packages, microcode, BIOS, frequency driver, governor, turbo, kernel, RAPL zones) for `summary.txt`. |
 | **`run_warm_stepup.sh`** | **The main benchmark driver** (`make warm-stepup`). Builds and saves the random order (with per-entry `run_id`s and each group's predecessor), does the per-entry cold start, invokes `query_runner` on one file at a time, writes `summary.txt` with every parameter plus clock/RAPL-limit state. Handles `FIX_CLOCK`. |
 | **`run_matrix.sh`** | `warm-stepup` across `PGVERS × DBS`, unattended and resumable (`make matrix` / `make matrix-plan`). Each combination is one warm-stepup run folder under `logs/matrix/`. |
 | **`run_equivalent.sh`** | One overnight sequence over `queries/equivalent/tpch`: plan snapshots, cold runs, warm matrix. |
@@ -262,6 +267,14 @@ Invoke as `make test-<param>` (dashes for underscores):
 | **`generate_tpch_query_set.py`** | Regenerate `queries/tpch/tpch-queries/` (the 53 variants; slow ones to `queries/slow/`). |
 | **`generate_tpch_core_queries.py`** / **`generate_tpch_function_queries.py`** | Regenerate `queries/tpch/Core/` and `queries/tpch/Functions/`. |
 | **`generate_tpch_write_queries.py`** | Regenerate `queries/write/tpch/`. |
+
+### `compare/` — cross-laptop comparison test
+
+| File | Purpose |
+|---|---|
+| **`run_compare.sh [session]`** | One ~3.3 h session: pre-flight (PG18 at 18.6, StackOverflow 1 GB, no other runner), testing GUCs, automatic upgrades paused for the run, then the fixed set as a (1,16) warm step-up with the 40–60 °C gate, the clock at 2.5 GHz, a 5 s idle baseline and a 15 s timeout, into `logs/compare/warm_stepup/compare_<host>_<session>_<stamp>/`; ends with a protocol check (`CHECK OK`). `ENTRIES=N` runs only the first N entries (smoke test). |
+| **`build_compare_set.py`** | Chooses the set once from laptop 1's StackOverflow pass: 10 queries per warm 1-copy time band (0.1–6 s, five bands) + the 4 probes, 6 rounds each in a fresh shuffle → `set/manifest.csv`, `set/order.txt` (committed; every machine replays the same order). |
+| **`probes/`** | Synthetic probes: pure CPU, memory bandwidth (parallel scans), memory latency (large hash joins), in-memory sort. |
 
 ### `queries/` — all SQL
 
@@ -304,7 +317,10 @@ LOGS_DIR=logs WARMUP=2 BATCH_SIZES="1 16" RUNS=1 REPEATS=1 WORKERS=
 STATEMENT_TIMEOUT=900 PGVERS="15 16 17 18" DBS="tpch tpch_idx" DRYRUN=`.
 Thermal (off by default): `THERMAL_EQUALISE=0|1|burn T_LO=55 T_HI=60
 PREHEAT_MAX_S=60 COOLDOWN_MAX_S=120 PREHEAT_S=30 FIX_CLOCK=0
-BATCH_CAP_SLOW= SLOW_COPY_SEC=1`.
+BATCH_CAP_SLOW= SLOW_COPY_SEC=1`. Idle baseline (off by default):
+`IDLE_BASELINE_S=0` (seconds before each query's measured batches).
+`WARMUP_FAIL_SKIP=1` makes a query whose warm-up fails (error or timeout) skip
+its remaining warm-ups and measured batches.
 
 ---
 
@@ -339,6 +355,16 @@ from what it writes.
   batch_index`. Populated only for queries written as `EXPLAIN (ANALYZE, …)`.
 - **`query_catalog_<db>.csv`** — relation sizes, once per runner invocation
   (once per warm-stepup run).
+- **`query_idle_<db>.csv`** — only with `IDLE_BASELINE_S` > 0: one row per
+  query, the power drawn with nothing running for that many seconds after the
+  warm-ups and just before the measured batches (`idle_s, idle_pkg_w,
+  idle_core_w, idle_gpu_w, idle_dram_w, pkg_temp_mean_c, mhz_mean`). Net energy
+  of a batch = `rapl_*_j - idle_*_w x elapsed_sec`; this matters on servers,
+  whose packages idle at tens of watts.
+- **`query_runinfo_<db>.csv`** — one row per runner invocation (so per entry in
+  a warm-stepup run): host, CPU model, packages, microcode, BIOS, product,
+  frequency driver, governor, turbo, max frequency, kernel and the RAPL backend
+  as the run saw them. Join on `run_id` to tell nodes apart.
 - **`query_cold_<db>.csv`** — cold-runner rows (`make cold`).
 - **`write_cold_<db>.csv`** — `make write` (one row per cold execution: `setup_sec`, `elapsed_sec`, `stmt_ms`, `wal_bytes`, `failed_stage`, RAPL).
 
@@ -367,11 +393,13 @@ For each of the `queries × REPEATS` entries, in the saved random order:
 Each run lives in `logs/warm_stepup/<RUNID>/`:
 - `run_order_<RUNID>.txt` — the order, plus `# order: <n> <run_id> prev=<run_id>`
   lines giving every group's `run_id` and its predecessor's;
-- `query_timing_<db>.csv`, `query_samples_<db>.csv`, `query_catalog_<db>.csv`;
+- `query_timing_<db>.csv`, `query_samples_<db>.csv`, `query_catalog_<db>.csv`,
+  `query_runinfo_<db>.csv` (and `query_idle_<db>.csv` with `IDLE_BASELINE_S`);
 - `console.log` — the per-entry runner output;
 - `summary.txt` — total runtime, tallies, every parameter, the thermal policy,
-  and the clock state (`no_turbo`, governor, min/max freq), RAPL PL1/PL2 limits
-  and a `dmesg` throttle-message count.
+  and the clock state (`no_turbo`, governor, min/max freq), RAPL PL1/PL2 limits,
+  a `dmesg` throttle-message count and a `-- node --` section (`node_info.sh`,
+  taken with the clock settings applied).
 
 `FIX_CLOCK=1` disables turbo and sets the performance governor for the whole
 run and restores the previous values at the end (also on Ctrl-C).
@@ -437,7 +465,8 @@ repeats that and summarises every query that drifted.
 - PostgreSQL clusters managed via `pg_ctlcluster` / `pg_lsclusters`, one `main`
   cluster per major version, from the PGDG apt repo.
 - `gcc`, `make`, `git`, TPC-H `dbgen` (fetched into `tpch-dbgen/` on demand).
-- Root access (RAPL MSRs, cache drop, cluster restarts, `apt`).
-- Linux with Intel RAPL and the `msr` module for the energy columns; the
+- Root access (RAPL, cache drop, cluster restarts, `apt`).
+- Linux with RAPL powercap zones (or Intel MSRs + the `msr` module) for the
+  energy columns; the
   thermal columns read `coretemp` / `cpufreq` / `thermal_throttle` from sysfs
   and are simply left empty where a sensor is missing.

@@ -1,0 +1,130 @@
+===== detach.sh start 2026-09-29T12:47:19Z  pid 20313
+===== command: bash /tmp/greensql_build_pg18.sh
+===== suspend inhibited: yes
+
+######## 2026-09-29T12:47:19Z tpch SF1 on PG18 (reusing the generated .tbl files)
+==> [tpch] target: PostgreSQL 18 on port 5432
+==> [tpch] reusing the existing .tbl files (SKIP_DBGEN=1)
+==> [tpch] (re)creating database
+NOTICE:  database "tpch" does not exist, skipping
+DROP DATABASE
+CREATE DATABASE
+==> [tpch] applying schema
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+==> [tpch] loading tables (streamed; trailing '|' stripped on the fly)
+COPY 5
+    - region loaded: 5 rows (0s)
+COPY 25
+    - nation loaded: 25 rows (0s)
+COPY 10000
+    - supplier loaded: 10000 rows (1s)
+COPY 150000
+    - customer loaded: 150000 rows (0s)
+COPY 200000
+    - part loaded: 200000 rows (1s)
+COPY 800000
+    - partsupp loaded: 800000 rows (1s)
+COPY 1500000
+    - orders loaded: 1500000 rows (3s)
+COPY 6001215
+    - lineitem loaded: 6001215 rows (22s)
+==> [tpch] creating indexes + get_tax_rate()
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE FUNCTION
+==> [tpch] ANALYZE
+ANALYZE
+==> [tpch] removing generated .tbl files to reclaim disk
+==> [tpch] DONE. database size:
+1379 MB
+
+######## 2026-09-29T12:47:52Z tpch_idx on PG18
+==> [tpch_idx PG18] cloning tpch (port 5432)
+NOTICE:  database "tpch_idx" does not exist, skipping
+DROP DATABASE
+CREATE DATABASE
+==> [tpch_idx PG18] applying index suite (index_schema_tpch.sql)
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+    indexes built in 25s
+    [tpch_idx PG18] DONE: 2094 MB  (ixtest_: 26 indexes, 715 MB)
+
+done: built 1, skipped 0 existing, 0 base(s) missing
+
+######## 2026-09-29T12:48:25Z runners
+mkdir -p bin
+gcc -O2 -Wall -Wextra -o bin/query_runner run/query_runner.c run/rapl.c -lm -lpthread
+gcc -O2 -Wall -Wextra -o bin/cold_runner run/cold_runner.c run/rapl.c -lm -lpthread
+gcc -O2 -Wall -Wextra -o bin/plan_builder run/plan_builder.c
+gcc -O2 -Wall -Wextra -o bin/output_runner run/output_runner.c
+gcc -O2 -Wall -Wextra -o bin/write_runner run/write_runner.c run/rapl.c -lm -lpthread
+
+######## 2026-09-29T12:48:27Z stackoverflow_1gb on PG18 (+ its query set)
+==> [stackoverflow_1gb] StackOverflow 1gb on PostgreSQL 18 (port 5432)
+==> /home/user01/GreenSQL/queries/stackoverflow/SQLStorm already holds 11794 .sql files - nothing to do (FORCE=1 to re-fetch)
+==> [stackoverflow_1gb] archive already downloaded: /home/user01/GreenSQL/Data/stackoverflow/stackoverflow_dba.tar.gz (377M)
+==> [stackoverflow_1gb] (re)creating database
+NOTICE:  database "stackoverflow_1gb" does not exist, skipping
+DROP DATABASE
+CREATE DATABASE
+==> [stackoverflow_1gb] applying schema (no foreign keys)
+==> [stackoverflow_1gb] loading tables straight from the archive (-z)
+    - votes                   926084 rows  (1s)
+    - linktypes                    2 rows  (0s)
+    - badges                  439352 rows  (1s)
+    - posttypes                    8 rows  (0s)
+    - posthistory             847593 rows  (14s)
+    - tags                      1232 rows  (0s)
+    - closereasontypes            12 rows  (0s)
+    - posts                   246673 rows  (6s)
+    - postlinks                20146 rows  (0s)
+    - comments                351440 rows  (1s)
+    - users                   267193 rows  (1s)
+    - posthistorytypes            34 rows  (0s)
+    - votetypes                   15 rows  (0s)
+    all 13 tables loaded in 25s
+==> [stackoverflow_1gb] adding primary keys
+    done in 3s
+==> [stackoverflow_1gb] VACUUM (FREEZE, ANALYZE)
+    done in 12s
+==> [stackoverflow_1gb] DONE: 1176 MB
+    run the queries with: make run DB_NAME=stackoverflow_1gb DIR=queries/stackoverflow/SQLStorm PGVER=18
+
+######## 2026-09-29T12:49:08Z done
+PG15 (port 5433): (none)
+PG16 (port 5434): (none)
+PG17 (port 5435): (none)
+PG18 (port 5432): tpch 1379 MB, tpch_idx 2094 MB, stackoverflow_1gb 1176 MB
+===== detach.sh end 2026-09-29T12:49:09Z  exit 0  duration 00:01:50

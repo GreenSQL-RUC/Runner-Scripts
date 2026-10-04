@@ -42,3 +42,8 @@ pginstall2.csv
 # StackOverflow data archives (0.4 / 4.5 / 84 GB), downloaded on demand by
 # build_stackoverflow.sh.
 /Data/stackoverflow/
+# Result rows of the StackOverflow SQLStorm set (make outputs; ~12k files, rebuildable).
+/outputs/stackoverflow_*/
+
+# Python bytecode caches (compare/build_compare_set.py imports test/build_slope_sample.py).
+__pycache__/

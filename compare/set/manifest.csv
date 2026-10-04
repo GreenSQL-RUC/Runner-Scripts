@@ -1,0 +1,55 @@
+kind,band,query,t1_s,e1_j,workers
+sqlstorm,0.1-0.3 s,queries/stackoverflow/SQLStorm/16399.sql,0.100,0.98,4
+sqlstorm,0.1-0.3 s,queries/stackoverflow/SQLStorm/13330.sql,0.100,0.95,4
+sqlstorm,0.1-0.3 s,queries/stackoverflow/SQLStorm/6651.sql,0.152,1.67,3
+sqlstorm,0.1-0.3 s,queries/stackoverflow/SQLStorm/14978.sql,0.158,1.85,4
+sqlstorm,0.1-0.3 s,queries/stackoverflow/SQLStorm/11473.sql,0.172,2.03,4
+sqlstorm,0.1-0.3 s,queries/stackoverflow/SQLStorm/14843.sql,0.176,0.97,0
+sqlstorm,0.1-0.3 s,queries/stackoverflow/SQLStorm/7184.sql,0.209,1.24,0
+sqlstorm,0.1-0.3 s,queries/stackoverflow/SQLStorm/10646.sql,0.216,1.58,4
+sqlstorm,0.1-0.3 s,queries/stackoverflow/SQLStorm/11124.sql,0.220,1.93,2
+sqlstorm,0.1-0.3 s,queries/stackoverflow/SQLStorm/4452.sql,0.280,3.02,3
+sqlstorm,0.3-0.7 s,queries/stackoverflow/SQLStorm/13737.sql,0.321,3.92,4
+sqlstorm,0.3-0.7 s,queries/stackoverflow/SQLStorm/24751.sql,0.326,2.31,4
+sqlstorm,0.3-0.7 s,queries/stackoverflow/SQLStorm/10937.sql,0.333,3.59,2
+sqlstorm,0.3-0.7 s,queries/stackoverflow/SQLStorm/16308.sql,0.428,4.16,2
+sqlstorm,0.3-0.7 s,queries/stackoverflow/SQLStorm/1255.sql,0.437,3.37,4
+sqlstorm,0.3-0.7 s,queries/stackoverflow/SQLStorm/6957.sql,0.442,4.75,4
+sqlstorm,0.3-0.7 s,queries/stackoverflow/SQLStorm/2764.sql,0.492,3.10,4
+sqlstorm,0.3-0.7 s,queries/stackoverflow/SQLStorm/16378.sql,0.546,2.97,0
+sqlstorm,0.3-0.7 s,queries/stackoverflow/SQLStorm/17234.sql,0.591,3.17,0
+sqlstorm,0.3-0.7 s,queries/stackoverflow/SQLStorm/21884.sql,0.691,7.29,2
+sqlstorm,0.7-1.5 s,queries/stackoverflow/SQLStorm/5502.sql,0.742,4.37,4
+sqlstorm,0.7-1.5 s,queries/stackoverflow/SQLStorm/21497.sql,0.886,6.17,4
+sqlstorm,0.7-1.5 s,queries/stackoverflow/SQLStorm/20804.sql,0.899,5.68,4
+sqlstorm,0.7-1.5 s,queries/stackoverflow/SQLStorm/9509.sql,0.907,4.89,0
+sqlstorm,0.7-1.5 s,queries/stackoverflow/SQLStorm/15173.sql,1.039,5.78,0
+sqlstorm,0.7-1.5 s,queries/stackoverflow/SQLStorm/7612.sql,1.081,9.63,4
+sqlstorm,0.7-1.5 s,queries/stackoverflow/SQLStorm/3090.sql,1.128,6.37,2
+sqlstorm,0.7-1.5 s,queries/stackoverflow/SQLStorm/22494.sql,1.237,7.21,4
+sqlstorm,0.7-1.5 s,queries/stackoverflow/SQLStorm/2243.sql,1.402,8.61,3
+sqlstorm,0.7-1.5 s,queries/stackoverflow/SQLStorm/11397.sql,1.472,10.96,3
+sqlstorm,1.5-3 s,queries/stackoverflow/SQLStorm/2863.sql,1.549,9.11,4
+sqlstorm,1.5-3 s,queries/stackoverflow/SQLStorm/13386.sql,1.812,10.24,0
+sqlstorm,1.5-3 s,queries/stackoverflow/SQLStorm/11471.sql,1.829,11.09,4
+sqlstorm,1.5-3 s,queries/stackoverflow/SQLStorm/28796.sql,1.853,12.53,4
+sqlstorm,1.5-3 s,queries/stackoverflow/SQLStorm/1959.sql,2.074,11.46,0
+sqlstorm,1.5-3 s,queries/stackoverflow/SQLStorm/25357.sql,2.274,14.98,4
+sqlstorm,1.5-3 s,queries/stackoverflow/SQLStorm/7046.sql,2.432,16.56,2
+sqlstorm,1.5-3 s,queries/stackoverflow/SQLStorm/12477.sql,2.515,13.69,0
+sqlstorm,1.5-3 s,queries/stackoverflow/SQLStorm/8072.sql,2.527,17.17,4
+sqlstorm,1.5-3 s,queries/stackoverflow/SQLStorm/16363.sql,2.624,24.42,2
+sqlstorm,3-6 s,queries/stackoverflow/SQLStorm/25154.sql,3.034,18.48,4
+sqlstorm,3-6 s,queries/stackoverflow/SQLStorm/14510.sql,3.337,32.16,2
+sqlstorm,3-6 s,queries/stackoverflow/SQLStorm/12128.sql,3.511,19.60,0
+sqlstorm,3-6 s,queries/stackoverflow/SQLStorm/14349.sql,3.587,21.59,4
+sqlstorm,3-6 s,queries/stackoverflow/SQLStorm/11211.sql,3.623,29.29,4
+sqlstorm,3-6 s,queries/stackoverflow/SQLStorm/20426.sql,3.749,23.59,4
+sqlstorm,3-6 s,queries/stackoverflow/SQLStorm/32216.sql,4.040,21.94,0
+sqlstorm,3-6 s,queries/stackoverflow/SQLStorm/13186.sql,4.479,34.53,4
+sqlstorm,3-6 s,queries/stackoverflow/SQLStorm/32661.sql,4.852,27.37,2
+sqlstorm,3-6 s,queries/stackoverflow/SQLStorm/13512.sql,5.639,49.73,2
+probe,probe,compare/probes/probe_cpu.sql,,,
+probe,probe,compare/probes/probe_hash.sql,,,
+probe,probe,compare/probes/probe_scan.sql,,,
+probe,probe,compare/probes/probe_sort.sql,,,

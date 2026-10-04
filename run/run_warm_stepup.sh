@@ -38,7 +38,7 @@
 # BATCH_SIZES RUNS DB_NAME PGVER LOGS_DIR (root for logs, default logs) or
 # LOGS_ROOT (default $LOGS_DIR/warm_stepup) RUNID ORDER_FILE STATEMENT_TIMEOUT
 # WORKERS THERMAL_EQUALISE T_LO T_HI PREHEAT_MAX_S COOLDOWN_MAX_S PREHEAT_S
-# FIX_CLOCK BATCH_CAP_SLOW SLOW_COPY_SEC DRYRUN BIN.
+# FIX_CLOCK BATCH_CAP_SLOW SLOW_COPY_SEC IDLE_BASELINE_S WARMUP_FAIL_SKIP DRYRUN BIN.
 #
 #   sudo bash run/run_warm_stepup.sh
 #   sudo DRYRUN=1 bash run/run_warm_stepup.sh                  # save the order only
@@ -69,6 +69,8 @@ FIX_CLOCK="${FIX_CLOCK:-0}"
 CLOCK_MAX_KHZ="${CLOCK_MAX_KHZ:-}"
 BATCH_CAP_SLOW="${BATCH_CAP_SLOW:-}"
 SLOW_COPY_SEC="${SLOW_COPY_SEC:-1}"
+IDLE_BASELINE_S="${IDLE_BASELINE_S:-0}"
+WARMUP_FAIL_SKIP="${WARMUP_FAIL_SKIP:-0}"
 T_LO="${T_LO:-55}"; T_HI="${T_HI:-60}"; PREHEAT_MAX_S="${PREHEAT_MAX_S:-60}"
 COOLDOWN_MAX_S="${COOLDOWN_MAX_S:-120}"; PREHEAT_S="${PREHEAT_S:-30}"
 [ "$DRYRUN" = "" ] && DRYRUN=0
@@ -160,6 +162,7 @@ if [ "$FIX_CLOCK" = 1 ]; then
     bash "$HERE/clock_control.sh" apply "$clock_state"
 fi
 clock_lines="$(bash "$HERE/clock_control.sh" status | sed 's/^/clock_/')"
+node_lines="$(bash "$HERE/node_info.sh")"     # as the run sees it (clock applied)
 rapl_dir=/sys/class/powercap/intel-rapl/intel-rapl:0
 rapl_pl1_w="n/a"; rapl_pl1_tau_s="n/a"; rapl_pl2_w="n/a"
 [ -r "$rapl_dir/constraint_0_power_limit_uw" ] && rapl_pl1_w=$(awk '{printf "%.1f", $1/1e6}' "$rapl_dir/constraint_0_power_limit_uw")
@@ -204,6 +207,7 @@ for i in "${!ORDER[@]}"; do
            THERMAL_EQUALISE="$THERMAL_EQUALISE" T_LO="$T_LO" T_HI="$T_HI" \
            PREHEAT_MAX_S="$PREHEAT_MAX_S" COOLDOWN_MAX_S="$COOLDOWN_MAX_S" PREHEAT_S="$PREHEAT_S" \
            BATCH_CAP_SLOW="$BATCH_CAP_SLOW" SLOW_COPY_SEC="$SLOW_COPY_SEC" \
+           IDLE_BASELINE_S="$IDLE_BASELINE_S" WARMUP_FAIL_SKIP="$WARMUP_FAIL_SKIP" \
            "$BIN/query_runner" >> "$console" 2>&1; then
         echo "  ok"; ok=$((ok + 1))
     else
@@ -243,6 +247,8 @@ throttle_msgs_after=$(dmesg 2>/dev/null | grep -ci 'clock throttled\|temperature
     echo "warmup:             $WARMUP"
     echo "batch_cap_slow:     ${BATCH_CAP_SLOW:-none} (slow_copy_sec $SLOW_COPY_SEC)"
     echo "statement_timeout:  ${STATEMENT_TIMEOUT}s"
+    echo "idle_baseline_s:    $IDLE_BASELINE_S"
+    echo "warmup_fail_skip:   $WARMUP_FAIL_SKIP"
     echo "workers:            ${WORKERS:-planner default}"
     echo "port:               $PORT"
     echo "logs_root:          $LOGS_ROOT"
@@ -258,6 +264,8 @@ throttle_msgs_after=$(dmesg 2>/dev/null | grep -ci 'clock throttled\|temperature
     echo "rapl_pl1_tau_s:     $rapl_pl1_tau_s"
     echo "rapl_pl2_w:         $rapl_pl2_w"
     echo "dmesg_throttle_msgs: $((throttle_msgs_after - throttle_msgs_before)) during run ($throttle_msgs_after total)"
+    echo "-- node --"
+    echo "$node_lines"
 } | tee "$RUN_DIR/summary.txt"
 
 echo

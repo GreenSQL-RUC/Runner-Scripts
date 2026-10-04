@@ -114,6 +114,11 @@ CLOCK_MAX_KHZ    ?=
 # run takes longer than SLOW_COPY_SEC skips batch sizes above BATCH_CAP_SLOW.
 BATCH_CAP_SLOW ?=
 SLOW_COPY_SEC  ?= 1
+# Idle baseline: seconds of package/DRAM power measured with nothing running,
+# before each query's measured batches (query_idle_<db>.csv). 0 = off.
+IDLE_BASELINE_S ?= 0
+# 1 = a query whose warm-up fails (error / timeout) skips its measured batches.
+WARMUP_FAIL_SKIP ?= 0
 
 # --- db-scale sweep (test-db-scale): TPC-H scale factors to step through -----
 #   SCALES        scale factors (db tpch<SF>, "tpch" for 1) + DB_SUFFIX (e.g. _idx)
@@ -171,7 +176,8 @@ THERMAL_ENV = THERMAL_EQUALISE="$(THERMAL_EQUALISE)" T_LO="$(T_LO)" T_HI="$(T_HI
               PREHEAT_MAX_S="$(PREHEAT_MAX_S)" COOLDOWN_MAX_S="$(COOLDOWN_MAX_S)" \
               PREHEAT_S="$(PREHEAT_S)" FIX_CLOCK="$(FIX_CLOCK)" \
               CLOCK_MAX_KHZ="$(CLOCK_MAX_KHZ)" \
-              BATCH_CAP_SLOW="$(BATCH_CAP_SLOW)" SLOW_COPY_SEC="$(SLOW_COPY_SEC)"
+              BATCH_CAP_SLOW="$(BATCH_CAP_SLOW)" SLOW_COPY_SEC="$(SLOW_COPY_SEC)" \
+              IDLE_BASELINE_S="$(IDLE_BASELINE_S)" WARMUP_FAIL_SKIP="$(WARMUP_FAIL_SKIP)"
 
 WARM_ENV = $(COMMON_ENV) $(THERMAL_ENV) WARMUP="$(WARMUP)" BATCH_SIZES="$(BATCH_SIZES)" \
            RUNS="$(RUNS)" REPEATS="$(REPEATS)" RUNID="$(RUNID)" ORDER_FILE="$(ORDER_FILE)" \
@@ -408,4 +414,4 @@ help:
 	@echo "  WARMUP=$(WARMUP)  BATCH_SIZES='$(BATCH_SIZES)'  RUNS=$(RUNS)  REPEATS=$(REPEATS)"
 	@echo "  WORKERS='$(WORKERS)'  STATEMENT_TIMEOUT=$(STATEMENT_TIMEOUT)  PGVERS='$(PGVERS)'  DBS='$(DBS)'"
 	@echo "  THERMAL_EQUALISE=$(THERMAL_EQUALISE) (T_LO=$(T_LO) T_HI=$(T_HI))  FIX_CLOCK=$(FIX_CLOCK) CLOCK_MAX_KHZ='$(CLOCK_MAX_KHZ)'  BATCH_CAP_SLOW='$(BATCH_CAP_SLOW)'"
-	@echo "  DRYRUN='$(DRYRUN)'  SUDO_PASSWORD=(set)"
+	@echo "  IDLE_BASELINE_S=$(IDLE_BASELINE_S)  WARMUP_FAIL_SKIP=$(WARMUP_FAIL_SKIP)  DRYRUN='$(DRYRUN)'  SUDO_PASSWORD=(set)"

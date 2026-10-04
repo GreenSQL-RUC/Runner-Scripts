@@ -28,6 +28,14 @@
  *                            overhead, rusage, RAPL joules, thermal/clock state
  *   query_samples_<db>.csv   one row per COPY: planning/execution ms, plan
  *                            shape, buffers, relations
+ *   query_idle_<db>.csv      IDLE_BASELINE_S > 0 only: one row per query, the
+ *                            power drawn with nothing running just before its
+ *                            measured batches (subtract idle W x elapsed_sec
+ *                            for net energy)
+ *   query_runinfo_<db>.csv   one row per invocation: the machine (host, CPU,
+ *                            packages, microcode, BIOS, frequency driver,
+ *                            governor, turbo, kernel, RAPL backend), so rows
+ *                            from several nodes can be told apart by run_id
  *   query_catalog_<db>.csv   relation sizes, once per invocation (SKIP_CATALOG=1
  *                            skips it; the step-up driver snapshots once)
  *
@@ -37,6 +45,7 @@
  *   WARMUP BATCH_SIZES RUNS RUN_ID SKIP_CATALOG
  *   THERMAL_EQUALISE T_LO T_HI PREHEAT_MAX_S COOLDOWN_MAX_S PREHEAT_S
  *   BATCH_CAP_SLOW SLOW_COPY_SEC PREV_END_EPOCH SIGLESS_ADDR SIGLESS_CHANNEL ROOT
+ *   IDLE_BASELINE_S WARMUP_FAIL_SKIP
  */
 
 #include <stdio.h>
@@ -55,6 +64,7 @@
 #include <pthread.h>
 #include <sys/wait.h>
 #include <sys/resource.h>
+#include <sys/utsname.h>
 
 #include "rapl.h"
 
@@ -706,6 +716,15 @@ static void write_copy_profile(FILE *out, const run_profile *pr) {
     "timestamp_utc,run_id,pg_version,database,schema,relname," \
     "relkind,reltuples,relpages,heap_bytes,index_bytes,total_bytes\n"
 
+#define HDR_IDLE \
+    "timestamp_utc,run_id,pg_version,query,idle_s," \
+    "idle_pkg_w,idle_core_w,idle_gpu_w,idle_dram_w,pkg_temp_mean_c,mhz_mean\n"
+
+#define HDR_RUNINFO \
+    "timestamp_utc,run_id,pg_version,host,cpu_model,packages,microcode," \
+    "bios_vendor,bios_version,bios_date,product,freq_driver,governor,turbo," \
+    "scaling_max_khz,kernel,rapl\n"
+
 /* Append, writing the header only for a new file. A header MISMATCH refuses:
  * these logs take hours to make, and mixing layouts corrupts every older row. */
 static FILE *open_csv_append(const char *path, const char *header) {
@@ -739,6 +758,78 @@ static FILE *open_csv_append(const char *path, const char *header) {
     if (!f) { perror(path); return NULL; }
     if (is_new) { fputs(header, f); fflush(f); }
     return f;
+}
+
+/* ------------------------------------------------------------------ */
+/* Machine identity: one runinfo row per invocation                    */
+/* ------------------------------------------------------------------ */
+static void first_line(const char *path, char *buf, size_t len) {
+    buf[0] = '\0';
+    FILE *f = fopen(path, "r");
+    if (!f) return;
+    if (fgets(buf, (int)len, f)) buf[strcspn(buf, "\r\n")] = '\0';
+    fclose(f);
+}
+
+/* First "key : value" in /proc/cpuinfo (model name, microcode). */
+static void cpuinfo_field(const char *key, char *buf, size_t len) {
+    buf[0] = '\0';
+    FILE *f = fopen("/proc/cpuinfo", "r");
+    if (!f) return;
+    char line[512];
+    size_t kl = strlen(key);
+    while (fgets(line, sizeof(line), f)) {
+        if (strncmp(line, key, kl) != 0 || (line[kl] != ' ' && line[kl] != '\t' && line[kl] != ':')) continue;
+        char *v = strchr(line, ':');
+        if (!v) continue;
+        for (v++; *v == ' '; v++) {}
+        snprintf(buf, len, "%s", v);
+        buf[strcspn(buf, "\r\n")] = '\0';
+        break;
+    }
+    fclose(f);
+}
+
+/* A quoted CSV field ("" doubles an embedded quote). */
+static void csv_text(FILE *f, const char *v, int last) {
+    fputc('"', f);
+    for (; *v; v++) { if (*v == '"') fputc('"', f); fputc(*v, f); }
+    fputc('"', f);
+    fputc(last ? '\n' : ',', f);
+}
+
+static void write_runinfo(const char *path, const char *run_id, const char *pg_version) {
+    FILE *out = open_csv_append(path, HDR_RUNINFO);
+    if (!out) return;
+    char host[256] = "", model[256], ucode[64], bvendor[128], bversion[128], bdate[64],
+         product[128], driver[64], governor[64], turbo[32] = "", maxf[32], v[16];
+    struct utsname un;
+    gethostname(host, sizeof(host) - 1);
+    cpuinfo_field("model name", model, sizeof(model));
+    cpuinfo_field("microcode", ucode, sizeof(ucode));
+    first_line("/sys/class/dmi/id/bios_vendor", bvendor, sizeof(bvendor));
+    first_line("/sys/class/dmi/id/bios_version", bversion, sizeof(bversion));
+    first_line("/sys/class/dmi/id/bios_date", bdate, sizeof(bdate));
+    first_line("/sys/class/dmi/id/product_name", product, sizeof(product));
+    first_line("/sys/devices/system/cpu/cpu0/cpufreq/scaling_driver", driver, sizeof(driver));
+    first_line("/sys/devices/system/cpu/cpu0/cpufreq/scaling_governor", governor, sizeof(governor));
+    first_line("/sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq", maxf, sizeof(maxf));
+    first_line("/sys/devices/system/cpu/intel_pstate/no_turbo", v, sizeof(v));
+    if (*v) snprintf(turbo, sizeof(turbo), "no_turbo=%s", v);
+    else {
+        first_line("/sys/devices/system/cpu/cpufreq/boost", v, sizeof(v));
+        if (*v) snprintf(turbo, sizeof(turbo), "boost=%s", v);
+    }
+    char ts[32], pk[16];
+    utc_timestamp(ts, sizeof(ts));
+    snprintf(pk, sizeof(pk), "%d", rapl_packages());
+    fprintf(out, "%s,%s,%s,", ts, run_id, pg_version);
+    const char *fields[] = { host, model, pk, ucode, bvendor, bversion, bdate, product,
+                             driver, governor, turbo, maxf,
+                             uname(&un) == 0 ? un.release : "", rapl_describe() };
+    int nf = (int)(sizeof(fields) / sizeof(fields[0]));
+    for (int i = 0; i < nf; i++) csv_text(out, fields[i], i == nf - 1);
+    fclose(out);
 }
 
 /* Relation sizes (rows, pages, bytes) once per invocation, so a measurement can
@@ -940,6 +1031,37 @@ static batch_result run_one_batch(runner_state *st, const char *cmd, const char 
     return br;
 }
 
+/* Idle baseline (IDLE_BASELINE_S > 0): the power drawn with nothing running,
+ * taken after the warm-ups and just before the measured batches, so it is the
+ * state those batches start from. A server package idles at tens of watts and
+ * that draw is billed for every second a batch runs; net energy is
+ * rapl_*_j - idle_*_w x elapsed_sec. The sampler runs as it does for a batch. */
+static void measure_idle(FILE *out, const runner_state *st, const char *query_id, double secs) {
+    double a[RAPL_MAX_ZONES], b[RAPL_MAX_ZONES], e[4];
+    int present[4];
+    sampler_t sm; sampler_start(&sm);
+    rapl_snapshot(a);
+    double t0 = now_sec();
+    struct timespec nap = { (time_t)secs, (long)((secs - floor(secs)) * 1e9) };
+    nanosleep(&nap, NULL);
+    rapl_snapshot(b);
+    double el = now_sec() - t0;
+    sampler_stop(&sm);
+    rapl_delta(a, b, e, present);
+
+    char ts[32], w[4][24], b_mean[16], b_mhz[16];
+    utc_timestamp(ts, sizeof(ts));
+    for (int d = 0; d < 4; d++) fmt_num(present[d] && el > 0 ? e[d] / el : NAN, 3, w[d], sizeof(w[d]));
+    fmt_num(sm.n ? sm.pkg_sum / sm.n : NAN, 2, b_mean, sizeof(b_mean));
+    fmt_num(sm.mhz_n ? sm.mhz_sum / sm.mhz_n : NAN, 0, b_mhz, sizeof(b_mhz));
+    fprintf(out, "%s,%s,%s,%s,%.3f,%s,%s,%s,%s,%s,%s\n", ts, st->run_id, st->pg_version,
+            query_id, el, w[0], w[1], w[2], w[3], b_mean, b_mhz);
+    fflush(out);
+    printf("  idle baseline: %.1fs, package %s W%s%s%s\n", el, w[0],
+           present[3] ? ", dram " : "", present[3] ? w[3] : "", present[3] ? " W" : "");
+    fflush(stdout);
+}
+
 /* ================================================================== */
 /* Main                                                                */
 /* ================================================================== */
@@ -956,8 +1078,11 @@ int main(void) {
     const char *logs_dir  = env_or("LOGS_DIR", DEFAULT_LOGS_DIR);
     (void)mkdir(logs_dir, 0755);
 
-    char log_file[PATH_MAX], sample_file[PATH_MAX], catalog_file[PATH_MAX];
+    char log_file[PATH_MAX], sample_file[PATH_MAX], catalog_file[PATH_MAX],
+         idle_file[PATH_MAX], runinfo_file[PATH_MAX];
     snprintf(log_file, sizeof(log_file), "%s/query_timing_%s.csv", logs_dir, db_name);
+    snprintf(idle_file, sizeof(idle_file), "%s/query_idle_%s.csv", logs_dir, db_name);
+    snprintf(runinfo_file, sizeof(runinfo_file), "%s/query_runinfo_%s.csv", logs_dir, db_name);
     snprintf(sample_file, sizeof(sample_file), "%s/query_samples_%s.csv", logs_dir, db_name);
     snprintf(catalog_file, sizeof(catalog_file), "%s/query_catalog_%s.csv", logs_dir, db_name);
 
@@ -998,6 +1123,12 @@ int main(void) {
     }
 
     int skip_catalog = env_flag("SKIP_CATALOG");
+    double idle_s = env_double("IDLE_BASELINE_S", 0);
+    /* WARMUP_FAIL_SKIP=1: a query whose warm-up fails (error or timeout) skips
+     * its remaining warm-ups and all measured batches; they would only fail
+     * too, each costing up to STATEMENT_TIMEOUT. */
+    int warmup_fail_skip = env_flag("WARMUP_FAIL_SKIP");
+    if (!(idle_s > 0)) idle_s = 0;
     const char *sigless_addr = env_or("SIGLESS_ADDR", "");
     const char *sigless_chan = env_or("SIGLESS_CHANNEL", "CH1");
     const char *pg_port      = env_or("PGPORT", "");
@@ -1030,6 +1161,9 @@ int main(void) {
     printf("\n");
     printf("  sensors           = pkg:%s cores:%d cpufreq:%d throttle:%d/%d\n",
            *S.pkg_temp ? S.pkg_temp : "(none)", S.n_core_temp, S.n_cur_freq, S.n_core_thr, S.n_pkg_thr);
+    if (warmup_fail_skip) printf("  WARMUP_FAIL_SKIP  = on (a failed warm-up skips the query's measured batches)\n");
+    if (idle_s > 0) printf("  IDLE_BASELINE_S   = %.1f s before each query's measured batches\n", idle_s);
+    else            printf("  IDLE_BASELINE_S   = off\n");
     printf("  SIGLESS_ADDR      = %s\n", *sigless_addr ? sigless_addr : "(disabled)");
     fflush(stdout);
 
@@ -1054,6 +1188,7 @@ int main(void) {
         for (int i = 0; i < count; i++) free(files[i]);
         return 1;
     }
+    printf("RAPL: %s\n\n", rapl_describe());
 
     /* --- outputs ------------------------------------------------------ */
     runner_state st;
@@ -1070,6 +1205,8 @@ int main(void) {
     }
     if (!skip_catalog)
         write_catalog_snapshot(catalog_file, env_prefix, db_user, db_name, pg_version, run_id);
+    write_runinfo(runinfo_file, run_id, pg_version);
+    FILE *idle_out = idle_s > 0 ? open_csv_append(idle_file, HDR_IDLE) : NULL;
 
     st.profiles = malloc((size_t)max_batch * sizeof(run_profile));
     if (!st.profiles) { fprintf(stderr, "out of memory for a %d-copy batch\n", max_batch); return 1; }
@@ -1106,18 +1243,21 @@ int main(void) {
          * this query's first batch row. */
         thermal_equalise(&th, &st.preheat_s, &st.cooldown_s);
 
-        int failures = 0;
+        int failures = 0, warm_failed = 0;
         double last_warm_elapsed = NAN;
 
         if (warmup > 0 && build_batch_file(query_id, batch_tmp, 1) == 0) {
             for (int w = 1; w <= warmup; w++) {
                 batch_result br = run_one_batch(&st, cmd, out_tmp, 1, query_id, "warmup", w, runs, warmup);
-                if (br.failed) failures++;
+                if (br.failed) { failures++; warm_failed = 1; }
                 last_warm_elapsed = br.elapsed;
                 printf("  warmup %d/%d: %.6f sec%s\n", w, warmup, br.elapsed, w == 1 ? " (cache prime)" : "");
                 fflush(stdout);
+                if (warm_failed && warmup_fail_skip) break;
             }
         }
+        int skip_measured = warm_failed && warmup_fail_skip;
+        if (skip_measured) printf("  warm-up failed: measured batches skipped (WARMUP_FAIL_SKIP)\n");
 
         int cap = 0;
         if (cap_slow > 0 && !isnan(last_warm_elapsed) && last_warm_elapsed > slow_copy_sec) {
@@ -1125,7 +1265,9 @@ int main(void) {
             printf("  warm 1-copy run %.2fs > %.2fs: capping batch size at %d\n", last_warm_elapsed, slow_copy_sec, cap);
         }
 
-        for (int si = 0; si < n_sizes; si++) {
+        if (idle_out && !skip_measured) measure_idle(idle_out, &st, query_id, idle_s);
+
+        for (int si = 0; si < n_sizes && !skip_measured; si++) {
             int bs = sizes[si];
             if (cap > 0 && bs > cap) { printf("  N=%-3d skipped (cap %d)\n", bs, cap); continue; }
             if (build_batch_file(query_id, batch_tmp, bs) != 0) {
@@ -1159,10 +1301,13 @@ int main(void) {
     for (int i = 0; i < count; i++) free(files[i]);
     fclose(st.log);
     fclose(st.samples);
+    if (idle_out) fclose(idle_out);
 
     printf("\nDone. Batch rows appended to %s\n", log_file);
     printf("Per-copy samples appended to %s\n", sample_file);
     if (!skip_catalog) printf("Relation sizes appended to %s\n", catalog_file);
+    if (idle_out) printf("Idle baselines appended to %s\n", idle_file);
+    printf("Machine identity appended to %s\n", runinfo_file);
     printf("Last batch ended at epoch %.3f (PREV_END_EPOCH for the next invocation)\n", st.prev_end_epoch);
     if (total_failures) printf("%d batch failure%s (see the failed column)\n", total_failures, total_failures == 1 ? "" : "s");
     return 0;
