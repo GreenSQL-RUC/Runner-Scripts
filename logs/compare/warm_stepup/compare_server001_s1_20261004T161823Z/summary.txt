@@ -1,0 +1,50 @@
+run_id:        compare_server001_s1_20261004T161823Z
+started_utc:   2026-10-04T16:18:27Z
+finished_utc:  2026-10-04T19:40:57Z
+total_runtime: 03:22:30  (12150 seconds)   avg_per_entry: 37s
+entries:       324   ok: 324   failed: 0
+-- parameters --
+pg:                 18
+db:                 stackoverflow_1gb
+queries_dir:        queries/stackoverflow/SQLStorm
+queries:            54
+repeats:            1
+batch_sizes:        1 16
+runs_per_size:      1
+warmup:             2
+batch_cap_slow:     none (slow_copy_sec 1)
+statement_timeout:  15s
+idle_baseline_s:    5
+warmup_fail_skip:   1
+workers:            planner default
+port:               5432
+logs_root:          logs/compare/warm_stepup
+run_dir:            logs/compare/warm_stepup/compare_server001_s1_20261004T161823Z
+order_file:         compare/set/order.txt
+saved_order:        logs/compare/warm_stepup/compare_server001_s1_20261004T161823Z/run_order_compare_server001_s1_20261004T161823Z.txt
+-- thermal / clock --
+thermal_policy:     gate T_LO=40 T_HI=60 PREHEAT_MAX_S=60 COOLDOWN_MAX_S=120
+fix_clock:          1
+clock_max_khz:      2500000
+clock_no_turbo: 0
+clock_governor: performance
+clock_min_freq_khz: 400000
+clock_max_freq_khz: 2500000
+rapl_pl1_w:         22.0
+rapl_pl1_tau_s:     27.98
+rapl_pl2_w:         44.0
+dmesg_throttle_msgs: 0 during run (0 total)
+-- node --
+host:               server001
+cpu_model:          Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
+cpu_packages:       1
+cpu_count:          8
+microcode:          0xf6
+bios:               Dell Inc. 1.25.0 (03/24/2022)
+product:            Dell Inc. Latitude 7490
+memory_gb:          8
+freq_driver:        intel_pstate
+governor:           performance
+turbo:              no_turbo=0
+kernel:             6.8.0-41-generic
+rapl_zones:         package-0 core uncore dram psys 
