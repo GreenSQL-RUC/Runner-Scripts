@@ -1,0 +1,200 @@
+===== [1/6] queries/stackoverflow/SQLStorm/5502.sql run_id=CF69E43AB2751CC4 =====
+query_runner configuration:
+  QUERY_DIR         = queries/stackoverflow/SQLStorm/5502.sql
+  LOGS_DIR          = logs/compare/warm_stepup/smoke_compare_user01_smoke_20261001T121743Z  (query_timing_/query_samples_/query_catalog_stackoverflow_1gb.csv)
+  DB_NAME / DB_USER = stackoverflow_1gb / postgres
+  PGPORT            = 5434  (server reports 18.6)
+  RUN_ID            = CF69E43AB2751CC4
+  WARMUP            = 2 single-copy warm-ups (the first primes the cache)
+  BATCH_SIZES       = 1 16  x RUNS=1 measured batches each
+  WORKERS           = (planner default)
+  STATEMENT_TIMEOUT = 15
+  THERMAL_EQUALISE  = gate (T_LO=40 T_HI=60 preheat<=60s cooldown<=120s)
+  sensors           = pkg:/sys/class/hwmon/hwmon8/temp1_input cores:4 cpufreq:8 throttle:8/8
+  WARMUP_FAIL_SKIP  = on (a failed warm-up skips the query's measured batches)
+  IDLE_BASELINE_S   = 5.0 s before each query's measured batches
+  SIGLESS_ADDR      = (disabled)
+Found 1 query under queries/stackoverflow/SQLStorm/5502.sql
+
+RAPL: powercap, 1 package, domains: pkg core gpu/uncore dram
+
+Catalog snapshot: 26 relations -> logs/compare/warm_stepup/smoke_compare_user01_smoke_20261001T121743Z/query_catalog_stackoverflow_1gb.csv
+[1/1] queries/stackoverflow/SQLStorm/5502.sql (2 warmup + step-up 1 16 x1)
+  warmup 1/2: 1.060981 sec (cache prime)
+  warmup 2/2: 0.690268 sec
+  idle baseline: 5.0s, package 1.373 W, dram 0.586 W
+  N=1   batch 1/1: 0.683717 sec, 1 copy (server sum 626.496 ms)
+  N=16  batch 1/1: 9.799022 sec, 16 copies (server sum 9721.736 ms)
+  done: 2 sizes x 1 run (0 failures)
+
+Done. Batch rows appended to logs/compare/warm_stepup/smoke_compare_user01_smoke_20261001T121743Z/query_timing_stackoverflow_1gb.csv
+Per-copy samples appended to logs/compare/warm_stepup/smoke_compare_user01_smoke_20261001T121743Z/query_samples_stackoverflow_1gb.csv
+Relation sizes appended to logs/compare/warm_stepup/smoke_compare_user01_smoke_20261001T121743Z/query_catalog_stackoverflow_1gb.csv
+Idle baselines appended to logs/compare/warm_stepup/smoke_compare_user01_smoke_20261001T121743Z/query_idle_stackoverflow_1gb.csv
+Machine identity appended to logs/compare/warm_stepup/smoke_compare_user01_smoke_20261001T121743Z/query_runinfo_stackoverflow_1gb.csv
+Last batch ended at epoch 1790857089.205 (PREV_END_EPOCH for the next invocation)
+===== [2/6] queries/stackoverflow/SQLStorm/7612.sql run_id=8F6C343203ADCB46 =====
+query_runner configuration:
+  QUERY_DIR         = queries/stackoverflow/SQLStorm/7612.sql
+  LOGS_DIR          = logs/compare/warm_stepup/smoke_compare_user01_smoke_20261001T121743Z  (query_timing_/query_samples_/query_catalog_stackoverflow_1gb.csv)
+  DB_NAME / DB_USER = stackoverflow_1gb / postgres
+  PGPORT            = 5434  (server reports 18.6)
+  RUN_ID            = 8F6C343203ADCB46
+  WARMUP            = 2 single-copy warm-ups (the first primes the cache)
+  BATCH_SIZES       = 1 16  x RUNS=1 measured batches each
+  WORKERS           = (planner default)
+  STATEMENT_TIMEOUT = 15
+  THERMAL_EQUALISE  = gate (T_LO=40 T_HI=60 preheat<=60s cooldown<=120s)
+  sensors           = pkg:/sys/class/hwmon/hwmon8/temp1_input cores:4 cpufreq:8 throttle:8/8
+  WARMUP_FAIL_SKIP  = on (a failed warm-up skips the query's measured batches)
+  IDLE_BASELINE_S   = 5.0 s before each query's measured batches
+  SIGLESS_ADDR      = (disabled)
+Found 1 query under queries/stackoverflow/SQLStorm/7612.sql
+
+RAPL: powercap, 1 package, domains: pkg core gpu/uncore dram
+
+[1/1] queries/stackoverflow/SQLStorm/7612.sql (2 warmup + step-up 1 16 x1)
+  warmup 1/2: 2.069690 sec (cache prime)
+  warmup 2/2: 1.080597 sec
+  idle baseline: 5.0s, package 1.363 W, dram 0.587 W
+  N=1   batch 1/1: 1.075453 sec, 1 copy (server sum 1017.951 ms)
+  N=16  batch 1/1: 16.232730 sec, 16 copies (server sum 16107.005 ms)
+  done: 2 sizes x 1 run (0 failures)
+
+Done. Batch rows appended to logs/compare/warm_stepup/smoke_compare_user01_smoke_20261001T121743Z/query_timing_stackoverflow_1gb.csv
+Per-copy samples appended to logs/compare/warm_stepup/smoke_compare_user01_smoke_20261001T121743Z/query_samples_stackoverflow_1gb.csv
+Idle baselines appended to logs/compare/warm_stepup/smoke_compare_user01_smoke_20261001T121743Z/query_idle_stackoverflow_1gb.csv
+Machine identity appended to logs/compare/warm_stepup/smoke_compare_user01_smoke_20261001T121743Z/query_runinfo_stackoverflow_1gb.csv
+Last batch ended at epoch 1790857118.790 (PREV_END_EPOCH for the next invocation)
+===== [3/6] queries/stackoverflow/SQLStorm/16399.sql run_id=B0C5D4259BD68E27 =====
+query_runner configuration:
+  QUERY_DIR         = queries/stackoverflow/SQLStorm/16399.sql
+  LOGS_DIR          = logs/compare/warm_stepup/smoke_compare_user01_smoke_20261001T121743Z  (query_timing_/query_samples_/query_catalog_stackoverflow_1gb.csv)
+  DB_NAME / DB_USER = stackoverflow_1gb / postgres
+  PGPORT            = 5434  (server reports 18.6)
+  RUN_ID            = B0C5D4259BD68E27
+  WARMUP            = 2 single-copy warm-ups (the first primes the cache)
+  BATCH_SIZES       = 1 16  x RUNS=1 measured batches each
+  WORKERS           = (planner default)
+  STATEMENT_TIMEOUT = 15
+  THERMAL_EQUALISE  = gate (T_LO=40 T_HI=60 preheat<=60s cooldown<=120s)
+  sensors           = pkg:/sys/class/hwmon/hwmon8/temp1_input cores:4 cpufreq:8 throttle:8/8
+  WARMUP_FAIL_SKIP  = on (a failed warm-up skips the query's measured batches)
+  IDLE_BASELINE_S   = 5.0 s before each query's measured batches
+  SIGLESS_ADDR      = (disabled)
+Found 1 query under queries/stackoverflow/SQLStorm/16399.sql
+
+RAPL: powercap, 1 package, domains: pkg core gpu/uncore dram
+
+[1/1] queries/stackoverflow/SQLStorm/16399.sql (2 warmup + step-up 1 16 x1)
+  warmup 1/2: 0.280047 sec (cache prime)
+  warmup 2/2: 0.110007 sec
+  idle baseline: 5.0s, package 4.466 W, dram 0.593 W
+  N=1   batch 1/1: 0.101283 sec, 1 copy (server sum 45.416 ms)
+  N=16  batch 1/1: 0.756330 sec, 16 copies (server sum 690.940 ms)
+  done: 2 sizes x 1 run (0 failures)
+
+Done. Batch rows appended to logs/compare/warm_stepup/smoke_compare_user01_smoke_20261001T121743Z/query_timing_stackoverflow_1gb.csv
+Per-copy samples appended to logs/compare/warm_stepup/smoke_compare_user01_smoke_20261001T121743Z/query_samples_stackoverflow_1gb.csv
+Idle baselines appended to logs/compare/warm_stepup/smoke_compare_user01_smoke_20261001T121743Z/query_idle_stackoverflow_1gb.csv
+Machine identity appended to logs/compare/warm_stepup/smoke_compare_user01_smoke_20261001T121743Z/query_runinfo_stackoverflow_1gb.csv
+Last batch ended at epoch 1790857128.653 (PREV_END_EPOCH for the next invocation)
+===== [4/6] queries/stackoverflow/SQLStorm/20804.sql run_id=E93ABCF92E1F25AD =====
+query_runner configuration:
+  QUERY_DIR         = queries/stackoverflow/SQLStorm/20804.sql
+  LOGS_DIR          = logs/compare/warm_stepup/smoke_compare_user01_smoke_20261001T121743Z  (query_timing_/query_samples_/query_catalog_stackoverflow_1gb.csv)
+  DB_NAME / DB_USER = stackoverflow_1gb / postgres
+  PGPORT            = 5434  (server reports 18.6)
+  RUN_ID            = E93ABCF92E1F25AD
+  WARMUP            = 2 single-copy warm-ups (the first primes the cache)
+  BATCH_SIZES       = 1 16  x RUNS=1 measured batches each
+  WORKERS           = (planner default)
+  STATEMENT_TIMEOUT = 15
+  THERMAL_EQUALISE  = gate (T_LO=40 T_HI=60 preheat<=60s cooldown<=120s)
+  sensors           = pkg:/sys/class/hwmon/hwmon8/temp1_input cores:4 cpufreq:8 throttle:8/8
+  WARMUP_FAIL_SKIP  = on (a failed warm-up skips the query's measured batches)
+  IDLE_BASELINE_S   = 5.0 s before each query's measured batches
+  SIGLESS_ADDR      = (disabled)
+Found 1 query under queries/stackoverflow/SQLStorm/20804.sql
+
+RAPL: powercap, 1 package, domains: pkg core gpu/uncore dram
+
+[1/1] queries/stackoverflow/SQLStorm/20804.sql (2 warmup + step-up 1 16 x1)
+  warmup 1/2: 1.591618 sec (cache prime)
+  warmup 2/2: 0.855031 sec
+  idle baseline: 5.0s, package 1.399 W, dram 0.587 W
+  N=1   batch 1/1: 0.853377 sec, 1 copy (server sum 793.948 ms)
+  N=16  batch 1/1: 11.732055 sec, 16 copies (server sum 11642.540 ms)
+  done: 2 sizes x 1 run (0 failures)
+
+Done. Batch rows appended to logs/compare/warm_stepup/smoke_compare_user01_smoke_20261001T121743Z/query_timing_stackoverflow_1gb.csv
+Per-copy samples appended to logs/compare/warm_stepup/smoke_compare_user01_smoke_20261001T121743Z/query_samples_stackoverflow_1gb.csv
+Idle baselines appended to logs/compare/warm_stepup/smoke_compare_user01_smoke_20261001T121743Z/query_idle_stackoverflow_1gb.csv
+Machine identity appended to logs/compare/warm_stepup/smoke_compare_user01_smoke_20261001T121743Z/query_runinfo_stackoverflow_1gb.csv
+Last batch ended at epoch 1790857152.730 (PREV_END_EPOCH for the next invocation)
+===== [5/6] queries/stackoverflow/SQLStorm/21497.sql run_id=3BC1AA9F3F04CAD6 =====
+query_runner configuration:
+  QUERY_DIR         = queries/stackoverflow/SQLStorm/21497.sql
+  LOGS_DIR          = logs/compare/warm_stepup/smoke_compare_user01_smoke_20261001T121743Z  (query_timing_/query_samples_/query_catalog_stackoverflow_1gb.csv)
+  DB_NAME / DB_USER = stackoverflow_1gb / postgres
+  PGPORT            = 5434  (server reports 18.6)
+  RUN_ID            = 3BC1AA9F3F04CAD6
+  WARMUP            = 2 single-copy warm-ups (the first primes the cache)
+  BATCH_SIZES       = 1 16  x RUNS=1 measured batches each
+  WORKERS           = (planner default)
+  STATEMENT_TIMEOUT = 15
+  THERMAL_EQUALISE  = gate (T_LO=40 T_HI=60 preheat<=60s cooldown<=120s)
+  sensors           = pkg:/sys/class/hwmon/hwmon8/temp1_input cores:4 cpufreq:8 throttle:8/8
+  WARMUP_FAIL_SKIP  = on (a failed warm-up skips the query's measured batches)
+  IDLE_BASELINE_S   = 5.0 s before each query's measured batches
+  SIGLESS_ADDR      = (disabled)
+Found 1 query under queries/stackoverflow/SQLStorm/21497.sql
+
+RAPL: powercap, 1 package, domains: pkg core gpu/uncore dram
+
+[1/1] queries/stackoverflow/SQLStorm/21497.sql (2 warmup + step-up 1 16 x1)
+  warmup 1/2: 1.948250 sec (cache prime)
+  warmup 2/2: 0.880950 sec
+  idle baseline: 5.0s, package 1.412 W, dram 0.585 W
+  N=1   batch 1/1: 0.935725 sec, 1 copy (server sum 825.382 ms)
+  N=16  batch 1/1: 12.477015 sec, 16 copies (server sum 12334.706 ms)
+  done: 2 sizes x 1 run (0 failures)
+
+Done. Batch rows appended to logs/compare/warm_stepup/smoke_compare_user01_smoke_20261001T121743Z/query_timing_stackoverflow_1gb.csv
+Per-copy samples appended to logs/compare/warm_stepup/smoke_compare_user01_smoke_20261001T121743Z/query_samples_stackoverflow_1gb.csv
+Idle baselines appended to logs/compare/warm_stepup/smoke_compare_user01_smoke_20261001T121743Z/query_idle_stackoverflow_1gb.csv
+Machine identity appended to logs/compare/warm_stepup/smoke_compare_user01_smoke_20261001T121743Z/query_runinfo_stackoverflow_1gb.csv
+Last batch ended at epoch 1790857178.206 (PREV_END_EPOCH for the next invocation)
+===== [6/6] compare/probes/probe_cpu.sql run_id=2A0502E48937DC47 =====
+query_runner configuration:
+  QUERY_DIR         = compare/probes/probe_cpu.sql
+  LOGS_DIR          = logs/compare/warm_stepup/smoke_compare_user01_smoke_20261001T121743Z  (query_timing_/query_samples_/query_catalog_stackoverflow_1gb.csv)
+  DB_NAME / DB_USER = stackoverflow_1gb / postgres
+  PGPORT            = 5434  (server reports 18.6)
+  RUN_ID            = 2A0502E48937DC47
+  WARMUP            = 2 single-copy warm-ups (the first primes the cache)
+  BATCH_SIZES       = 1 16  x RUNS=1 measured batches each
+  WORKERS           = (planner default)
+  STATEMENT_TIMEOUT = 15
+  THERMAL_EQUALISE  = gate (T_LO=40 T_HI=60 preheat<=60s cooldown<=120s)
+  sensors           = pkg:/sys/class/hwmon/hwmon8/temp1_input cores:4 cpufreq:8 throttle:8/8
+  WARMUP_FAIL_SKIP  = on (a failed warm-up skips the query's measured batches)
+  IDLE_BASELINE_S   = 5.0 s before each query's measured batches
+  SIGLESS_ADDR      = (disabled)
+Found 1 query under compare/probes/probe_cpu.sql
+
+RAPL: powercap, 1 package, domains: pkg core gpu/uncore dram
+
+[1/1] compare/probes/probe_cpu.sql (2 warmup + step-up 1 16 x1)
+  warmup 1/2: 2.009834 sec (cache prime)
+  warmup 2/2: 1.633947 sec
+  idle baseline: 5.0s, package 4.837 W, dram 0.602 W
+  N=1   batch 1/1: 1.605663 sec, 0 copies
+  N=16  batch 1/1: 24.645104 sec, 0 copies
+  done: 2 sizes x 1 run (0 failures)
+
+Done. Batch rows appended to logs/compare/warm_stepup/smoke_compare_user01_smoke_20261001T121743Z/query_timing_stackoverflow_1gb.csv
+Per-copy samples appended to logs/compare/warm_stepup/smoke_compare_user01_smoke_20261001T121743Z/query_samples_stackoverflow_1gb.csv
+Idle baselines appended to logs/compare/warm_stepup/smoke_compare_user01_smoke_20261001T121743Z/query_idle_stackoverflow_1gb.csv
+Machine identity appended to logs/compare/warm_stepup/smoke_compare_user01_smoke_20261001T121743Z/query_runinfo_stackoverflow_1gb.csv
+Last batch ended at epoch 1790857217.527 (PREV_END_EPOCH for the next invocation)

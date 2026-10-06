@@ -1,0 +1,7 @@
+# first 6 entries of compare/set/order.txt (smoke test)
+queries/stackoverflow/SQLStorm/5502.sql
+queries/stackoverflow/SQLStorm/7612.sql
+queries/stackoverflow/SQLStorm/16399.sql
+queries/stackoverflow/SQLStorm/20804.sql
+queries/stackoverflow/SQLStorm/21497.sql
+compare/probes/probe_cpu.sql
