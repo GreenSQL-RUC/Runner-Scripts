@@ -12,8 +12,8 @@
 # compare/build_compare_set.py (never per machine).
 #
 # What it does:
-#   1. pre-flight: PG18 at $PG_MINOR, stackoverflow_1gb present, every query in
-#      the set present, no other runner active;
+#   1. pre-flight: PostgreSQL $PGVER at $PG_MINOR, stackoverflow_1gb present,
+#      every query in the set present, no other runner active;
 #   2. applies the testing parameters (make set-parameters);
 #   3. pauses automatic upgrades (stops apt-daily.timer / apt-daily-upgrade.timer
 #      if active, waits for any apt/dpkg in progress); the timers it stopped are
@@ -34,19 +34,28 @@
 # Stop it: sudo kill -TERM -- -<pgid> (the process group is printed at the start).
 #
 # ENV: ENTRIES=N   run only the first N entries (smoke test; RUNID gets "smoke_")
-#      PG_MINOR    required PG18 version (default 18.6)
+#      PGVER       PostgreSQL major to test (default 18; a CloudLab node from
+#                  cloudlab/profile.py sets it in login shells). The laptop
+#                  sessions are PG18; another major gets "pg<N>_" in its RUNID.
+#      PG_MINOR    required minor (default: build/bootstrap_ubuntu.sh's pin for
+#                  PGVER, e.g. 18.6 or 16.15)
+# The testing parameters a major lacks (io_* before PG18) are skipped by
+# make set-parameters, so a PG16 session runs without them.
 #
 set -uo pipefail
 cd "$(dirname "$0")/.." || exit 1
 
 SESSION="${1:-s1}"
 ORDER=compare/set/order.txt
-PG_MINOR="${PG_MINOR:-18.6}"
+PGVER="${PGVER:-18}"
+PG_MINOR="${PG_MINOR:-$(sed -n "s/^ *\[$PGVER\]=\([0-9.]*\)$/\1/p" build/bootstrap_ubuntu.sh)}"
 CLOCK_KHZ=2500000
 DB=stackoverflow_1gb
 PW="${SUDO_PASSWORD:-a}"
 ENTRIES="${ENTRIES:-}"
 UNITS="apt-daily.timer apt-daily-upgrade.timer"
+
+[ -n "$PG_MINOR" ] || { echo "!! no pinned minor for PG$PGVER in build/bootstrap_ubuntu.sh; set PG_MINOR" >&2; exit 1; }
 
 as_root(){ printf '%s\n' "$PW" | sudo -S -p '' "$@"; }
 die(){ echo "!! $*" >&2; exit 1; }
@@ -58,19 +67,20 @@ for q in $(printf '%s\n' "${ENTRY[@]}" | sort -u); do
     [ -f "$q" ] || die "query file missing: $q (make fetch-sqlstorm SQLSTORM_DATASET=stackoverflow)"
 done
 as_root true || die "sudo failed (set SUDO_PASSWORD)"
-PORT=$(pg_lsclusters -h | awk '$1==18 && $2=="main"{print $3}')
-[ -n "$PORT" ] || die "no PG18 main cluster"
-psql18(){ as_root -u postgres psql -p "$PORT" -d "$1" -Atc "$2"; }
-ver=$(psql18 postgres "SHOW server_version" | awk '{print $1}')
-[ "$ver" = "$PG_MINOR" ] || die "PG18 is $ver, the test needs $PG_MINOR (sudo FORCE_MINOR=1 bash build/bootstrap_ubuntu.sh 18)"
-[ "$(psql18 postgres "SELECT 1 FROM pg_database WHERE datname='$DB'")" = 1 ] \
-    || die "database $DB missing (make build-stackoverflow)"
+PORT=$(pg_lsclusters -h | awk -v v="$PGVER" '$1==v && $2=="main"{print $3}')
+[ -n "$PORT" ] || die "no PG$PGVER main cluster"
+psqlv(){ as_root -u postgres psql -p "$PORT" -d "$1" -Atc "$2"; }
+ver=$(psqlv postgres "SHOW server_version" | awk '{print $1}')
+[ "$ver" = "$PG_MINOR" ] || die "PG$PGVER is $ver, the test needs $PG_MINOR (sudo FORCE_MINOR=1 bash build/bootstrap_ubuntu.sh $PGVER)"
+[ "$(psqlv postgres "SELECT 1 FROM pg_database WHERE datname='$DB'")" = 1 ] \
+    || die "database $DB missing on PG$PGVER (make build-stackoverflow PGVER=$PGVER)"
 busy=$(ps -eo pid=,stat=,comm= | awk '$2 !~ /^T/ && $3 ~ /^(query_runner|cold_runner|output_runner)$/')
 [ -z "$busy" ] || die "another runner is active:
 $busy"
 
 stamp=$(date -u +%Y%m%dT%H%M%SZ)
-RUNID="compare_$(hostname -s)_${SESSION}_$stamp"
+pgtag=""; [ "$PGVER" = 18 ] || pgtag="pg${PGVER}_"
+RUNID="compare_$(hostname -s)_${pgtag}${SESSION}_$stamp"
 if [ -n "$ENTRIES" ]; then
     RUNID="smoke_$RUNID"
     mkdir -p logs/compare
@@ -79,13 +89,13 @@ if [ -n "$ENTRIES" ]; then
     ORDER="$sub"
 fi
 RUN_DIR="logs/compare/warm_stepup/$RUNID"
-echo "==> compare session $SESSION on $(hostname -s): $RUNID"
+echo "==> compare session $SESSION on $(hostname -s), PostgreSQL $ver: $RUNID"
 echo "    $(grep -vcE '^\s*(#|$)' "$ORDER") entries from $ORDER; $(sed -n 's/^# estimate: //p' compare/set/order.txt)"
 echo "    process group $(ps -o pgid= $$ | tr -d ' ')"
 
 # --- 2. testing parameters -----------------------------------------------------
 echo "==> testing parameters"
-make --no-print-directory set-parameters SUDO_PASSWORD="$PW" | grep -E "^(==>|  !!)|=" | sed 's/^/    /'
+make --no-print-directory set-parameters PGVER="$PGVER" SUDO_PASSWORD="$PW" | grep -E "^(==>|  !!)|=" | sed 's/^/    /'
 
 # --- 3. pause automatic upgrades ----------------------------------------------
 stopped=""
@@ -111,7 +121,7 @@ apt_busy && die "apt/dpkg still running after 10 min"
 
 # --- 4. the run ---------------------------------------------------------------
 make --no-print-directory warm-stepup SUDO_PASSWORD="$PW" \
-    PGVER=18 DB_NAME="$DB" DIR=queries/stackoverflow/SQLStorm ORDER_FILE="$ORDER" \
+    PGVER="$PGVER" DB_NAME="$DB" DIR=queries/stackoverflow/SQLStorm ORDER_FILE="$ORDER" \
     "BATCH_SIZES=1 16" WARMUP=2 RUNS=1 STATEMENT_TIMEOUT=15 WARMUP_FAIL_SKIP=1 \
     THERMAL_EQUALISE=1 T_LO=40 T_HI=60 FIX_CLOCK=1 CLOCK_MAX_KHZ="$CLOCK_KHZ" \
     IDLE_BASELINE_S=5 LOGS_DIR=logs/compare RUNID="$RUNID"

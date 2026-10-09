@@ -272,7 +272,7 @@ Invoke as `make test-<param>` (dashes for underscores):
 
 | File | Purpose |
 |---|---|
-| **`run_compare.sh [session]`** | One ~3.3 h session: pre-flight (PG18 at 18.6, StackOverflow 1 GB, no other runner), testing GUCs, automatic upgrades paused for the run, then the fixed set as a (1,16) warm step-up with the 40–60 °C gate, the clock at 2.5 GHz, a 5 s idle baseline and a 15 s timeout, into `logs/compare/warm_stepup/compare_<host>_<session>_<stamp>/`; ends with a protocol check (`CHECK OK`). `ENTRIES=N` runs only the first N entries (smoke test). |
+| **`run_compare.sh [session]`** | One ~3.3 h session: pre-flight (PostgreSQL `PGVER`, default 18, at its pinned minor, e.g. 18.6 or 16.15; StackOverflow 1 GB on that cluster; no other runner), testing GUCs, automatic upgrades paused for the run, then the fixed set as a (1,16) warm step-up with the 40–60 °C gate, the clock at 2.5 GHz, a 5 s idle baseline and a 15 s timeout, into `logs/compare/warm_stepup/compare_<host>_<session>_<stamp>/` (`compare_<host>_pg16_<session>_...` for `PGVER=16`; the io_* testing GUCs do not exist before PG18 and are skipped); ends with a protocol check (`CHECK OK`). `ENTRIES=N` runs only the first N entries (smoke test). |
 | **`build_compare_set.py`** | Chooses the set once from laptop 1's StackOverflow pass: 10 queries per warm 1-copy time band (0.1–6 s, five bands) + the 4 probes, 6 rounds each in a fresh shuffle → `set/manifest.csv`, `set/order.txt` (committed; every machine replays the same order). |
 | **`probes/`** | Synthetic probes: pure CPU, memory bandwidth (parallel scans), memory latency (large hash joins), in-memory sort. |
 
