@@ -382,6 +382,21 @@ make warm-stepup ORDER_FILE=logs/warm_stepup/<RUNID>/run_order_<RUNID>.txt   # r
 make reset-parameters
 ```
 
+An `ORDER_FILE` is run as written: one query path per line (`#` and blank lines
+skipped, a repeated line is a repeat, `REPEATS` ignored). A line may end in its
+own comma-separated batch sizes, which replace `BATCH_SIZES` for that entry only
+(`BATCH_CAP_SLOW` still applies on top), e.g. to give expensive queries fewer
+copies in one shuffled run:
+
+```
+queries/stackoverflow/SQLStorm/100.sql
+queries/stackoverflow/SQLStorm/34585.sql 1,8
+queries/stackoverflow/SQLStorm/22783.sql 1,4
+```
+
+Here `100.sql` runs `BATCH_SIZES`. Comments must be on their own line. The saved `run_order_<RUNID>.txt` keeps the sizes, so a replay runs the same
+batches. A malformed line aborts the run before anything starts.
+
 For each of the `queries × REPEATS` entries, in the saved random order:
 1. drop the OS page cache and restart the cluster (clean cold start);
 2. *(only if `THERMAL_EQUALISE` is set)* equalise the die temperature —

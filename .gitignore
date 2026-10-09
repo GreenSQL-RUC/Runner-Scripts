@@ -44,6 +44,12 @@ pginstall2.csv
 /Data/stackoverflow/
 # Result rows of the StackOverflow SQLStorm set (make outputs; ~12k files, rebuildable).
 /outputs/stackoverflow_*/
+# Their EXPLAIN ANALYZE plans (make plans; ~12k files, rebuildable).
+/plans/stackoverflow_*/
+# Same for the SQLStorm TPC-H set (OUTPUTS_DIR/PLANS_DIR=.../sqlstorm, kept apart
+# from the curated plans/tpch_idx/ files).
+/outputs/sqlstorm/
+/plans/sqlstorm/
 
 # Python bytecode caches (compare/build_compare_set.py imports test/build_slope_sample.py).
 __pycache__/

@@ -258,6 +258,7 @@ cold: $(BIN)/cold_runner check-pg
 #   make set-parameters && make warm-stepup [DB_NAME=tpch_idx REPEATS=3]
 #   make warm-stepup DRYRUN=1                      # save the order, run nothing
 #   make warm-stepup ORDER_FILE=logs/warm_stepup/<RUNID>/run_order_<RUNID>.txt
+#     (an order line may end in its own batch sizes, e.g. "<path> 1,4")
 # Everything lands in $(LOGS_DIR)/warm_stepup/<RUNID>/ (CSVs, order, summary).
 warm-stepup: $(BIN)/query_runner check-pg
 	@$(call SUDO_RUN,$(WARM_ENV),bash $(RUN)/run_warm_stepup.sh)

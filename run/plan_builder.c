@@ -36,6 +36,7 @@
  *   DB_USER     OS user psql runs as, via sudo                 (default: postgres)
  *   PGPORT      cluster port (= PostgreSQL major)              (default: psql's)
  *   WORKERS     max_parallel_workers_per_gather cap            (default: planner)
+ *   STATEMENT_TIMEOUT  seconds per query, 0 = none             (default: none)
  *   APPEND      1 = append snapshots + compare shapes          (default: replace)
  */
 
@@ -88,18 +89,24 @@ static void utc_timestamp(char *buf, size_t buf_size) {
 }
 
 /* "env PGPORT=N PGOPTIONS='...' " between `sudo -u USER` and `psql`, so the
- * plans come from the same cluster / worker cap the runner would use. */
-static const char *build_psql_env_prefix(const char *port, const char *workers) {
-    static char buf[160];
+ * plans come from the same cluster / worker cap the runner would use. A
+ * STATEMENT_TIMEOUT (seconds, 0 = none) stops a runaway query; it then fails. */
+static const char *build_psql_env_prefix(const char *port, const char *workers, const char *timeout) {
+    static char buf[224];
     char port_part[48] = "";
-    char opts_part[96] = "";
+    char opts[128] = "";
+    int n = 0;
     if (port && *port)
         snprintf(port_part, sizeof(port_part), "PGPORT=%ld ", require_uint("PGPORT", port));
     if (workers && *workers)
-        snprintf(opts_part, sizeof(opts_part), "PGOPTIONS='-c max_parallel_workers_per_gather=%ld' ",
-                 require_uint("WORKERS", workers));
-    if (!*port_part && !*opts_part) buf[0] = '\0';
-    else snprintf(buf, sizeof(buf), "env %s%s", port_part, opts_part);
+        n += snprintf(opts + n, sizeof(opts) - n, " -c max_parallel_workers_per_gather=%ld",
+                      require_uint("WORKERS", workers));
+    if (timeout && *timeout && require_uint("STATEMENT_TIMEOUT", timeout) > 0)
+        n += snprintf(opts + n, sizeof(opts) - n, " -c statement_timeout=%ld000",
+                      require_uint("STATEMENT_TIMEOUT", timeout));
+    if (!*port_part && !n) buf[0] = '\0';
+    else if (!n) snprintf(buf, sizeof(buf), "env %s", port_part);
+    else snprintf(buf, sizeof(buf), "env %sPGOPTIONS='%s' ", port_part, opts + 1);
     return buf;
 }
 
@@ -340,9 +347,10 @@ int main(void) {
     const char *db_user    = env_or("DB_USER",   DEFAULT_DB_USER);
     const char *workers    = env_or("WORKERS",   "");
     const char *pg_port    = env_or("PGPORT",    "");
+    const char *timeout    = env_or("STATEMENT_TIMEOUT", "");
     const char *append_env = getenv("APPEND");
     int append = (append_env && *append_env && strcmp(append_env, "0") != 0);
-    const char *env_prefix = build_psql_env_prefix(pg_port, workers);
+    const char *env_prefix = build_psql_env_prefix(pg_port, workers, timeout);
     const char *pg_version = query_pg_version(env_prefix, db_user, db_name);
 
     /* Plans go under <PLANS_DIR>/<DB_NAME>/ so tpch and tpch_idx never overwrite each other. */
@@ -355,6 +363,8 @@ int main(void) {
     printf("  DB_NAME   = %s   DB_USER = %s\n", db_name, db_user);
     printf("  PGPORT    = %s  (server reports %s)\n", *pg_port ? pg_port : "(psql default, 5432)", pg_version);
     printf("  WORKERS   = %s\n", *workers ? workers : "(planner default)");
+    if (*timeout && strcmp(timeout, "0")) printf("  TIMEOUT   = %s s per query\n", timeout);
+    else printf("  TIMEOUT   = none\n");
     printf("  MODE      = %s\n\n", append ? "APPEND (snapshot appended, shape compared with the previous one)"
                                           : "replace (each plan file overwritten)");
 
@@ -442,7 +452,7 @@ int main(void) {
 
         char cmd[MAX_CMD];
         n = snprintf(cmd, sizeof(cmd),
-                     "sudo -n -u %s %spsql -d %s -X -q -P pager=off -f \"%s\" %s \"%s\" 2>&1",
+                     "sudo -n -u %s %spsql -d %s -X -q -v ON_ERROR_STOP=1 -P pager=off -f \"%s\" %s \"%s\" 2>&1",
                      db_user, env_prefix, db_name, temp_sql, append ? ">>" : ">", plan_path);
         if (n <= 0 || n >= (int)sizeof(cmd)) { fprintf(stderr, "Command too long for %s, skipping\n", rel); failures++; continue; }
 

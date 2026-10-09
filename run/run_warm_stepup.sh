@@ -44,6 +44,14 @@
 #   sudo DRYRUN=1 bash run/run_warm_stepup.sh                  # save the order only
 #   sudo ORDER_FILE=logs/warm_stepup/<RUNID>/run_order_<RUNID>.txt bash run/run_warm_stepup.sh
 #
+# ORDER_FILE: one entry per line, run in the order written (duplicates are
+# repeats; '#' and blank lines skipped; REPEATS ignored). A line may give its
+# own batch sizes after the path, comma-separated, which replace BATCH_SIZES
+# for that entry only (BATCH_CAP_SLOW still applies on top):
+#   queries/stackoverflow/SQLStorm/100.sql            <- BATCH_SIZES
+#   queries/stackoverflow/SQLStorm/22783.sql 1,4      <- N=1 and N=4 only
+# The saved run_order keeps these, so a replay runs the same sizes.
+#
 set -uo pipefail
 
 HERE="$(cd "$(dirname "$0")" && pwd)"
@@ -91,8 +99,14 @@ if [ "$DRYRUN" != 1 ] && [ "$(id -u)" != 0 ]; then
     exit 1
 fi
 
+# A given ORDER_FILE must exist: a wrong path would otherwise fall through to a
+# fresh shuffle of everything under DIR.
+if [ -n "$ORDER_FILE" ] && [ ! -f "$ORDER_FILE" ]; then
+    echo "!! ORDER_FILE not found: $ORDER_FILE (paths are relative to $ROOT); aborting" >&2
+    exit 1
+fi
+
 RUN_DIR="$LOGS_ROOT/$RUNID"
-mkdir -p "$RUN_DIR"
 saved_order="$RUN_DIR/run_order_$RUNID.txt"
 console="$RUN_DIR/console.log"
 
@@ -108,6 +122,18 @@ else
     mapfile -t ORDER < <(for ((r = 0; r < REPEATS; r++)); do printf '%s\n' "${QUERIES[@]}"; done | shuf)
     src_note="# generated fresh: ${#QUERIES[@]} queries x $REPEATS repeats"
 fi
+# Split "<path> [<sizes>]"; SIZES[i] is empty when the line gives none.
+SIZES=(); n_own=0
+for i in "${!ORDER[@]}"; do
+    read -r q s extra <<< "${ORDER[$i]}"
+    if [ -n "$extra" ] || { [ -n "$s" ] && ! [[ "$s" =~ ^[1-9][0-9]*(,[1-9][0-9]*)*$ ]]; }; then
+        echo "!! bad order entry $((i + 1)): '${ORDER[$i]}' (want '<query path> [<sizes> e.g. 1,4]'); aborting" >&2
+        exit 1
+    fi
+    ORDER[$i]="$q"; SIZES[$i]="$s"
+    [ -n "$s" ] && n_own=$((n_own + 1))
+done
+own_note=""; [ "$n_own" -gt 0 ] && own_note=" ($n_own of ${#ORDER[@]} entries set their own in the order file)"
 total="${#ORDER[@]}"
 n_queries=$(printf '%s\n' "${ORDER[@]}" | sort -u | grep -c .)
 
@@ -125,13 +151,14 @@ case "$thermal_policy" in
     *)         thermal_policy="off" ;;
 esac
 
+mkdir -p "$RUN_DIR"
 {
     echo "# warm step-up run order"
     echo "# run_id=$RUNID"
     echo "# generated $(date -u +%Y-%m-%dT%H:%M:%SZ)  DIR=$DIR  REPEATS=$REPEATS  total=$total"
     echo "# thermal_policy: $thermal_policy   fix_clock: $FIX_CLOCK   clock_max_khz: ${CLOCK_MAX_KHZ:-base}"
     echo "$src_note"
-    printf '%s\n' "${ORDER[@]}"
+    for ((i = 0; i < total; i++)); do echo "${ORDER[$i]}${SIZES[$i]:+ ${SIZES[$i]}}"; done
     echo "# per-entry run ids (group n, its run_id, the predecessor group's run_id):"
     prev="none"
     for ((i = 0; i < total; i++)); do
@@ -141,13 +168,13 @@ esac
 } > "$saved_order"
 echo "==> run_id=$RUNID  order ($total entries) -> $saved_order"
 
-echo "warm step-up: PG$PGVER  DB=$DB_NAME  DIR=$DIR  BATCH_SIZES='$BATCH_SIZES'  WARMUP=$WARMUP  RUNS=$RUNS  REPEATS=$REPEATS"
+echo "warm step-up: PG$PGVER  DB=$DB_NAME  DIR=$DIR  BATCH_SIZES='$BATCH_SIZES'$own_note  WARMUP=$WARMUP  RUNS=$RUNS  REPEATS=$REPEATS"
 echo "  thermal: $thermal_policy   fix_clock: $FIX_CLOCK (ceiling ${CLOCK_MAX_KHZ:-base freq})   batch cap: ${BATCH_CAP_SLOW:-none}"
 echo "  logs -> $RUN_DIR/  ($total entries)$([ "$DRYRUN" = 1 ] && echo '   [DRY RUN]')"
 
 if [ "$DRYRUN" = 1 ]; then
     echo "  first entries:"
-    printf '    %s\n' "${ORDER[@]:0:10}"
+    for ((i = 0; i < total && i < 10; i++)); do echo "    ${ORDER[$i]}${SIZES[$i]:+ ${SIZES[$i]}}"; done
     [ "$total" -gt 10 ] && echo "    ... ($((total - 10)) more)"
     echo "  [DRY RUN] order saved; nothing restarted or run."
     exit 0
@@ -180,7 +207,8 @@ for i in "${!ORDER[@]}"; do
     qfile="${ORDER[$i]}"
     n=$((i + 1))
     rid="${IDS[$i]}"
-    echo "[$n/$total] $qfile  (run_id $rid)"
+    sizes="${SIZES[$i]:-$BATCH_SIZES}"
+    echo "[$n/$total] $qfile  (run_id $rid)${SIZES[$i]:+  sizes ${SIZES[$i]}}"
 
     # 1. clean cold start: drop OS page cache + restart the cluster.
     sync
@@ -199,9 +227,9 @@ for i in "${!ORDER[@]}"; do
     skip_catalog=1; [ "$n" = 1 ] && skip_catalog=""
 
     # 2-4: equalise (if on) + WARMUP + step-up are query_runner's job, on this ONE file.
-    echo "===== [$n/$total] $qfile run_id=$rid =====" >> "$console"
+    echo "===== [$n/$total] $qfile run_id=$rid sizes=$sizes =====" >> "$console"
     if env ROOT="$ROOT" QUERY_DIR="$qfile" DB_NAME="$DB_NAME" DB_USER="$DB_USER" PGPORT="$PORT" \
-           LOGS_DIR="$RUN_DIR" WARMUP="$WARMUP" BATCH_SIZES="$BATCH_SIZES" RUNS="$RUNS" \
+           LOGS_DIR="$RUN_DIR" WARMUP="$WARMUP" BATCH_SIZES="$sizes" RUNS="$RUNS" \
            WORKERS="$WORKERS" STATEMENT_TIMEOUT="$STATEMENT_TIMEOUT" SKIP_CATALOG="$skip_catalog" \
            RUN_ID="$rid" PREV_END_EPOCH="$prev_end_epoch" \
            THERMAL_EQUALISE="$THERMAL_EQUALISE" T_LO="$T_LO" T_HI="$T_HI" \
@@ -242,7 +270,7 @@ throttle_msgs_after=$(dmesg 2>/dev/null | grep -ci 'clock throttled\|temperature
     echo "queries_dir:        $DIR"
     echo "queries:            $n_queries"
     echo "repeats:            $REPEATS"
-    echo "batch_sizes:        $BATCH_SIZES"
+    echo "batch_sizes:        $BATCH_SIZES$own_note"
     echo "runs_per_size:      $RUNS"
     echo "warmup:             $WARMUP"
     echo "batch_cap_slow:     ${BATCH_CAP_SLOW:-none} (slow_copy_sec $SLOW_COPY_SEC)"

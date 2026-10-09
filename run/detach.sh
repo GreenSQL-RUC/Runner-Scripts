@@ -16,7 +16,12 @@
 #     suspend nor suspends on lid close while the job runs. Both are released
 #     the moment the job exits;
 #   - one console log with a start line, the command's full output, and an end
-#     line carrying the exit code and the wall-clock duration.
+#     line carrying the exit code and the wall-clock duration;
+#   - on a CloudLab node set up by cloudlab/profile.py, the logs leave the node
+#     as soon as the job ends (its disks are wiped when the experiment ends):
+#     greensql-save-logs (to /proj) and greensql-push-results (to GitHub) run
+#     after the end line, whatever the exit code. Where they are not installed,
+#     e.g. on the laptops, nothing happens.
 #
 # The machine itself must stay powered on. Closing the terminal, the Claude app
 # or an SSH session does not stop the job; `kill <pid>` of the make process does
@@ -64,4 +69,13 @@ t1=$(date +%s)
 printf '===== detach.sh end %s  exit %d  duration %02d:%02d:%02d\n' \
     "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$rc" \
     $(( (t1 - t0) / 3600 )) $(( ((t1 - t0) % 3600) / 60 )) $(( (t1 - t0) % 60 ))
+
+# CloudLab only (see the header). Both need root; the sudo ticket from the start
+# may have expired during a long job, so it is renewed first.
+for c in greensql-save-logs greensql-push-results; do
+    cmd="$(command -v "$c" 2>/dev/null)" || continue
+    printf '%s\n' "${SUDO_PASSWORD:-a}" | sudo -S -v 2>/dev/null
+    echo "===== $c"
+    sudo -n "$cmd" || echo "===== $c failed (exit $?); the logs are still on this node"
+done
 exit $rc

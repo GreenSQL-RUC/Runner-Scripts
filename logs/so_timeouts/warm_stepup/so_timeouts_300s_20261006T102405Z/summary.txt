@@ -1,0 +1,50 @@
+run_id:        so_timeouts_300s_20261006T102405Z
+started_utc:   2026-10-06T10:24:06Z
+finished_utc:  2026-10-06T16:54:11Z
+total_runtime: 06:30:05  (23405 seconds)   avg_per_entry: 64s
+entries:       363   ok: 363   failed: 0
+-- parameters --
+pg:                 18
+db:                 stackoverflow_1gb
+queries_dir:        queries/stackoverflow/SQLStorm
+queries:            363
+repeats:            1
+batch_sizes:        1
+runs_per_size:      1
+warmup:             1
+batch_cap_slow:     none (slow_copy_sec 1)
+statement_timeout:  300s
+idle_baseline_s:    0
+warmup_fail_skip:   1
+workers:            planner default
+port:               5434
+logs_root:          logs/so_timeouts/warm_stepup
+run_dir:            logs/so_timeouts/warm_stepup/so_timeouts_300s_20261006T102405Z
+order_file:         logs/so_timeouts/order_so_timeouts.txt
+saved_order:        logs/so_timeouts/warm_stepup/so_timeouts_300s_20261006T102405Z/run_order_so_timeouts_300s_20261006T102405Z.txt
+-- thermal / clock --
+thermal_policy:     gate T_LO=40 T_HI=60 PREHEAT_MAX_S=60 COOLDOWN_MAX_S=120
+fix_clock:          1
+clock_max_khz:      2500000
+clock_no_turbo: 0
+clock_governor: performance
+clock_min_freq_khz: 400000
+clock_max_freq_khz: 2500000
+rapl_pl1_w:         22.0
+rapl_pl1_tau_s:     27.98
+rapl_pl2_w:         44.0
+dmesg_throttle_msgs: 0 during run (0 total)
+-- node --
+host:               user01
+cpu_model:          Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
+cpu_packages:       1
+cpu_count:          8
+microcode:          0xec
+bios:               Dell Inc. 1.24.1 (01/24/2022)
+product:            Dell Inc. Latitude 7490
+memory_gb:          15
+freq_driver:        intel_pstate
+governor:           performance
+turbo:              no_turbo=0
+kernel:             6.8.0-139-generic
+rapl_zones:         package-0 core uncore dram psys 
