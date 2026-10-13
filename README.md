@@ -213,6 +213,7 @@ schema/           DDL: tpch, index suite, estat, warehouse, stackoverflow (no-FK
 logs/             results (CSV); sub-folders per sweep / per warm-stepup run
 plans/ outputs/   EXPLAIN plans / result rows from plan_builder / output_runner
 Data/             raw real-world data + normalisers for estat / warehouse
+cloudlab/         CloudLab profile + its step-by-step README (cloudlab/README.md)
 archive/ matrix_logs/ old/ tpch-dbgen/   run artifacts, prior project, upstream dbgen (ignore)
 ```
 
@@ -230,8 +231,8 @@ archive/ matrix_logs/ old/ tpch-dbgen/   run artifacts, prior project, upstream 
 | **`run_warm_stepup.sh`** | **The main benchmark driver** (`make warm-stepup`). Builds and saves the random order (with per-entry `run_id`s and each group's predecessor), does the per-entry cold start, invokes `query_runner` on one file at a time, writes `summary.txt` with every parameter plus clock/RAPL-limit state. Handles `FIX_CLOCK`. |
 | **`run_matrix.sh`** | `warm-stepup` across `PGVERS × DBS`, unattended and resumable (`make matrix` / `make matrix-plan`). Each combination is one warm-stepup run folder under `logs/matrix/`. |
 | **`run_equivalent.sh`** | One overnight sequence over `queries/equivalent/tpch`: plan snapshots, cold runs, warm matrix. |
-| **`clock_control.sh`** | `apply` / `restore` / `status` / `with <cmd>`: disable turbo + performance governor, and put it back. Used by `FIX_CLOCK=1`. |
-| **`set_test_parameters.sh`** / **`reset_all_parameters.sh`** | Apply / undo the fixed testing GUCs (`make set-parameters` / `make reset-parameters`). Reset works even when the server is down. |
+| **`clock_control.sh`** | `apply` / `restore` / `status` / `with <cmd>`: performance governor and a clock ceiling (base frequency with turbo off, or `CLOCK_MAX_KHZ`, with turbo on only above base), and put it back. Used by `FIX_CLOCK=1`. |
+| **`set_test_parameters.sh`** / **`reset_all_parameters.sh`** | Apply / undo the fixed testing GUCs (`make set-parameters` / `make reset-parameters`); `SHARED_BUFFERS` / `EFFECTIVE_CACHE_SIZE` resize those two for another machine. Reset works even when the server is down. |
 | **`archive_partial.sh`** | Move a query's / a run's rows out of the live CSVs into `archive/partial/` (reversible). `make partial-archive`. |
 | **`post_to_sigless.sh`** | Start/stop markers to an external power meter (optional, `SIGLESS_ADDR`). |
 | **`thermal_runner_brief.md`** | The analysis brief behind the thermal columns and protocol knobs. |
@@ -272,9 +273,16 @@ Invoke as `make test-<param>` (dashes for underscores):
 
 | File | Purpose |
 |---|---|
-| **`run_compare.sh [session]`** | One ~3.3 h session: pre-flight (PostgreSQL `PGVER`, default 18, at its pinned minor, e.g. 18.6 or 16.15; StackOverflow 1 GB on that cluster; no other runner), testing GUCs, automatic upgrades paused for the run, then the fixed set as a (1,16) warm step-up with the 40–60 °C gate, the clock at 2.5 GHz, a 5 s idle baseline and a 15 s timeout, into `logs/compare/warm_stepup/compare_<host>_<session>_<stamp>/` (`compare_<host>_pg16_<session>_...` for `PGVER=16`; the io_* testing GUCs do not exist before PG18 and are skipped); ends with a protocol check (`CHECK OK`). `ENTRIES=N` runs only the first N entries (smoke test). |
+| **`run_compare.sh [session]`** | One ~3.3 h session: pre-flight (PostgreSQL `PGVER`, default 18, at its pinned minor, e.g. 18.6 or 16.15; StackOverflow 1 GB on that cluster; no other runner), testing GUCs, automatic upgrades paused for the run, then the fixed set as a (1,16) warm step-up with the 40–60 °C gate, the clock at `CLOCK_KHZ` (default 2.5 GHz; a CloudLab m510 runs at its 2.0 GHz base), a 5 s idle baseline and a 15 s timeout, into `logs/compare/warm_stepup/compare_<host>_<session>_<stamp>/` (`compare_<host>_pg16_<session>_...` for `PGVER=16`; the io_* testing GUCs do not exist before PG18 and are skipped); ends with a protocol check (`CHECK OK`). `ENTRIES=N` runs only the first N entries (smoke test). |
 | **`build_compare_set.py`** | Chooses the set once from laptop 1's StackOverflow pass: 10 queries per warm 1-copy time band (0.1–6 s, five bands) + the 4 probes, 6 rounds each in a fresh shuffle → `set/manifest.csv`, `set/order.txt` (committed; every machine replays the same order). |
 | **`probes/`** | Synthetic probes: pure CPU, memory bandwidth (parallel scans), memory latency (large hash joins), in-memory sort. |
+
+### `cloudlab/` — CloudLab nodes
+
+| File | Purpose |
+|---|---|
+| **`profile.py`** | The CloudLab profile (pasted into the portal): bare-metal nodes (default 1 × m510), Ubuntu 24.04, PostgreSQL at the pinned minor (default 16), the chosen databases, the testing GUCs with `shared_buffers` / `effective_cache_size` as parameters, `PGVER` / `CLOCK_KHZ` exported for `compare/run_compare.sh`, and the node's own logs copied to the project's `/proj` share and pushed to GreenSQL-RUC/CloudLab-Results on a schedule and when a `run/detach.sh` job ends. |
+| **`README.md`** | Every command: keys, creating the profile, starting an experiment, the first-time deploy key, the compare test, finishing, troubleshooting. |
 
 ### `queries/` — all SQL
 

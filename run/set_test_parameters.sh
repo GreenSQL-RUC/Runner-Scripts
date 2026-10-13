@@ -8,9 +8,9 @@
 # reset_all_parameters.sh - set with this, undo with that.
 #
 # The parameters set:
-#   shared_buffers                   = 4GB    (restart)
+#   shared_buffers                   = 4GB    (restart; SHARED_BUFFERS overrides)
 #   work_mem                         = 64MB
-#   effective_cache_size             = 12GB
+#   effective_cache_size             = 12GB   (EFFECTIVE_CACHE_SIZE overrides)
 #   effective_io_concurrency         = 64
 #   max_parallel_workers_per_gather  = 4
 #   io_combine_limit                 = 1MB    (PG18+; needs io_max_combine_limit)
@@ -20,9 +20,14 @@
 # note. A restart is always done, since shared_buffers and io_max_combine_limit
 # require it.
 #
+# SHARED_BUFFERS / EFFECTIVE_CACHE_SIZE (e.g. 16GB, 512MB) size those two for a
+# machine with more or less memory than the 16 GB laptops; unset = the values
+# above. A CloudLab node from cloudlab/profile.py exports them in login shells.
+#
 # Run as root (ALTER SYSTEM + pg_ctlcluster need root):
 #   sudo bash set_test_parameters.sh            # PG18
 #   sudo bash set_test_parameters.sh 16 18      # PG16 and PG18
+#   sudo SHARED_BUFFERS=16GB EFFECTIVE_CACHE_SIZE=48GB bash set_test_parameters.sh 16
 #
 # Undo (back to PostgreSQL defaults):
 #   EXTRA_PARAMS="effective_io_concurrency io_combine_limit io_max_combine_limit" \
@@ -32,10 +37,15 @@ set -uo pipefail
 
 # GUCs to apply, in order (io_max_combine_limit before io_combine_limit). All
 # values are single-quoted in the ALTER SYSTEM; PostgreSQL accepts quoted ints.
+SHARED_BUFFERS="${SHARED_BUFFERS:-4GB}"
+EFFECTIVE_CACHE_SIZE="${EFFECTIVE_CACHE_SIZE:-12GB}"
+for v in "$SHARED_BUFFERS" "$EFFECTIVE_CACHE_SIZE"; do
+    [[ "$v" =~ ^[0-9]+(MB|GB)$ ]] || { echo "!! sizes must look like 512MB or 4GB, got '$v'; aborting" >&2; exit 1; }
+done
 PAIRS=(
-    "shared_buffers=4GB"
+    "shared_buffers=$SHARED_BUFFERS"
     "work_mem=64MB"
-    "effective_cache_size=12GB"
+    "effective_cache_size=$EFFECTIVE_CACHE_SIZE"
     "effective_io_concurrency=64"
     "max_parallel_workers_per_gather=4"
     "io_max_combine_limit=1MB"

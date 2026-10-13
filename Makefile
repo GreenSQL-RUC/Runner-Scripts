@@ -333,9 +333,12 @@ index-drop-db:
 
 # ------------------------------------------------ testing parameters -----
 # Apply / undo the fixed testing GUCs on SET_VERS (default: PGVER).
+# SHARED_BUFFERS / EFFECTIVE_CACHE_SIZE (above, default 4GB / 12GB) resize those
+# two for a bigger or smaller machine: make set-parameters SHARED_BUFFERS=16GB.
 set-parameters:
 	@$(SUDO_PRIME) || { echo "sudo authentication failed"; exit 1; }; \
-	  sudo -n bash $(RUN)/set_test_parameters.sh $(SET_VERS)
+	  sudo -n env SHARED_BUFFERS="$(SHARED_BUFFERS)" EFFECTIVE_CACHE_SIZE="$(EFFECTIVE_CACHE_SIZE)" \
+	    bash $(RUN)/set_test_parameters.sh $(SET_VERS)
 
 reset-parameters:
 	@$(SUDO_PRIME) || { echo "sudo authentication failed"; exit 1; }; \

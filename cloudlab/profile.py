@@ -1,47 +1,47 @@
 """GreenSQL benchmark node(s): Ubuntu 24.04 server with PostgreSQL 16 held at
 the repository's pinned minor (build/bootstrap_ubuntu.sh), set up the same way
-as the two benchmark laptops.
+as the two benchmark laptops. Step-by-step use: cloudlab/README.md.
 
 Instructions:
-On first boot every node sets itself up once, as root:
+On first boot every node sets itself up once (CloudLab runs this as its
+generic `geniuser`, with sudo):
   1. automatic upgrades off (no package update can restart PostgreSQL mid-run);
   2. PostgreSQL's data directory on the node's local blockstore (/mydata);
-  3. clones the GreenSQL repository to /mydata/GreenSQL (linked as ~/GreenSQL);
+  3. clones the GreenSQL repository to /mydata/GreenSQL, owned by you and
+     linked as ~/GreenSQL;
   4. build/bootstrap_ubuntu.sh: PostgreSQL at the pinned minor, apt-pinned so
      it never moves;
   5. make (the runners), then the chosen databases (StackOverflow 1 GB and/or
      TPC-H SF1 + tpch_idx + the SQLStorm TPC-H queries);
-  6. make set-parameters (the same testing GUCs as the laptops);
-  7. log saving: node disks are WIPED when the experiment ends, so the node
-     copies /mydata/GreenSQL/logs (plus its setup log and node_info.txt) to the
-     project's persistent NFS share, /proj/<project>/greensql/<experiment>/<node>/,
-     every "Save logs every" minutes (incremental rsync at the lowest CPU and
-     I/O priority; 0 = off). Run `greensql-save-logs` by hand after a run ends,
-     and before the experiment expires;
-  8. results to GitHub: every "Push results every" hours the node also commits
-     the same files to the results repository (default the private
-     GreenSQL-RUC/CloudLab-Results), into <experiment>/<node>/, with that repo's
-     deploy key. Nodes only add their own folder, so several nodes can push to
-     the same repository. `greensql-push-results` pushes by hand.
+  6. make set-parameters: the laptops' testing GUCs, with shared_buffers and
+     effective_cache_size from the parameters below;
+  7. login defaults: PGVER, SHARED_BUFFERS, EFFECTIVE_CACHE_SIZE and CLOCK_KHZ
+     are exported in login shells, so make targets and compare/run_compare.sh
+     use them;
+  8. log saving: node disks are WIPED when the experiment ends, so the logs this
+     node makes (not the ones the repository already ships), its setup log and
+     node_info.txt are copied to /proj/<project>/greensql/<experiment>/<node>/
+     every "Save logs every" minutes (0 = off), and
+  9. committed to the results repository (default the private
+     GreenSQL-RUC/CloudLab-Results), same folder, every "Push results every"
+     hours (0 = off). Both also run when a run/detach.sh job ends; by hand:
+     `sudo greensql-save-logs`, `sudo greensql-push-results`.
 
-The deploy key (private half) is never in a repository. Put it once in the
-project's /proj share and every later node picks it up during setup:
-    ssh <you>@<node> 'mkdir -p -m 700 /proj/<project>/greensql/.deploy'
-    scp ~/.ssh/greensql_results_deploy <you>@<node>:/proj/<project>/greensql/.deploy/results_key
-    ssh <you>@<node> 'chmod 600 /proj/<project>/greensql/.deploy/results_key'
-If it was not there at setup, install it on a running node with
-    sudo install -m 600 <key file> /etc/greensql/results_key
+The deploy key (private half) is never in a repository. It is kept once in
+/proj/<project>/greensql/.deploy/results_key (owned by geniuser, mode 600),
+and every node copies it during setup. cloudlab/README.md has the commands for
+putting it there the first time.
 
 Follow it:      tail -f /mydata/greensql_setup.log
 Done when:      /mydata/greensql_setup.done exists (greensql_setup.failed on error)
-Then, e.g.:     cd ~/GreenSQL && make warm-stepup DB_NAME=stackoverflow_1gb ...
-PGVER is preset to the installed major in login shells, so make targets use it.
+Then, e.g.:     cd ~/GreenSQL && ENTRIES=6 bash compare/run_compare.sh smoke
 Log saving:     /mydata/greensql_save.log, /mydata/greensql_push.log
 """
 
 import base64
 import gzip
 import io
+import re
 
 import geni.portal as portal
 import geni.rspec.pg as pg
@@ -55,6 +55,13 @@ pc.defineParameter("stackoverflow", "Build StackOverflow 1 GB (+ its SQLStorm qu
                    portal.ParameterType.BOOLEAN, True)
 pc.defineParameter("tpch", "Build TPC-H SF1 + tpch_idx (+ the SQLStorm TPC-H queries)",
                    portal.ParameterType.BOOLEAN, False)
+pc.defineParameter("sharedBuffers", "shared_buffers (e.g. 4GB; the laptops use 4GB)",
+                   portal.ParameterType.STRING, "4GB")
+pc.defineParameter("effectiveCacheSize", "effective_cache_size (e.g. 12GB; the laptops use 12GB)",
+                   portal.ParameterType.STRING, "12GB")
+pc.defineParameter("clockKhz", "Clock ceiling for compare/run_compare.sh in kHz "
+                   "(m510: 2000000 = its 2.0 GHz base, turbo off; the laptops use 2500000)",
+                   portal.ParameterType.INTEGER, 2000000)
 pc.defineParameter("saveEvery", "Save logs to /proj every N minutes (0 = off; 1-59 or 60)",
                    portal.ParameterType.INTEGER, 30)
 pc.defineParameter("pushEvery", "Push results to GitHub every N hours (0 = off; 1-23)",
@@ -69,11 +76,18 @@ pc.defineParameter("dataSize", "Local blockstore for PostgreSQL, repo and logs",
                    portal.ParameterType.STRING, "60GB", advanced=True)
 params = pc.bindParameters()
 
+SIZE = re.compile(r"^[0-9]+(MB|GB)$")
 if params.nodeCount < 1:
     pc.reportError(portal.ParameterError("At least one node is needed", ["nodeCount"]))
 if params.pgVersion not in ("15", "16", "17", "18"):
     pc.reportError(portal.ParameterError("bootstrap_ubuntu.sh pins 15, 16, 17 and 18 only",
                                          ["pgVersion"]))
+if not SIZE.match(params.sharedBuffers):
+    pc.reportError(portal.ParameterError("Use a size like 4GB or 512MB", ["sharedBuffers"]))
+if not SIZE.match(params.effectiveCacheSize):
+    pc.reportError(portal.ParameterError("Use a size like 12GB or 512MB", ["effectiveCacheSize"]))
+if params.clockKhz < 400000 or params.clockKhz > 6000000:
+    pc.reportError(portal.ParameterError("kHz, e.g. 2000000 for 2.0 GHz", ["clockKhz"]))
 if params.saveEvery < 0 or params.saveEvery > 60:
     pc.reportError(portal.ParameterError("Use 0 (off), 1-59 or 60 minutes", ["saveEvery"]))
 if params.pushEvery < 0 or params.pushEvery > 23:
@@ -87,12 +101,14 @@ IMAGE = "urn:publicid:IDN+emulab.net+image+emulab-ops//UBUNTU24-64-STD"
 # finished setup leaves greensql_setup.done and later boots skip it.
 SETUP = r"""#!/usr/bin/env bash
 set -euo pipefail
-U="${SUDO_USER:-root}"
 PGV=@PGV@
 REPO=@REPO@
 BRANCH=@BRANCH@
 WANT_SO=@SO@
 WANT_TPCH=@TPCH@
+SB=@SB@
+ECS=@ECS@
+CLOCK=@CLOCK@
 SAVE_CRON="@SAVECRON@"
 PUSH_CRON="@PUSHCRON@"
 RESULTS_REPO="@RESULTS@"
@@ -105,6 +121,28 @@ step() { echo "==> $(date -u +%Y-%m-%dT%H:%M:%SZ) $*"; }
 if [ -f "$DONE" ]; then step "setup already done ($(cat "$DONE")); remove $DONE to redo"; exit 0; fi
 rm -f "$DATA/greensql_setup.failed"
 trap 'step "!! setup FAILED (line $LINENO)"; date -u > "$DATA/greensql_setup.failed"' ERR
+
+step "0. who and where"
+# The startup command runs as CloudLab's generic geniuser, so SUDO_USER is not
+# the person: the experiment's creator owns the repository instead. /proj is
+# written as geniuser, which every node of every experiment has, so files there
+# stay readable by the next node's setup whoever started it.
+RUN_USER=""
+for u in "$(geni-get user_urn 2>/dev/null | sed 's/.*+//' || true)" \
+         "$(cat /var/emulab/boot/creator 2>/dev/null || true)" "${SUDO_USER:-}"; do
+    if [ -n "$u" ] && [ "$u" != geniuser ] && getent passwd "$u" > /dev/null; then RUN_USER="$u"; break; fi
+done
+[ -n "$RUN_USER" ] || RUN_USER=root
+PROJ_USER=geniuser
+getent passwd geniuser > /dev/null || PROJ_USER="$RUN_USER"
+# node0.<experiment>.<project> (hostname -f is the physical name, e.g. ms1126.utah...)
+nick=$(cat /var/emulab/boot/nickname 2>/dev/null || hostname -f)
+phys=$(cat /var/emulab/boot/nodeid 2>/dev/null || true)
+NODE_DIR="$(echo "$nick" | cut -d. -f2)/$(echo "$nick" | cut -d. -f1)${phys:+-$phys}"
+PROJ="/proj/$(echo "$nick" | cut -d. -f3)"
+[ -d "$PROJ" ] || PROJ="$( (ls -d /proj/*/ 2>/dev/null || true) | head -1)"
+PROJ="${PROJ%/}"
+echo "    user $RUN_USER, /proj as $PROJ_USER, project share ${PROJ:-none}, results folder $NODE_DIR"
 
 step "1. no automatic upgrades or service restarts during measurements"
 systemctl disable --now unattended-upgrades.service apt-daily.timer apt-daily-upgrade.timer 2>/dev/null || true
@@ -149,40 +187,58 @@ if [ "$WANT_TPCH" = 1 ]; then
     make fetch-sqlstorm SQLSTORM_DATASET=tpch
 fi
 
-step "6. testing parameters"
-make set-parameters PGVER="$PGV"
+step "6. testing parameters (shared_buffers=$SB, effective_cache_size=$ECS)"
+make set-parameters PGVER="$PGV" SHARED_BUFFERS="$SB" EFFECTIVE_CACHE_SIZE="$ECS"
 
 step "7. login defaults, node identity, ownership"
-echo "export PGVER=$PGV" > /etc/profile.d/greensql.sh
-home=$(getent passwd "$U" | cut -d: -f6)
-[ -n "$home" ] && [ -d "$home" ] && ln -sfn "$DATA/GreenSQL" "$home/GreenSQL"
+printf 'export PGVER=%s\nexport SHARED_BUFFERS=%s\nexport EFFECTIVE_CACHE_SIZE=%s\nexport CLOCK_KHZ=%s\n' \
+    "$PGV" "$SB" "$ECS" "$CLOCK" > /etc/profile.d/greensql.sh
+home=$(getent passwd "$RUN_USER" | cut -d: -f6 || true)
+if [ -n "$home" ] && [ -d "$home" ]; then ln -sfn "$DATA/GreenSQL" "$home/GreenSQL"; fi
 bash run/node_info.sh | tee "$DATA/node_info.txt"
-chown -R "$U": "$DATA/GreenSQL"
+chown -R "$RUN_USER": "$DATA/GreenSQL"
 
 step "8. log saving to the project's persistent /proj share"
-printf 'GREENSQL_USER=%s\nGREENSQL_DATA=%s\nGREENSQL_RESULTS_REPO=%s\nGREENSQL_RESULTS_KEY=%s\n' \
-    "$U" "$DATA" "$RESULTS_REPO" /etc/greensql/results_key > /etc/greensql.conf
-cat > /usr/local/bin/greensql-save-logs <<'SAVEEOF'
+{
+    echo "GREENSQL_USER=$RUN_USER"
+    echo "GREENSQL_PROJ_USER=$PROJ_USER"
+    echo "GREENSQL_PROJ=$PROJ"
+    echo "GREENSQL_NODE=$NODE_DIR"
+    echo "GREENSQL_DATA=$DATA"
+    echo "GREENSQL_RESULTS_REPO=$RESULTS_REPO"
+    echo "GREENSQL_RESULTS_KEY=/etc/greensql/results_key"
+} > /etc/greensql.conf
+cat > /usr/local/bin/greensql-new-logs <<'NEWEOF'
 #!/usr/bin/env bash
-# greensql-save-logs: copy this node's GreenSQL logs to the project's persistent
-# NFS share (node disks are wiped when the experiment ends). Incremental, at the
-# lowest CPU and I/O priority; runs as the experiment user (NFS squashes root).
+# greensql-new-logs: the log files this node made or changed - not the ones the
+# repository already ships - NUL-separated, relative to the repository root.
 set -uo pipefail
 . /etc/greensql.conf
-proj=$(ls -d /proj/*/ 2>/dev/null | head -1)
-[ -n "$proj" ] || { echo "$(date -u +%FT%TZ) no /proj share mounted; nothing saved" >&2; exit 1; }
-fq=$(hostname -f)                                     # node0.<experiment>.<project>....
-phys=$(cat /var/emulab/boot/nodeid 2>/dev/null || true)
-dest="${proj%/}/greensql/$(echo "$fq" | cut -d. -f2)/$(echo "$fq" | cut -d. -f1)${phys:+-$phys}"
-sudo -u "$GREENSQL_USER" mkdir -p "$dest" || exit 1
-sudo -u "$GREENSQL_USER" nice -n 19 ionice -c3 rsync -a \
-    "$GREENSQL_DATA/GreenSQL/logs/" "$dest/logs/" || exit 1
+git -c safe.directory='*' -C "$GREENSQL_DATA/GreenSQL" ls-files -z --others --modified -- logs
+NEWEOF
+cat > /usr/local/bin/greensql-save-logs <<'SAVEEOF'
+#!/usr/bin/env bash
+# greensql-save-logs: copy this node's own logs, its setup log and node_info.txt
+# to the project's persistent NFS share (node disks are wiped when the
+# experiment ends). Incremental, at the lowest CPU and I/O priority; written as
+# GREENSQL_PROJ_USER (geniuser), since NFS squashes root.
+set -uo pipefail
+. /etc/greensql.conf
+now() { date -u +%FT%TZ; }
+[ -n "${GREENSQL_PROJ:-}" ] && [ -d "$GREENSQL_PROJ" ] \
+    || { echo "$(now) no /proj share mounted; nothing saved" >&2; exit 1; }
+dest="$GREENSQL_PROJ/greensql/$GREENSQL_NODE"
+list=$(mktemp); chmod 644 "$list"; trap 'rm -f "$list"' EXIT
+/usr/local/bin/greensql-new-logs > "$list" || exit 1
+as() { sudo -u "$GREENSQL_PROJ_USER" "$@"; }
+as mkdir -p "$dest" || exit 1
+as nice -n 19 ionice -c3 rsync -a --from0 --files-from="$list" "$GREENSQL_DATA/GreenSQL/" "$dest/" || exit 1
 for f in greensql_setup.log node_info.txt; do
-    [ -r "$GREENSQL_DATA/$f" ] && sudo -u "$GREENSQL_USER" cp "$GREENSQL_DATA/$f" "$dest/"
+    [ -r "$GREENSQL_DATA/$f" ] && as cp "$GREENSQL_DATA/$f" "$dest/"
 done
-echo "$(date -u +%FT%TZ) saved to $dest ($(du -sh "$dest" | cut -f1))"
+echo "$(now) saved $(tr -cd '\0' < "$list" | wc -c) log files to $dest ($(du -sh "$dest" | cut -f1))"
 SAVEEOF
-chmod 755 /usr/local/bin/greensql-save-logs
+chmod 755 /usr/local/bin/greensql-new-logs /usr/local/bin/greensql-save-logs
 if [ -n "$SAVE_CRON" ]; then
     echo "$SAVE_CRON root /usr/local/bin/greensql-save-logs >> $DATA/greensql_save.log 2>&1" \
         > /etc/cron.d/greensql-save-logs
@@ -196,24 +252,25 @@ grep -q '^github.com ssh-ed25519 ' /etc/ssh/ssh_known_hosts 2>/dev/null \
     || echo 'github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl' \
         >> /etc/ssh/ssh_known_hosts
 install -d -m 700 /etc/greensql
-for k in /proj/*/greensql/.deploy/results_key; do
-    if [ -f "$k" ] && sudo -u "$U" cat "$k" > /etc/greensql/results_key.tmp 2>/dev/null; then
-        chmod 600 /etc/greensql/results_key.tmp && mv /etc/greensql/results_key.tmp /etc/greensql/results_key
-        echo "    deploy key from $k"; break
-    fi
-done
-rm -f /etc/greensql/results_key.tmp
-[ -f /etc/greensql/results_key ] \
-    || echo "    !! no deploy key in /proj/<project>/greensql/.deploy/results_key; pushes fail until one is installed"
+key="$PROJ/greensql/.deploy/results_key"
+if [ -n "$PROJ" ] && sudo -u "$PROJ_USER" cat "$key" > /etc/greensql/results_key.tmp 2>/dev/null \
+        && [ -s /etc/greensql/results_key.tmp ]; then
+    chmod 600 /etc/greensql/results_key.tmp && mv /etc/greensql/results_key.tmp /etc/greensql/results_key
+    echo "    deploy key from $key"
+else
+    rm -f /etc/greensql/results_key.tmp
+    echo "    !! no deploy key at $key; pushes fail until one is installed (cloudlab/README.md)"
+fi
 cat > /usr/local/bin/greensql-push-results <<'PUSHEOF'
 #!/usr/bin/env bash
-# greensql-push-results: commit this node's GreenSQL logs to the results repo
-# (GitHub, deploy key). Each node writes only its own folder,
-# <experiment>/<node>[-<physical id>]/, on top of the newest main, so nodes never
-# conflict; a push that loses a race to another node is redone. Fetches are
-# shallow and blob-less, so a node never downloads other nodes' results.
+# greensql-push-results: commit this node's own logs, its setup log and
+# node_info.txt to the results repo (GitHub, deploy key), in
+# <experiment>/<node>-<physical id>/. Each node writes only its own folder on
+# top of the newest main, so nodes never conflict; a push that loses a race to
+# another node is redone. Fetches are shallow and blob-less, so a node never
+# downloads other nodes' results.
 set -uo pipefail
-. "${GREENSQL_CONF:-/etc/greensql.conf}"   # GREENSQL_DATA GREENSQL_RESULTS_REPO [GREENSQL_RESULTS_KEY]
+. "${GREENSQL_CONF:-/etc/greensql.conf}"   # GREENSQL_DATA GREENSQL_NODE GREENSQL_RESULTS_REPO [GREENSQL_RESULTS_KEY]
 now() { date -u +%FT%TZ; }
 [ -n "${GREENSQL_RESULTS_REPO:-}" ] || { echo "$(now) no results repo configured; nothing pushed"; exit 0; }
 case "$GREENSQL_RESULTS_REPO" in
@@ -222,13 +279,7 @@ case "$GREENSQL_RESULTS_REPO" in
         [ -r "$key" ] || { echo "$(now) no deploy key at $key; nothing pushed" >&2; exit 1; }
         export GIT_SSH_COMMAND="ssh -i $key -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=30" ;;
 esac
-if [ -n "${GREENSQL_NODE:-}" ]; then
-    sub="$GREENSQL_NODE"
-else
-    fq=$(hostname -f)                                 # node0.<experiment>.<project>....
-    phys=$(cat /var/emulab/boot/nodeid 2>/dev/null || true)
-    sub="$(echo "$fq" | cut -d. -f2)/$(echo "$fq" | cut -d. -f1)${phys:+-$phys}"
-fi
+sub="${GREENSQL_NODE:?GREENSQL_NODE not set in the config}"
 
 R="$GREENSQL_DATA/results"
 if [ ! -d "$R/.git" ]; then
@@ -239,9 +290,11 @@ if [ ! -d "$R/.git" ]; then
     git -C "$R" config user.name "greensql node"
     git -C "$R" config user.email "greensql-node@$(hostname -f)"
 fi
+list=$(mktemp); trap 'rm -f "$list"' EXIT
+"${GREENSQL_NEW_LOGS:-/usr/local/bin/greensql-new-logs}" > "$list" || exit 1
 cd "$R" || exit 1
 mkdir -p "$sub"
-nice -n 19 ionice -c3 rsync -a --delete "$GREENSQL_DATA/GreenSQL/logs/" "$sub/logs/" || exit 1
+nice -n 19 ionice -c3 rsync -a --from0 --files-from="$list" "$GREENSQL_DATA/GreenSQL/" "$sub/" || exit 1
 for f in greensql_setup.log node_info.txt; do
     [ -r "$GREENSQL_DATA/$f" ] && cp "$GREENSQL_DATA/$f" "$sub/"
 done
@@ -293,6 +346,9 @@ script = (SETUP.replace("@PGV@", params.pgVersion)
                .replace("@BRANCH@", params.repoBranch)
                .replace("@SO@", "1" if params.stackoverflow else "0")
                .replace("@TPCH@", "1" if params.tpch else "0")
+               .replace("@SB@", params.sharedBuffers)
+               .replace("@ECS@", params.effectiveCacheSize)
+               .replace("@CLOCK@", str(params.clockKhz))
                .replace("@SAVECRON@", "" if params.saveEvery == 0 else
                         ("0 * * * *" if params.saveEvery == 60 else "*/%d * * * *" % params.saveEvery))
                .replace("@PUSHCRON@", "" if params.pushEvery == 0 else "17 */%d * * *" % params.pushEvery)

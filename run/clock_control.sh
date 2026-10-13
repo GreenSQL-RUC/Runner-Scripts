@@ -45,7 +45,16 @@ CPU0=/sys/devices/system/cpu/cpu0/cpufreq
 CLOCK_MAX_KHZ="${CLOCK_MAX_KHZ:-}"
 
 # Base (non-turbo) frequency; empty when the platform does not publish it.
-base_khz() { cat "$CPU0/base_frequency" 2>/dev/null || true; }
+# Some platforms (e.g. the CloudLab m510's Xeon D under intel_cpufreq) have no
+# base_frequency file; Intel model names carry it ("... @ 2.00GHz"), so fall
+# back to that rather than treat every ceiling as non-turbo.
+base_khz() {
+    local b
+    b="$(cat "$CPU0/base_frequency" 2>/dev/null || true)"
+    [ -z "$b" ] && b="$(sed -n 's/^model name.*@ *\([0-9.]*\)GHz.*/\1/p' /proc/cpuinfo 2>/dev/null | head -1 \
+                        | awk '{ if ($1 != "") printf "%d", $1 * 1000000 }')"
+    echo "$b"
+}
 # Highest frequency the hardware will accept (turbo ceiling).
 hw_max_khz() { cat "$CPU0/cpuinfo_max_freq" 2>/dev/null || true; }
 
@@ -81,6 +90,17 @@ apply() {
         [ -n "$base" ] && [ "$CLOCK_MAX_KHZ" -gt "$base" ] && want_turbo=1
     fi
 
+    # The original per-CPU ceilings, read BEFORE turbo is touched: turning turbo
+    # off clamps scaling_max_freq to base, and saving it afterwards would make
+    # restore leave the machine capped. Written after the turbo line, because
+    # restore replays the file in order and a ceiling above base only sticks
+    # once turbo is back on.
+    local f cpu orig_max=""
+    for f in $MAXF_GLOB; do
+        cpu="${f%/cpufreq/scaling_max_freq}"; cpu="${cpu##*/}"
+        orig_max="${orig_max}max_freq:$cpu=$(cat "$f" 2>/dev/null)"$'\n'
+    done
+
     if [ -w "$NO_TURBO" ]; then
         echo "no_turbo=$(cat "$NO_TURBO")" >> "$STATE"
         if [ "$want_turbo" = 1 ]; then
@@ -108,13 +128,13 @@ apply() {
         echo "clock_control: no cpufreq governor found; skipped"
     fi
 
-    # Explicit ceiling: every logical CPU gets the same scaling_max_freq. Saved
-    # per CPU so restore is exact even if they differed.
+    printf '%s' "$orig_max" >> "$STATE"
+
+    # Explicit ceiling: every logical CPU gets the same scaling_max_freq. The
+    # originals are saved per CPU above, so restore is exact even if they differed.
     if [ -n "$CLOCK_MAX_KHZ" ]; then
-        local wrote=0 f cpu got
+        local wrote=0 got
         for f in $MAXF_GLOB; do
-            cpu="${f%/cpufreq/scaling_max_freq}"; cpu="${cpu##*/}"
-            echo "max_freq:$cpu=$(cat "$f" 2>/dev/null)" >> "$STATE"
             echo "$CLOCK_MAX_KHZ" > "$f" 2>/dev/null && wrote=$((wrote + 1))
         done
         got="$(cat "$CPU0/scaling_max_freq" 2>/dev/null || true)"

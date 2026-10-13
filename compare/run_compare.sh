@@ -19,8 +19,9 @@
 #      if active, waits for any apt/dpkg in progress); the timers it stopped are
 #      started again on exit, so a box with them disabled stays disabled;
 #   4. make warm-stepup with the gate (T_LO=40 T_HI=60) and the clock pinned at
-#      2.5 GHz (FIX_CLOCK=1, performance governor; restored afterwards);
-#   5. checks from the run's own CSVs that every entry ran at 2.5 GHz with the
+#      CLOCK_KHZ, default 2.5 GHz (FIX_CLOCK=1, performance governor; restored
+#      afterwards);
+#   5. checks from the run's own CSVs that every entry ran at CLOCK_KHZ with the
 #      performance governor on PG $PG_MINOR, and how many entries the gate let
 #      start outside 40-60 C; prints CHECK OK / CHECK FAILED.
 #
@@ -39,6 +40,10 @@
 #                  sessions are PG18; another major gets "pg<N>_" in its RUNID.
 #      PG_MINOR    required minor (default: build/bootstrap_ubuntu.sh's pin for
 #                  PGVER, e.g. 18.6 or 16.15)
+#      CLOCK_KHZ   clock ceiling in kHz (default 2500000, the laptop sessions).
+#                  Above the CPU's base frequency it needs turbo, which then
+#                  wanders with load; a server is steadier at its base with
+#                  turbo off (CloudLab m510: CLOCK_KHZ=2000000).
 # The testing parameters a major lacks (io_* before PG18) are skipped by
 # make set-parameters, so a PG16 session runs without them.
 #
@@ -49,7 +54,8 @@ SESSION="${1:-s1}"
 ORDER=compare/set/order.txt
 PGVER="${PGVER:-18}"
 PG_MINOR="${PG_MINOR:-$(sed -n "s/^ *\[$PGVER\]=\([0-9.]*\)$/\1/p" build/bootstrap_ubuntu.sh)}"
-CLOCK_KHZ=2500000
+CLOCK_KHZ="${CLOCK_KHZ:-2500000}"
+[[ "$CLOCK_KHZ" =~ ^[0-9]+$ ]] || { echo "!! CLOCK_KHZ must be in kHz, e.g. 2000000; got '$CLOCK_KHZ'" >&2; exit 1; }
 DB=stackoverflow_1gb
 PW="${SUDO_PASSWORD:-a}"
 ENTRIES="${ENTRIES:-}"
@@ -89,7 +95,7 @@ if [ -n "$ENTRIES" ]; then
     ORDER="$sub"
 fi
 RUN_DIR="logs/compare/warm_stepup/$RUNID"
-echo "==> compare session $SESSION on $(hostname -s), PostgreSQL $ver: $RUNID"
+echo "==> compare session $SESSION on $(hostname -s), PostgreSQL $ver, clock $((CLOCK_KHZ / 1000)) MHz: $RUNID"
 echo "    $(grep -vcE '^\s*(#|$)' "$ORDER") entries from $ORDER; $(sed -n 's/^# estimate: //p' compare/set/order.txt)"
 echo "    process group $(ps -o pgid= $$ | tr -d ' ')"
 

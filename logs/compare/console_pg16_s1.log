@@ -1,0 +1,55 @@
+===== detach.sh start 2026-10-13T20:53:27Z  pid 3752561
+===== command: bash compare/run_compare.sh s1
+===== suspend inhibited: yes
+==> compare session s1 on user01, PostgreSQL 16.15, clock 2500 MHz: compare_user01_pg16_s1_20261013T205327Z
+    324 entries from compare/set/order.txt; ~3.3 h on a Latitude 7490 at 2.5 GHz with the 40-60 C gate
+    process group 3752555
+==> testing parameters
+    ==> PG16 (port 5432): applying testing parameters
+       PG16 now: shared_buffers=4GB
+       PG16 now: work_mem=64MB
+       PG16 now: effective_cache_size=12GB
+       PG16 now: effective_io_concurrency=64
+       PG16 now: max_parallel_workers_per_gather=4
+    reset with: EXTRA_PARAMS="effective_io_concurrency io_combine_limit io_max_combine_limit" sudo bash reset_all_parameters.sh 16
+==> paused apt-daily.timer
+==> paused apt-daily-upgrade.timer
+==> replaying saved order: compare/set/order.txt
+==> run_id=compare_user01_pg16_s1_20261013T205327Z  order (324 entries) -> logs/compare/warm_stepup/compare_user01_pg16_s1_20261013T205327Z/run_order_compare_user01_pg16_s1_20261013T205327Z.txt
+warm step-up: PG16  DB=stackoverflow_1gb  DIR=queries/stackoverflow/SQLStorm  BATCH_SIZES='1 16'  WARMUP=2  RUNS=1  REPEATS=1
+  thermal: gate T_LO=40 T_HI=60 PREHEAT_MAX_S=60 COOLDOWN_MAX_S=120   fix_clock: 1 (ceiling 2500000)   batch cap: none
+  logs -> logs/compare/warm_stepup/compare_user01_pg16_s1_20261013T205327Z/  (324 entries)
+clock_control: no_turbo=0 (ceiling 2500000 kHz is a turbo bin)
+clock_control: governor=performance (was powersave)
+clock_control: max_freq=2500000 kHz on 8 CPUs
+[1/324] queries/stackoverflow/SQLStorm/5502.sql  (run_id 40A006004E125867)
+  ok
+[2/324] queries/stackoverflow/SQLStorm/7612.sql  (run_id E3DC7C7AC94B1574)
+  ok
+[3/324] queries/stackoverflow/SQLStorm/16399.sql  (run_id BA6F7CD52995EBFA)
+  ok
+[4/324] queries/stackoverflow/SQLStorm/20804.sql  (run_id ED43892528C9D67F)
+  ok
+[5/324] queries/stackoverflow/SQLStorm/21497.sql  (run_id 0FB4A1F4F6F4C39D)
+  ok
+[6/324] compare/probes/probe_cpu.sql  (run_id 10C461F233C5B99B)
+  ok
+[7/324] queries/stackoverflow/SQLStorm/8072.sql  (run_id 68689D7ACBDEBCE5)
+  ok
+[8/324] queries/stackoverflow/SQLStorm/21884.sql  (run_id 11A02ADAAC70F31A)
+  ok
+[9/324] queries/stackoverflow/SQLStorm/4452.sql  (run_id 6EB6B30C0C6A0E2F)
+  ok
+[10/324] queries/stackoverflow/SQLStorm/16308.sql  (run_id A9E691EA5E318C81)
+  ok
+[11/324] queries/stackoverflow/SQLStorm/25357.sql  (run_id 1A81DA411ECB9C8B)
+  ok
+[12/324] queries/stackoverflow/SQLStorm/16363.sql  (run_id 6AD7218C06B8DE6C)
+  ok
+[13/324] queries/stackoverflow/SQLStorm/11471.sql  (run_id B2F7A896B91BAF24)
+  ok
+[14/324] compare/probes/probe_hash.sql  (run_id F5AD9F18580D6B85)
+  ok
+[15/324] queries/stackoverflow/SQLStorm/10646.sql  (run_id 54A69B838906915D)
+  ok
+[16/324] queries/stackoverflow/SQLStorm/2764.sql  (run_id FA5BC40F25B233E9)

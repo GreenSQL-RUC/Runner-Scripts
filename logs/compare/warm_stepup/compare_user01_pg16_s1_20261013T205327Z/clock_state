@@ -1,0 +1,10 @@
+no_turbo=0
+governor=powersave
+max_freq:cpu0=3600000
+max_freq:cpu1=3600000
+max_freq:cpu2=3600000
+max_freq:cpu3=3600000
+max_freq:cpu4=3600000
+max_freq:cpu5=3600000
+max_freq:cpu6=3600000
+max_freq:cpu7=3600000
