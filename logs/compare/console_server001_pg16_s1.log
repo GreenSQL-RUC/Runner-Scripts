@@ -1,0 +1,735 @@
+===== detach.sh start 2026-10-13T20:50:57Z  pid 2418783
+===== command: bash compare/run_compare.sh s1
+===== suspend inhibited: yes
+==> compare session s1 on server001, PostgreSQL 16.15, clock 2500 MHz: compare_server001_pg16_s1_20261013T205057Z
+    324 entries from compare/set/order.txt; ~3.3 h on a Latitude 7490 at 2.5 GHz with the 40-60 C gate
+    process group 2418778
+==> testing parameters
+    ==> PG16 (port 5434): applying testing parameters
+       PG16 now: shared_buffers=4GB
+       PG16 now: work_mem=64MB
+       PG16 now: effective_cache_size=12GB
+       PG16 now: effective_io_concurrency=64
+       PG16 now: max_parallel_workers_per_gather=4
+    reset with: EXTRA_PARAMS="effective_io_concurrency io_combine_limit io_max_combine_limit" sudo bash reset_all_parameters.sh 16
+==> replaying saved order: compare/set/order.txt
+==> run_id=compare_server001_pg16_s1_20261013T205057Z  order (324 entries) -> logs/compare/warm_stepup/compare_server001_pg16_s1_20261013T205057Z/run_order_compare_server001_pg16_s1_20261013T205057Z.txt
+warm step-up: PG16  DB=stackoverflow_1gb  DIR=queries/stackoverflow/SQLStorm  BATCH_SIZES='1 16'  WARMUP=2  RUNS=1  REPEATS=1
+  thermal: gate T_LO=40 T_HI=60 PREHEAT_MAX_S=60 COOLDOWN_MAX_S=120   fix_clock: 1 (ceiling 2500000)   batch cap: none
+  logs -> logs/compare/warm_stepup/compare_server001_pg16_s1_20261013T205057Z/  (324 entries)
+clock_control: no_turbo=0 (ceiling 2500000 kHz is a turbo bin)
+clock_control: governor=performance (was powersave)
+clock_control: max_freq=2500000 kHz on 8 CPUs
+[1/324] queries/stackoverflow/SQLStorm/5502.sql  (run_id AE1420032DD671ED)
+  ok
+[2/324] queries/stackoverflow/SQLStorm/7612.sql  (run_id 27085027E2C15554)
+  ok
+[3/324] queries/stackoverflow/SQLStorm/16399.sql  (run_id 9F891E2F3BD6DF07)
+  ok
+[4/324] queries/stackoverflow/SQLStorm/20804.sql  (run_id EB5712AC153BC9F6)
+  ok
+[5/324] queries/stackoverflow/SQLStorm/21497.sql  (run_id 2C9C0F1B35B58D9C)
+  ok
+[6/324] compare/probes/probe_cpu.sql  (run_id 95860AEC9B2FED5F)
+  ok
+[7/324] queries/stackoverflow/SQLStorm/8072.sql  (run_id F9166866FC4327D7)
+  ok
+[8/324] queries/stackoverflow/SQLStorm/21884.sql  (run_id 2269E29F54D987D3)
+  ok
+[9/324] queries/stackoverflow/SQLStorm/4452.sql  (run_id B49199DFF413E7F7)
+  ok
+[10/324] queries/stackoverflow/SQLStorm/16308.sql  (run_id C56D6AD76E34E98C)
+  ok
+[11/324] queries/stackoverflow/SQLStorm/25357.sql  (run_id F0649DB59BC09BCE)
+  ok
+[12/324] queries/stackoverflow/SQLStorm/16363.sql  (run_id 52D6AC6F9840827D)
+  ok
+[13/324] queries/stackoverflow/SQLStorm/11471.sql  (run_id 234DB173B40A6B1F)
+  ok
+[14/324] compare/probes/probe_hash.sql  (run_id 83341841F74F1F34)
+  ok
+[15/324] queries/stackoverflow/SQLStorm/10646.sql  (run_id B78285F77B46F992)
+  ok
+[16/324] queries/stackoverflow/SQLStorm/2764.sql  (run_id A0351E9DEE09B8DB)
+  ok
+[17/324] queries/stackoverflow/SQLStorm/9509.sql  (run_id 4E12BA290F160367)
+  ok
+[18/324] queries/stackoverflow/SQLStorm/11473.sql  (run_id 2D91408797629652)
+  ok
+[19/324] queries/stackoverflow/SQLStorm/6651.sql  (run_id 2BB86E0B24A46DA0)
+  ok
+[20/324] queries/stackoverflow/SQLStorm/22494.sql  (run_id DDD32D75005DA910)
+  ok
+[21/324] queries/stackoverflow/SQLStorm/3090.sql  (run_id B67DC1A0B0659233)
+  ok
+[22/324] compare/probes/probe_scan.sql  (run_id 900484DB0140F3B8)
+  ok
+[23/324] queries/stackoverflow/SQLStorm/13186.sql  (run_id 8FF7447A05140DF8)
+  ok
+[24/324] queries/stackoverflow/SQLStorm/1959.sql  (run_id ECA04CBE3809BAD5)
+  ok
+[25/324] queries/stackoverflow/SQLStorm/11397.sql  (run_id 87B1F94D5C824E41)
+  ok
+[26/324] queries/stackoverflow/SQLStorm/15173.sql  (run_id 226A58DB41E8E423)
+  ok
+[27/324] queries/stackoverflow/SQLStorm/13737.sql  (run_id EC84C26F1B6C756B)
+  ok
+[28/324] queries/stackoverflow/SQLStorm/32661.sql  (run_id 0624652381E0EACE)
+  ok
+[29/324] compare/probes/probe_sort.sql  (run_id D02008CC330AF7A4)
+  ok
+[30/324] queries/stackoverflow/SQLStorm/14349.sql  (run_id 64D69BA7D01352F6)
+  ok
+[31/324] queries/stackoverflow/SQLStorm/7184.sql  (run_id 5050C4748A51EC2F)
+  ok
+[32/324] queries/stackoverflow/SQLStorm/10937.sql  (run_id B33D05DB87C39602)
+  ok
+[33/324] queries/stackoverflow/SQLStorm/14843.sql  (run_id CF936E7669D0E6B5)
+  ok
+[34/324] queries/stackoverflow/SQLStorm/12128.sql  (run_id 2DF98F0D488319C3)
+  ok
+[35/324] queries/stackoverflow/SQLStorm/1255.sql  (run_id E5B99B665F6F9155)
+  ok
+[36/324] queries/stackoverflow/SQLStorm/16378.sql  (run_id 988E6513DFC540A6)
+  ok
+[37/324] queries/stackoverflow/SQLStorm/2863.sql  (run_id 1BD5B34FC4719569)
+  ok
+[38/324] queries/stackoverflow/SQLStorm/11124.sql  (run_id 0F1AE074009CE0C5)
+  ok
+[39/324] queries/stackoverflow/SQLStorm/14510.sql  (run_id 32C8BB4E53D15E61)
+  ok
+[40/324] queries/stackoverflow/SQLStorm/13512.sql  (run_id 4B8F861C4E60B55D)
+  ok
+[41/324] queries/stackoverflow/SQLStorm/12477.sql  (run_id A02FB0A2BF316B41)
+  ok
+[42/324] queries/stackoverflow/SQLStorm/20426.sql  (run_id EEA4B33DB8B2371C)
+  ok
+[43/324] queries/stackoverflow/SQLStorm/6957.sql  (run_id 20B94F99B394F3B7)
+  ok
+[44/324] queries/stackoverflow/SQLStorm/7046.sql  (run_id FE058E88ABB0B1A8)
+  ok
+[45/324] queries/stackoverflow/SQLStorm/13330.sql  (run_id F76A698E0B4BF0E5)
+  ok
+[46/324] queries/stackoverflow/SQLStorm/2243.sql  (run_id 12B4B1D41852EA5E)
+  ok
+[47/324] queries/stackoverflow/SQLStorm/13386.sql  (run_id B47F3EB2BE489E14)
+  ok
+[48/324] queries/stackoverflow/SQLStorm/14978.sql  (run_id 7037DCCF942E6BD2)
+  ok
+[49/324] queries/stackoverflow/SQLStorm/17234.sql  (run_id 336A32599BDCBD3B)
+  ok
+[50/324] queries/stackoverflow/SQLStorm/28796.sql  (run_id 6529F327ABD429FB)
+  ok
+[51/324] queries/stackoverflow/SQLStorm/32216.sql  (run_id C379A543AC1F643E)
+  ok
+[52/324] queries/stackoverflow/SQLStorm/25154.sql  (run_id F1A5CD6B0EF0940F)
+  ok
+[53/324] queries/stackoverflow/SQLStorm/24751.sql  (run_id 7914FD4B46F497DC)
+  ok
+[54/324] queries/stackoverflow/SQLStorm/11211.sql  (run_id AB11F4BB248E8E81)
+  ok
+[55/324] queries/stackoverflow/SQLStorm/10646.sql  (run_id 79A74BE72E84807C)
+  ok
+[56/324] queries/stackoverflow/SQLStorm/12477.sql  (run_id 0FABA6FBAB06BBB3)
+  ok
+[57/324] queries/stackoverflow/SQLStorm/6651.sql  (run_id 9304EF60D912036D)
+  ok
+[58/324] queries/stackoverflow/SQLStorm/5502.sql  (run_id 92D1F8AB463790F9)
+  ok
+[59/324] queries/stackoverflow/SQLStorm/13330.sql  (run_id 0C682A54D0243E44)
+  ok
+[60/324] queries/stackoverflow/SQLStorm/14510.sql  (run_id 340D3E407CB9DC1F)
+  ok
+[61/324] queries/stackoverflow/SQLStorm/7612.sql  (run_id 33CAA0883D911F97)
+  ok
+[62/324] queries/stackoverflow/SQLStorm/7184.sql  (run_id 46A20390A18197A5)
+  ok
+[63/324] compare/probes/probe_sort.sql  (run_id 11E8194B1BBFE57C)
+  ok
+[64/324] queries/stackoverflow/SQLStorm/3090.sql  (run_id D7FB28B9168CC9D8)
+  ok
+[65/324] queries/stackoverflow/SQLStorm/22494.sql  (run_id CF82A7074C3AB857)
+  ok
+[66/324] queries/stackoverflow/SQLStorm/13386.sql  (run_id 1DD3EE09BA0B2E62)
+  ok
+[67/324] queries/stackoverflow/SQLStorm/17234.sql  (run_id A5EF885550FAA09D)
+  ok
+[68/324] queries/stackoverflow/SQLStorm/16399.sql  (run_id F021F397DFBA31D6)
+  ok
+[69/324] queries/stackoverflow/SQLStorm/2764.sql  (run_id 00BC3185573A2EDD)
+  ok
+[70/324] queries/stackoverflow/SQLStorm/11397.sql  (run_id 68FBCF88AD574B70)
+  ok
+[71/324] queries/stackoverflow/SQLStorm/7046.sql  (run_id 937D9B881D06ACC8)
+  ok
+[72/324] queries/stackoverflow/SQLStorm/13737.sql  (run_id 060D27CE91C90AD5)
+  ok
+[73/324] queries/stackoverflow/SQLStorm/16378.sql  (run_id E25AC573CE797C68)
+  ok
+[74/324] queries/stackoverflow/SQLStorm/11211.sql  (run_id 1ACFB046B65EEAE6)
+  ok
+[75/324] queries/stackoverflow/SQLStorm/16363.sql  (run_id 454E29667ACA3E90)
+  ok
+[76/324] queries/stackoverflow/SQLStorm/25154.sql  (run_id C5DA1B9A0EEBB2C4)
+  ok
+[77/324] queries/stackoverflow/SQLStorm/21497.sql  (run_id A8961E50C59D7423)
+  ok
+[78/324] queries/stackoverflow/SQLStorm/13186.sql  (run_id 000B988B8C0A3218)
+  ok
+[79/324] queries/stackoverflow/SQLStorm/32216.sql  (run_id C6597CB0C284ACE7)
+  ok
+[80/324] queries/stackoverflow/SQLStorm/6957.sql  (run_id E5837661CF09254B)
+  ok
+[81/324] queries/stackoverflow/SQLStorm/8072.sql  (run_id A456010D138D6D4B)
+  ok
+[82/324] queries/stackoverflow/SQLStorm/13512.sql  (run_id E70A78D2C9184410)
+  ok
+[83/324] queries/stackoverflow/SQLStorm/14843.sql  (run_id B48D98C6610E839E)
+  ok
+[84/324] queries/stackoverflow/SQLStorm/20426.sql  (run_id C854F3F8434B1658)
+  ok
+[85/324] compare/probes/probe_cpu.sql  (run_id 0F69F85700D1F6A4)
+  ok
+[86/324] queries/stackoverflow/SQLStorm/4452.sql  (run_id 859948CECDD3BF2A)
+  ok
+[87/324] queries/stackoverflow/SQLStorm/16308.sql  (run_id 8C6C71C5F9D41D88)
+  ok
+[88/324] queries/stackoverflow/SQLStorm/9509.sql  (run_id 1A1F2B506E3CE219)
+  ok
+[89/324] queries/stackoverflow/SQLStorm/20804.sql  (run_id 08E67D06B01E3A92)
+  ok
+[90/324] queries/stackoverflow/SQLStorm/28796.sql  (run_id 53A759D9C725D500)
+  ok
+[91/324] queries/stackoverflow/SQLStorm/10937.sql  (run_id 821292ACFF97BC2A)
+  ok
+[92/324] queries/stackoverflow/SQLStorm/12128.sql  (run_id 03327474390BF29E)
+  ok
+[93/324] queries/stackoverflow/SQLStorm/14349.sql  (run_id 81CBA0DB5C23505C)
+  ok
+[94/324] queries/stackoverflow/SQLStorm/21884.sql  (run_id 3A6D9E04A27F2DCE)
+  ok
+[95/324] queries/stackoverflow/SQLStorm/25357.sql  (run_id 532D2316B1EF25FD)
+  ok
+[96/324] queries/stackoverflow/SQLStorm/2863.sql  (run_id 9990B8C926BA0E71)
+  ok
+[97/324] queries/stackoverflow/SQLStorm/24751.sql  (run_id 4F6BB80074898791)
+  ok
+[98/324] compare/probes/probe_hash.sql  (run_id 985D61D0B3653BAC)
+  ok
+[99/324] queries/stackoverflow/SQLStorm/11473.sql  (run_id 05106639E1A084A8)
+  ok
+[100/324] queries/stackoverflow/SQLStorm/11124.sql  (run_id 2C3C4745201B0EB2)
+  ok
+[101/324] queries/stackoverflow/SQLStorm/2243.sql  (run_id 308BC230271AD822)
+  ok
+[102/324] queries/stackoverflow/SQLStorm/15173.sql  (run_id 818BDB33658D06D5)
+  ok
+[103/324] queries/stackoverflow/SQLStorm/11471.sql  (run_id E2D6957A3A3FA421)
+  ok
+[104/324] queries/stackoverflow/SQLStorm/14978.sql  (run_id 93C44AEBFCAEA280)
+  ok
+[105/324] queries/stackoverflow/SQLStorm/1959.sql  (run_id 994AA30343ACDD84)
+  ok
+[106/324] compare/probes/probe_scan.sql  (run_id 5410889EA1C6AE0F)
+  ok
+[107/324] queries/stackoverflow/SQLStorm/1255.sql  (run_id 61E696053EEE66D2)
+  ok
+[108/324] queries/stackoverflow/SQLStorm/32661.sql  (run_id DB05467978449F6A)
+  ok
+[109/324] queries/stackoverflow/SQLStorm/1255.sql  (run_id BEF04978B1AD48F6)
+  ok
+[110/324] queries/stackoverflow/SQLStorm/13386.sql  (run_id 172514FA41733245)
+  ok
+[111/324] queries/stackoverflow/SQLStorm/3090.sql  (run_id 72800A901C256D0F)
+  ok
+[112/324] queries/stackoverflow/SQLStorm/21884.sql  (run_id F2563F9246686A1F)
+  ok
+[113/324] queries/stackoverflow/SQLStorm/8072.sql  (run_id 46329942C0649591)
+  ok
+[114/324] queries/stackoverflow/SQLStorm/14978.sql  (run_id 4AFBDF6C67707C78)
+  ok
+[115/324] queries/stackoverflow/SQLStorm/20426.sql  (run_id EBF06C8EAE566FAE)
+  ok
+[116/324] queries/stackoverflow/SQLStorm/2764.sql  (run_id B199BECDB6B07DEB)
+  ok
+[117/324] queries/stackoverflow/SQLStorm/7046.sql  (run_id 6D11E2BD5AE1D200)
+  ok
+[118/324] queries/stackoverflow/SQLStorm/28796.sql  (run_id 900850FF81EAEA63)
+  ok
+[119/324] queries/stackoverflow/SQLStorm/13330.sql  (run_id C0AF2229239D62BD)
+  ok
+[120/324] queries/stackoverflow/SQLStorm/6651.sql  (run_id 70903B404431CE90)
+  ok
+[121/324] queries/stackoverflow/SQLStorm/32661.sql  (run_id C2CAD54F7A470D64)
+  ok
+[122/324] compare/probes/probe_sort.sql  (run_id F4BB9F3CE7255861)
+  ok
+[123/324] compare/probes/probe_cpu.sql  (run_id BE01F90421E1E008)
+  ok
+[124/324] queries/stackoverflow/SQLStorm/25357.sql  (run_id E65CF0D08EA4D377)
+  ok
+[125/324] queries/stackoverflow/SQLStorm/14843.sql  (run_id A843FFE8BFCBDB93)
+  ok
+[126/324] queries/stackoverflow/SQLStorm/11124.sql  (run_id 74BE8DC8CA4084D5)
+  ok
+[127/324] queries/stackoverflow/SQLStorm/20804.sql  (run_id 036BA0A3FFE82D4A)
+  ok
+[128/324] queries/stackoverflow/SQLStorm/2863.sql  (run_id 66B23135FC579864)
+  ok
+[129/324] queries/stackoverflow/SQLStorm/14510.sql  (run_id C13786B544258DD3)
+  ok
+[130/324] queries/stackoverflow/SQLStorm/22494.sql  (run_id 635E3E7535C9C838)
+  ok
+[131/324] queries/stackoverflow/SQLStorm/24751.sql  (run_id 1DF9FE2CD5EE9655)
+  ok
+[132/324] queries/stackoverflow/SQLStorm/13737.sql  (run_id 7D5BC23EA6B02ED8)
+  ok
+[133/324] queries/stackoverflow/SQLStorm/16378.sql  (run_id 14AE9805A8EB22F9)
+  ok
+[134/324] queries/stackoverflow/SQLStorm/11473.sql  (run_id D949DD8028415B46)
+  ok
+[135/324] queries/stackoverflow/SQLStorm/12477.sql  (run_id CCE213D9392A901E)
+  ok
+[136/324] queries/stackoverflow/SQLStorm/14349.sql  (run_id F647F26759489A27)
+  ok
+[137/324] queries/stackoverflow/SQLStorm/16308.sql  (run_id B8088BC073153DE3)
+  ok
+[138/324] queries/stackoverflow/SQLStorm/15173.sql  (run_id DC24DFBA13F4D087)
+  ok
+[139/324] queries/stackoverflow/SQLStorm/12128.sql  (run_id F602569348D94569)
+  ok
+[140/324] queries/stackoverflow/SQLStorm/10646.sql  (run_id 69B8F647E07521D5)
+  ok
+[141/324] queries/stackoverflow/SQLStorm/2243.sql  (run_id 5CDBA8B638DF474B)
+  ok
+[142/324] queries/stackoverflow/SQLStorm/16363.sql  (run_id 120572214463D777)
+  ok
+[143/324] queries/stackoverflow/SQLStorm/32216.sql  (run_id 45650A6449E7C21F)
+  ok
+[144/324] queries/stackoverflow/SQLStorm/16399.sql  (run_id 959D7440246A4A41)
+  ok
+[145/324] queries/stackoverflow/SQLStorm/13186.sql  (run_id 840B5A1F247C4E87)
+  ok
+[146/324] queries/stackoverflow/SQLStorm/6957.sql  (run_id 38CE484A2A0A4ED1)
+  ok
+[147/324] queries/stackoverflow/SQLStorm/9509.sql  (run_id 359F9310D0836C25)
+  ok
+[148/324] queries/stackoverflow/SQLStorm/10937.sql  (run_id 3D86C8B26AF09442)
+  ok
+[149/324] queries/stackoverflow/SQLStorm/7612.sql  (run_id 4DDF6FAA5E573E78)
+  ok
+[150/324] queries/stackoverflow/SQLStorm/25154.sql  (run_id 6B3A395F74FCC576)
+  ok
+[151/324] compare/probes/probe_scan.sql  (run_id 45848F5342741E96)
+  ok
+[152/324] queries/stackoverflow/SQLStorm/11211.sql  (run_id 44A191F932F8D322)
+  ok
+[153/324] queries/stackoverflow/SQLStorm/17234.sql  (run_id 166A7A9A87425740)
+  ok
+[154/324] compare/probes/probe_hash.sql  (run_id AEF24F4DB268797C)
+  ok
+[155/324] queries/stackoverflow/SQLStorm/5502.sql  (run_id 10CB1713DD57884E)
+  ok
+[156/324] queries/stackoverflow/SQLStorm/21497.sql  (run_id 25AED22FC5CCCDC0)
+  ok
+[157/324] queries/stackoverflow/SQLStorm/13512.sql  (run_id D128088D96D78112)
+  ok
+[158/324] queries/stackoverflow/SQLStorm/11471.sql  (run_id C7A0BF8DF51CE974)
+  ok
+[159/324] queries/stackoverflow/SQLStorm/7184.sql  (run_id D90AEF84B1F4B529)
+  ok
+[160/324] queries/stackoverflow/SQLStorm/11397.sql  (run_id 0DE0F24AD6EB177C)
+  ok
+[161/324] queries/stackoverflow/SQLStorm/1959.sql  (run_id CD2A0D641AFA09D1)
+  ok
+[162/324] queries/stackoverflow/SQLStorm/4452.sql  (run_id 33B32F04CAF7EA28)
+  ok
+[163/324] queries/stackoverflow/SQLStorm/20804.sql  (run_id 8A691146184A2138)
+  ok
+[164/324] queries/stackoverflow/SQLStorm/10646.sql  (run_id 153B195F2AD620A6)
+  ok
+[165/324] compare/probes/probe_scan.sql  (run_id D9473DC3790BF101)
+  ok
+[166/324] queries/stackoverflow/SQLStorm/25357.sql  (run_id FBF5F46BC18CD61D)
+  ok
+[167/324] queries/stackoverflow/SQLStorm/6651.sql  (run_id 22A615FFC28A7C90)
+  ok
+[168/324] queries/stackoverflow/SQLStorm/5502.sql  (run_id 5453DCE6C796F3A3)
+  ok
+[169/324] queries/stackoverflow/SQLStorm/28796.sql  (run_id B2A36170613F0BC0)
+  ok
+[170/324] queries/stackoverflow/SQLStorm/24751.sql  (run_id FD35CF1593494BD6)
+  ok
+[171/324] queries/stackoverflow/SQLStorm/9509.sql  (run_id AEE75E5EFD3967F8)
+  ok
+[172/324] queries/stackoverflow/SQLStorm/20426.sql  (run_id 9B5A9E60D935ED46)
+  ok
+[173/324] queries/stackoverflow/SQLStorm/7046.sql  (run_id A12D87C19525B5BD)
+  ok
+[174/324] queries/stackoverflow/SQLStorm/13186.sql  (run_id CBF1C363F3529DE1)
+  ok
+[175/324] queries/stackoverflow/SQLStorm/6957.sql  (run_id E3577B2945401850)
+  ok
+[176/324] queries/stackoverflow/SQLStorm/13512.sql  (run_id 3C5F946E6169D52C)
+  ok
+[177/324] queries/stackoverflow/SQLStorm/1959.sql  (run_id 9F884EA6210DB520)
+  ok
+[178/324] queries/stackoverflow/SQLStorm/16308.sql  (run_id 20FC382EA8DB42A5)
+  ok
+[179/324] queries/stackoverflow/SQLStorm/11211.sql  (run_id 36A4D26DA616213D)
+  ok
+[180/324] queries/stackoverflow/SQLStorm/12477.sql  (run_id 59484CDA9A3B0747)
+  ok
+[181/324] queries/stackoverflow/SQLStorm/8072.sql  (run_id 47EF998F8DFFD9E5)
+  ok
+[182/324] queries/stackoverflow/SQLStorm/11397.sql  (run_id F45E019E27ABAF4F)
+  ok
+[183/324] queries/stackoverflow/SQLStorm/3090.sql  (run_id 46A673FB16083D6A)
+  ok
+[184/324] queries/stackoverflow/SQLStorm/15173.sql  (run_id 3058CAF6EA4151A7)
+  ok
+[185/324] queries/stackoverflow/SQLStorm/11473.sql  (run_id 8ED127738FE47BE6)
+  ok
+[186/324] queries/stackoverflow/SQLStorm/17234.sql  (run_id 6166F4CDA18B695D)
+  ok
+[187/324] queries/stackoverflow/SQLStorm/14978.sql  (run_id 585D28F297C9180B)
+  ok
+[188/324] queries/stackoverflow/SQLStorm/2863.sql  (run_id 34BF1A6392440B51)
+  ok
+[189/324] queries/stackoverflow/SQLStorm/32661.sql  (run_id 36A2DE8616F30923)
+  ok
+[190/324] queries/stackoverflow/SQLStorm/1255.sql  (run_id 7312C7AA390A0D8D)
+  ok
+[191/324] queries/stackoverflow/SQLStorm/14349.sql  (run_id 2F02C6CBADFADB91)
+  ok
+[192/324] queries/stackoverflow/SQLStorm/13386.sql  (run_id 7A8216FB1525774C)
+  ok
+[193/324] queries/stackoverflow/SQLStorm/14843.sql  (run_id C30AD9F26A65F11D)
+  ok
+[194/324] queries/stackoverflow/SQLStorm/2243.sql  (run_id BBB8712092D7A688)
+  ok
+[195/324] compare/probes/probe_sort.sql  (run_id 4CD768024D11D99E)
+  ok
+[196/324] queries/stackoverflow/SQLStorm/16363.sql  (run_id B9DC9AB1F7F0F04E)
+  ok
+[197/324] queries/stackoverflow/SQLStorm/32216.sql  (run_id D2695D63CEE66D89)
+  ok
+[198/324] compare/probes/probe_cpu.sql  (run_id CC8211EF54C61531)
+  ok
+[199/324] queries/stackoverflow/SQLStorm/10937.sql  (run_id D85E504124B6DC8C)
+  ok
+[200/324] queries/stackoverflow/SQLStorm/13330.sql  (run_id 777835F6C4A37F94)
+  ok
+[201/324] queries/stackoverflow/SQLStorm/7612.sql  (run_id 77F5217635B918BB)
+  ok
+[202/324] queries/stackoverflow/SQLStorm/16378.sql  (run_id B4D865579F966A89)
+  ok
+[203/324] queries/stackoverflow/SQLStorm/4452.sql  (run_id 79007B23DAB1CD89)
+  ok
+[204/324] queries/stackoverflow/SQLStorm/21884.sql  (run_id 4C697FD7A31B1C83)
+  ok
+[205/324] queries/stackoverflow/SQLStorm/11471.sql  (run_id F92D935A8C2717A9)
+  ok
+[206/324] queries/stackoverflow/SQLStorm/16399.sql  (run_id CCAFED9F4816E669)
+  ok
+[207/324] queries/stackoverflow/SQLStorm/22494.sql  (run_id 16BB007F9EE515C7)
+  ok
+[208/324] queries/stackoverflow/SQLStorm/2764.sql  (run_id 9E37043476ADAECB)
+  ok
+[209/324] queries/stackoverflow/SQLStorm/25154.sql  (run_id F4242A54F92DEFB7)
+  ok
+[210/324] queries/stackoverflow/SQLStorm/21497.sql  (run_id 86DA05906E6EFD16)
+  ok
+[211/324] compare/probes/probe_hash.sql  (run_id DF4B0C836CC2C562)
+  ok
+[212/324] queries/stackoverflow/SQLStorm/13737.sql  (run_id AF2AB4B65839FB3D)
+  ok
+[213/324] queries/stackoverflow/SQLStorm/11124.sql  (run_id A1C704FFD21AAE59)
+  ok
+[214/324] queries/stackoverflow/SQLStorm/12128.sql  (run_id DEB65688622D6990)
+  ok
+[215/324] queries/stackoverflow/SQLStorm/7184.sql  (run_id 96214F8D3F591D10)
+  ok
+[216/324] queries/stackoverflow/SQLStorm/14510.sql  (run_id DB98159CE6C0D4BF)
+  ok
+[217/324] queries/stackoverflow/SQLStorm/17234.sql  (run_id 266385E9D2CEE630)
+  ok
+[218/324] queries/stackoverflow/SQLStorm/13186.sql  (run_id 6B25A5F2C8868A08)
+  ok
+[219/324] queries/stackoverflow/SQLStorm/11471.sql  (run_id 59F9AF247C0D201B)
+  ok
+[220/324] queries/stackoverflow/SQLStorm/2764.sql  (run_id C2FFF41CD8A2F095)
+  ok
+[221/324] queries/stackoverflow/SQLStorm/16378.sql  (run_id DF34ED963F0D5941)
+  ok
+[222/324] queries/stackoverflow/SQLStorm/12477.sql  (run_id 86D8CB2FC372220A)
+  ok
+[223/324] queries/stackoverflow/SQLStorm/2863.sql  (run_id 6E3BA575053FF538)
+  ok
+[224/324] queries/stackoverflow/SQLStorm/14843.sql  (run_id 9E449149AFCA07C0)
+  ok
+[225/324] compare/probes/probe_hash.sql  (run_id D55235995FB10981)
+  ok
+[226/324] queries/stackoverflow/SQLStorm/20426.sql  (run_id 734F3983E3BEC0BE)
+  ok
+[227/324] queries/stackoverflow/SQLStorm/9509.sql  (run_id 260896B8729EF500)
+  ok
+[228/324] queries/stackoverflow/SQLStorm/1255.sql  (run_id EEEAF98231AFC216)
+  ok
+[229/324] queries/stackoverflow/SQLStorm/12128.sql  (run_id DC8F8CBAB0276E27)
+  ok
+[230/324] queries/stackoverflow/SQLStorm/28796.sql  (run_id 552E22E20ACD58F5)
+  ok
+[231/324] queries/stackoverflow/SQLStorm/8072.sql  (run_id C1EE3707B2D186EC)
+  ok
+[232/324] queries/stackoverflow/SQLStorm/7184.sql  (run_id 3EA23D0C137B8491)
+  ok
+[233/324] queries/stackoverflow/SQLStorm/16399.sql  (run_id 02A0627821E16D4D)
+  ok
+[234/324] queries/stackoverflow/SQLStorm/7046.sql  (run_id C0A4382CFEF7687C)
+  ok
+[235/324] queries/stackoverflow/SQLStorm/6957.sql  (run_id 723F6B64A388CA2D)
+  ok
+[236/324] queries/stackoverflow/SQLStorm/14978.sql  (run_id 23EFCDB641B9858B)
+  ok
+[237/324] compare/probes/probe_sort.sql  (run_id 5930DFDBB7B69819)
+  ok
+[238/324] queries/stackoverflow/SQLStorm/11397.sql  (run_id 5B3D2D17BE585716)
+  ok
+[239/324] queries/stackoverflow/SQLStorm/11124.sql  (run_id 8EA11692720C9FCD)
+  ok
+[240/324] queries/stackoverflow/SQLStorm/6651.sql  (run_id DF0FA2F5251054D3)
+  ok
+[241/324] queries/stackoverflow/SQLStorm/16363.sql  (run_id 86612EDC33EA1D24)
+  ok
+[242/324] queries/stackoverflow/SQLStorm/25357.sql  (run_id 8DC0E1B33A957144)
+  ok
+[243/324] queries/stackoverflow/SQLStorm/15173.sql  (run_id A30D3A246C48895A)
+  ok
+[244/324] queries/stackoverflow/SQLStorm/21497.sql  (run_id 249BBC34EC7AF932)
+  ok
+[245/324] queries/stackoverflow/SQLStorm/10937.sql  (run_id D67B5AFE2A3A2E73)
+  ok
+[246/324] queries/stackoverflow/SQLStorm/22494.sql  (run_id EFD307B87C6711FC)
+  ok
+[247/324] queries/stackoverflow/SQLStorm/13737.sql  (run_id 138D793BE5C05F2F)
+  ok
+[248/324] compare/probes/probe_scan.sql  (run_id C2EF7560CB52061A)
+  ok
+[249/324] queries/stackoverflow/SQLStorm/14349.sql  (run_id 7CC580CFBF49ED5B)
+  ok
+[250/324] queries/stackoverflow/SQLStorm/5502.sql  (run_id 6F4B60EAFF64DBCB)
+  ok
+[251/324] queries/stackoverflow/SQLStorm/10646.sql  (run_id FC794B5EDF31D30A)
+  ok
+[252/324] queries/stackoverflow/SQLStorm/11473.sql  (run_id 028FEDFF7438020C)
+  ok
+[253/324] queries/stackoverflow/SQLStorm/25154.sql  (run_id FE341F201FDC2357)
+  ok
+[254/324] compare/probes/probe_cpu.sql  (run_id 4630AF6451B0E6C8)
+  ok
+[255/324] queries/stackoverflow/SQLStorm/13386.sql  (run_id 43B06119C00046A6)
+  ok
+[256/324] queries/stackoverflow/SQLStorm/32661.sql  (run_id 0F607B99A53C4207)
+  ok
+[257/324] queries/stackoverflow/SQLStorm/21884.sql  (run_id 600AE81009B2F5F8)
+  ok
+[258/324] queries/stackoverflow/SQLStorm/16308.sql  (run_id 18ABC39C16E51D6C)
+  ok
+[259/324] queries/stackoverflow/SQLStorm/14510.sql  (run_id B8AAD4DEFDCF9C1E)
+  ok
+[260/324] queries/stackoverflow/SQLStorm/7612.sql  (run_id B5076153C6F0B372)
+  ok
+[261/324] queries/stackoverflow/SQLStorm/2243.sql  (run_id 9D56B2C597E9BA23)
+  ok
+[262/324] queries/stackoverflow/SQLStorm/3090.sql  (run_id ACFA091C720A0F83)
+  ok
+[263/324] queries/stackoverflow/SQLStorm/13512.sql  (run_id 1CF29B0BA19D8552)
+  ok
+[264/324] queries/stackoverflow/SQLStorm/24751.sql  (run_id 3D9C15747C9DBC4D)
+  ok
+[265/324] queries/stackoverflow/SQLStorm/20804.sql  (run_id 5FC7924308AD3825)
+  ok
+[266/324] queries/stackoverflow/SQLStorm/11211.sql  (run_id 74F87430A4C2FC7D)
+  ok
+[267/324] queries/stackoverflow/SQLStorm/32216.sql  (run_id D882E679B88385C6)
+  ok
+[268/324] queries/stackoverflow/SQLStorm/13330.sql  (run_id B8C82F0E178A4F1D)
+  ok
+[269/324] queries/stackoverflow/SQLStorm/1959.sql  (run_id C244900178D3F285)
+  ok
+[270/324] queries/stackoverflow/SQLStorm/4452.sql  (run_id 38378553D54D2785)
+  ok
+[271/324] queries/stackoverflow/SQLStorm/1255.sql  (run_id 53D1EF44BE2D0F0C)
+  ok
+[272/324] queries/stackoverflow/SQLStorm/1959.sql  (run_id 954D5028F53482A2)
+  ok
+[273/324] queries/stackoverflow/SQLStorm/3090.sql  (run_id 7ED398C0A6263031)
+  ok
+[274/324] queries/stackoverflow/SQLStorm/16363.sql  (run_id 3B1128E7B43AE504)
+  ok
+[275/324] queries/stackoverflow/SQLStorm/28796.sql  (run_id 7B4B98A184A01B94)
+  ok
+[276/324] queries/stackoverflow/SQLStorm/16399.sql  (run_id A7B987010C894F9D)
+  ok
+[277/324] compare/probes/probe_sort.sql  (run_id 59F4889AE58FFC1B)
+  ok
+[278/324] queries/stackoverflow/SQLStorm/16308.sql  (run_id 7F1D678299EF1C9D)
+  ok
+[279/324] queries/stackoverflow/SQLStorm/13386.sql  (run_id 63B6032046622D32)
+  ok
+[280/324] queries/stackoverflow/SQLStorm/10646.sql  (run_id E768EDFD68B85F29)
+  ok
+[281/324] compare/probes/probe_cpu.sql  (run_id 7292E9D6026BA9F8)
+  ok
+[282/324] queries/stackoverflow/SQLStorm/10937.sql  (run_id D86F43862F2CC5D5)
+  ok
+[283/324] queries/stackoverflow/SQLStorm/11211.sql  (run_id 3F4A2DAC3E2C6B10)
+  ok
+[284/324] queries/stackoverflow/SQLStorm/14510.sql  (run_id 4853F199FEC7C877)
+  ok
+[285/324] queries/stackoverflow/SQLStorm/8072.sql  (run_id FF60B3E1586D197A)
+  ok
+[286/324] queries/stackoverflow/SQLStorm/2243.sql  (run_id 89795DF9DACA44ED)
+  ok
+[287/324] queries/stackoverflow/SQLStorm/13737.sql  (run_id 01F64F9984FC2509)
+  ok
+[288/324] queries/stackoverflow/SQLStorm/13330.sql  (run_id C8B7924D095645CB)
+  ok
+[289/324] queries/stackoverflow/SQLStorm/32216.sql  (run_id 25B85689ACD6EC7B)
+  ok
+[290/324] queries/stackoverflow/SQLStorm/12128.sql  (run_id CEEC6283CC2656A8)
+  ok
+[291/324] queries/stackoverflow/SQLStorm/17234.sql  (run_id 7732986BD90914E6)
+  ok
+[292/324] queries/stackoverflow/SQLStorm/14349.sql  (run_id BCE2F28CEB923F95)
+  ok
+[293/324] queries/stackoverflow/SQLStorm/15173.sql  (run_id BC172DF33A875E48)
+  ok
+[294/324] queries/stackoverflow/SQLStorm/12477.sql  (run_id FB1644CC5B68DDFA)
+  ok
+[295/324] queries/stackoverflow/SQLStorm/22494.sql  (run_id 0899ACFF7AF96E65)
+  ok
+[296/324] queries/stackoverflow/SQLStorm/25154.sql  (run_id D6CE5F334B9E9080)
+  ok
+[297/324] queries/stackoverflow/SQLStorm/2764.sql  (run_id 27FE0CBB98802C1C)
+  ok
+[298/324] queries/stackoverflow/SQLStorm/32661.sql  (run_id 19FB8BFB113B44FF)
+  ok
+[299/324] queries/stackoverflow/SQLStorm/6651.sql  (run_id 332FBE59D9DACFC5)
+  ok
+[300/324] compare/probes/probe_hash.sql  (run_id A7E28646326A2F43)
+  ok
+[301/324] queries/stackoverflow/SQLStorm/13512.sql  (run_id F292DCF1788A54AC)
+  ok
+[302/324] queries/stackoverflow/SQLStorm/2863.sql  (run_id 0B0EAF08DB3081FE)
+  ok
+[303/324] queries/stackoverflow/SQLStorm/6957.sql  (run_id 156DED6955395BE7)
+  ok
+[304/324] queries/stackoverflow/SQLStorm/9509.sql  (run_id 91D66F088408204E)
+  ok
+[305/324] compare/probes/probe_scan.sql  (run_id CF3CBC4040DDC043)
+  ok
+[306/324] queries/stackoverflow/SQLStorm/14978.sql  (run_id 78B0607258AB59C6)
+  ok
+[307/324] queries/stackoverflow/SQLStorm/11124.sql  (run_id DBD801C690820433)
+  ok
+[308/324] queries/stackoverflow/SQLStorm/16378.sql  (run_id E07DC57893FCE621)
+  ok
+[309/324] queries/stackoverflow/SQLStorm/4452.sql  (run_id A93BEFE3DFDD0BD2)
+  ok
+[310/324] queries/stackoverflow/SQLStorm/11471.sql  (run_id A1EB46B150F7261B)
+  ok
+[311/324] queries/stackoverflow/SQLStorm/11397.sql  (run_id 3BD5DD16F0F1FF15)
+  ok
+[312/324] queries/stackoverflow/SQLStorm/7046.sql  (run_id 0F7DC7C16A6AB957)
+  ok
+[313/324] queries/stackoverflow/SQLStorm/21884.sql  (run_id C673D2BE03AD6146)
+  ok
+[314/324] queries/stackoverflow/SQLStorm/21497.sql  (run_id 04BAB456B58C87F9)
+  ok
+[315/324] queries/stackoverflow/SQLStorm/11473.sql  (run_id E08DE56383F2402F)
+  ok
+[316/324] queries/stackoverflow/SQLStorm/7612.sql  (run_id 886C02C25687D414)
+  ok
+[317/324] queries/stackoverflow/SQLStorm/20804.sql  (run_id FA95744341E4E8F5)
+  ok
+[318/324] queries/stackoverflow/SQLStorm/14843.sql  (run_id 320FBDAE0995A870)
+  ok
+[319/324] queries/stackoverflow/SQLStorm/24751.sql  (run_id FAC615D4D1C1C86D)
+  ok
+[320/324] queries/stackoverflow/SQLStorm/13186.sql  (run_id 71733E9B34BBF0DF)
+  ok
+[321/324] queries/stackoverflow/SQLStorm/5502.sql  (run_id 56D77ECAB0CBF9F2)
+  ok
+[322/324] queries/stackoverflow/SQLStorm/7184.sql  (run_id 8EAE877BDA409DDE)
+  ok
+[323/324] queries/stackoverflow/SQLStorm/20426.sql  (run_id D31FF67539A9CE18)
+  ok
+[324/324] queries/stackoverflow/SQLStorm/25357.sql  (run_id D6B6FA6492437405)
+  ok
+clock_control: no_turbo restored to 0
+clock_control: governor restored to powersave
+clock_control: max_freq restored to 3600000 kHz
+run_id:        compare_server001_pg16_s1_20261013T205057Z
+started_utc:   2026-10-13T20:51:02Z
+finished_utc:  2026-10-14T00:22:15Z
+total_runtime: 03:31:12  (12672 seconds)   avg_per_entry: 39s
+entries:       324   ok: 324   failed: 0
+-- parameters --
+pg:                 16
+db:                 stackoverflow_1gb
+queries_dir:        queries/stackoverflow/SQLStorm
+queries:            54
+repeats:            1
+batch_sizes:        1 16
+runs_per_size:      1
+warmup:             2
+batch_cap_slow:     none (slow_copy_sec 1)
+statement_timeout:  15s
+idle_baseline_s:    5
+warmup_fail_skip:   1
+workers:            planner default
+port:               5434
+logs_root:          logs/compare/warm_stepup
+run_dir:            logs/compare/warm_stepup/compare_server001_pg16_s1_20261013T205057Z
+order_file:         compare/set/order.txt
+saved_order:        logs/compare/warm_stepup/compare_server001_pg16_s1_20261013T205057Z/run_order_compare_server001_pg16_s1_20261013T205057Z.txt
+-- thermal / clock --
+thermal_policy:     gate T_LO=40 T_HI=60 PREHEAT_MAX_S=60 COOLDOWN_MAX_S=120
+fix_clock:          1
+clock_max_khz:      2500000
+clock_no_turbo: 0
+clock_governor: performance
+clock_min_freq_khz: 400000
+clock_max_freq_khz: 2500000
+rapl_pl1_w:         22.0
+rapl_pl1_tau_s:     27.98
+rapl_pl2_w:         44.0
+dmesg_throttle_msgs: 0 during run (0 total)
+-- node --
+host:               server001
+cpu_model:          Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
+cpu_packages:       1
+cpu_count:          8
+microcode:          0xf6
+bios:               Dell Inc. 1.25.0 (03/24/2022)
+product:            Dell Inc. Latitude 7490
+memory_gb:          8
+freq_driver:        intel_pstate
+governor:           performance
+turbo:              no_turbo=0
+kernel:             6.8.0-41-generic
+rapl_zones:         package-0 core uncore dram psys 
+
+warm step-up done: 324 ok, 0 failed of 324 entries in 03:31:12
+  results dir: logs/compare/warm_stepup/compare_server001_pg16_s1_20261013T205057Z/  (query_timing_stackoverflow_1gb.csv, ..., summary.txt)
+  order: logs/compare/warm_stepup/compare_server001_pg16_s1_20261013T205057Z/run_order_compare_server001_pg16_s1_20261013T205057Z.txt   console: logs/compare/warm_stepup/compare_server001_pg16_s1_20261013T205057Z/console.log
+==> checking logs/compare/warm_stepup/compare_server001_pg16_s1_20261013T205057Z
+    scaling_max_khz  2500000
+    governor         performance
+    pg_version       16.15
+    gate             324 entries gated, 0 started outside 40-60 C
+    entries          324 run, 0 warm-up failures, 0 failed measured batches
+CHECK OK
+===== detach.sh end 2026-10-14T00:22:15Z  exit 0  duration 03:31:18

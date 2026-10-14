@@ -1,0 +1,33 @@
+===== detach.sh start 2026-10-09T12:04:24Z  pid 2328982
+===== command: make build-stackoverflow PGVER=16 SUDO_PASSWORD=a
+===== suspend inhibited: yes
+==> [stackoverflow_1gb] StackOverflow 1gb on PostgreSQL 16 (port 5434)
+==> /home/user01/GreenSQL/queries/stackoverflow/SQLStorm already holds 11794 .sql files - nothing to do (FORCE=1 to re-fetch)
+==> [stackoverflow_1gb] archive already downloaded: /home/user01/GreenSQL/Data/stackoverflow/stackoverflow_dba.tar.gz (377M)
+==> [stackoverflow_1gb] (re)creating database
+NOTICE:  database "stackoverflow_1gb" does not exist, skipping
+DROP DATABASE
+CREATE DATABASE
+==> [stackoverflow_1gb] applying schema (no foreign keys)
+==> [stackoverflow_1gb] loading tables straight from the archive (-z)
+    - votes                   926084 rows  (1s)
+    - linktypes                    2 rows  (0s)
+    - badges                  439352 rows  (1s)
+    - posttypes                    8 rows  (0s)
+    - posthistory             847593 rows  (15s)
+    - tags                      1232 rows  (0s)
+    - closereasontypes            12 rows  (0s)
+    - posts                   246673 rows  (6s)
+    - postlinks                20146 rows  (1s)
+    - comments                351440 rows  (1s)
+    - users                   267193 rows  (1s)
+    - posthistorytypes            34 rows  (0s)
+    - votetypes                   15 rows  (0s)
+    all 13 tables loaded in 26s
+==> [stackoverflow_1gb] adding primary keys
+    done in 2s
+==> [stackoverflow_1gb] VACUUM (FREEZE, ANALYZE)
+    done in 19s
+==> [stackoverflow_1gb] DONE: 1175 MB
+    run the queries with: make run DB_NAME=stackoverflow_1gb DIR=queries/stackoverflow/SQLStorm PGVER=16
+===== detach.sh end 2026-10-09T12:05:13Z  exit 0  duration 00:00:49

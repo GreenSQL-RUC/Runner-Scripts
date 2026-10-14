@@ -1,0 +1,7 @@
+timestamp_utc,run_id,pg_version,query,idle_s,idle_pkg_w,idle_core_w,idle_gpu_w,idle_dram_w,pkg_temp_mean_c,mhz_mean
+2026-10-09T12:05:51Z,5C85E4D04900D29C,16.15,queries/stackoverflow/SQLStorm/5502.sql,5.001,0.405,0.071,0.000,0.255,40.20,610
+2026-10-09T12:06:16Z,42C8AF1E1FF8E854,16.15,queries/stackoverflow/SQLStorm/7612.sql,5.000,0.425,0.078,0.000,0.256,43.64,611
+2026-10-09T12:06:58Z,E706E3241DD4DE90,16.15,queries/stackoverflow/SQLStorm/16399.sql,5.001,0.443,0.078,0.000,0.257,46.20,754
+2026-10-09T12:07:11Z,61B4AB5521BEB9B4,16.15,queries/stackoverflow/SQLStorm/20804.sql,5.001,0.443,0.084,0.000,0.256,46.64,739
+2026-10-09T12:07:46Z,EDB8F56B1A43243E,16.15,queries/stackoverflow/SQLStorm/21497.sql,5.001,1.112,0.543,0.000,0.272,48.80,816
+2026-10-09T12:08:12Z,79601ECE18B0060B,16.15,compare/probes/probe_cpu.sql,5.001,0.475,0.104,0.000,0.256,47.48,831

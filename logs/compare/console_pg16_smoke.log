@@ -1,0 +1,99 @@
+===== detach.sh start 2026-10-09T12:05:36Z  pid 2329580
+===== command: bash compare/run_compare.sh smoke
+===== suspend inhibited: yes
+==> compare session smoke on server001, PostgreSQL 16.15: smoke_compare_server001_pg16_smoke_20261009T120536Z
+    6 entries from logs/compare/order_smoke_compare_server001_pg16_smoke_20261009T120536Z.txt; ~3.3 h on a Latitude 7490 at 2.5 GHz with the 40-60 C gate
+    process group 2329575
+==> testing parameters
+    ==> PG16 (port 5434): applying testing parameters
+       PG16 now: shared_buffers=4GB
+       PG16 now: work_mem=64MB
+       PG16 now: effective_cache_size=12GB
+       PG16 now: effective_io_concurrency=64
+       PG16 now: max_parallel_workers_per_gather=4
+    reset with: EXTRA_PARAMS="effective_io_concurrency io_combine_limit io_max_combine_limit" sudo bash reset_all_parameters.sh 16
+==> replaying saved order: logs/compare/order_smoke_compare_server001_pg16_smoke_20261009T120536Z.txt
+==> run_id=smoke_compare_server001_pg16_smoke_20261009T120536Z  order (6 entries) -> logs/compare/warm_stepup/smoke_compare_server001_pg16_smoke_20261009T120536Z/run_order_smoke_compare_server001_pg16_smoke_20261009T120536Z.txt
+warm step-up: PG16  DB=stackoverflow_1gb  DIR=queries/stackoverflow/SQLStorm  BATCH_SIZES='1 16'  WARMUP=2  RUNS=1  REPEATS=1
+  thermal: gate T_LO=40 T_HI=60 PREHEAT_MAX_S=60 COOLDOWN_MAX_S=120   fix_clock: 1 (ceiling 2500000)   batch cap: none
+  logs -> logs/compare/warm_stepup/smoke_compare_server001_pg16_smoke_20261009T120536Z/  (6 entries)
+clock_control: no_turbo=0 (ceiling 2500000 kHz is a turbo bin)
+clock_control: governor=performance (was powersave)
+clock_control: max_freq=2500000 kHz on 8 CPUs
+[1/6] queries/stackoverflow/SQLStorm/5502.sql  (run_id 5C85E4D04900D29C)
+  ok
+[2/6] queries/stackoverflow/SQLStorm/7612.sql  (run_id 42C8AF1E1FF8E854)
+  ok
+[3/6] queries/stackoverflow/SQLStorm/16399.sql  (run_id E706E3241DD4DE90)
+  ok
+[4/6] queries/stackoverflow/SQLStorm/20804.sql  (run_id 61B4AB5521BEB9B4)
+  ok
+[5/6] queries/stackoverflow/SQLStorm/21497.sql  (run_id EDB8F56B1A43243E)
+  ok
+[6/6] compare/probes/probe_cpu.sql  (run_id 79601ECE18B0060B)
+  ok
+clock_control: no_turbo restored to 0
+clock_control: governor restored to powersave
+clock_control: max_freq restored to 3600000 kHz
+run_id:        smoke_compare_server001_pg16_smoke_20261009T120536Z
+started_utc:   2026-10-09T12:05:40Z
+finished_utc:  2026-10-09T12:08:39Z
+total_runtime: 00:02:59  (179 seconds)   avg_per_entry: 29s
+entries:       6   ok: 6   failed: 0
+-- parameters --
+pg:                 16
+db:                 stackoverflow_1gb
+queries_dir:        queries/stackoverflow/SQLStorm
+queries:            6
+repeats:            1
+batch_sizes:        1 16
+runs_per_size:      1
+warmup:             2
+batch_cap_slow:     none (slow_copy_sec 1)
+statement_timeout:  15s
+idle_baseline_s:    5
+warmup_fail_skip:   1
+workers:            planner default
+port:               5434
+logs_root:          logs/compare/warm_stepup
+run_dir:            logs/compare/warm_stepup/smoke_compare_server001_pg16_smoke_20261009T120536Z
+order_file:         logs/compare/order_smoke_compare_server001_pg16_smoke_20261009T120536Z.txt
+saved_order:        logs/compare/warm_stepup/smoke_compare_server001_pg16_smoke_20261009T120536Z/run_order_smoke_compare_server001_pg16_smoke_20261009T120536Z.txt
+-- thermal / clock --
+thermal_policy:     gate T_LO=40 T_HI=60 PREHEAT_MAX_S=60 COOLDOWN_MAX_S=120
+fix_clock:          1
+clock_max_khz:      2500000
+clock_no_turbo: 0
+clock_governor: performance
+clock_min_freq_khz: 400000
+clock_max_freq_khz: 2500000
+rapl_pl1_w:         22.0
+rapl_pl1_tau_s:     27.98
+rapl_pl2_w:         44.0
+dmesg_throttle_msgs: 0 during run (0 total)
+-- node --
+host:               server001
+cpu_model:          Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
+cpu_packages:       1
+cpu_count:          8
+microcode:          0xf6
+bios:               Dell Inc. 1.25.0 (03/24/2022)
+product:            Dell Inc. Latitude 7490
+memory_gb:          8
+freq_driver:        intel_pstate
+governor:           performance
+turbo:              no_turbo=0
+kernel:             6.8.0-41-generic
+rapl_zones:         package-0 core uncore dram psys 
+
+warm step-up done: 6 ok, 0 failed of 6 entries in 00:02:59
+  results dir: logs/compare/warm_stepup/smoke_compare_server001_pg16_smoke_20261009T120536Z/  (query_timing_stackoverflow_1gb.csv, ..., summary.txt)
+  order: logs/compare/warm_stepup/smoke_compare_server001_pg16_smoke_20261009T120536Z/run_order_smoke_compare_server001_pg16_smoke_20261009T120536Z.txt   console: logs/compare/warm_stepup/smoke_compare_server001_pg16_smoke_20261009T120536Z/console.log
+==> checking logs/compare/warm_stepup/smoke_compare_server001_pg16_smoke_20261009T120536Z
+    scaling_max_khz  2500000
+    governor         performance
+    pg_version       16.15
+    gate             6 entries gated, 0 started outside 40-60 C
+    entries          6 run, 0 warm-up failures, 0 failed measured batches
+CHECK OK
+===== detach.sh end 2026-10-09T12:08:39Z  exit 0  duration 00:03:03
