@@ -691,7 +691,9 @@ static void write_copy_profile(FILE *out, const run_profile *pr) {
  * previous batch ended (across processes via PREV_END_EPOCH); preheat_s /
  * cooldown_wait_s = what the equalisation step took before THIS query's first
  * batch (0 otherwise, 0 always when it is off); pkg_watts_mean = rapl_pkg_j /
- * elapsed_sec.
+ * elapsed_sec; start_epoch / end_epoch = the measured window in Unix seconds
+ * (ms), for matching against outside time series such as the BMC power log
+ * (run/power_logger.py). The idle CSV carries the same two columns.
  */
 #define HDR_LOG \
     "timestamp_utc,run_id,pg_version,query,phase,batch_index,batchnum,runs,warmup," \
@@ -700,7 +702,7 @@ static void write_copy_profile(FILE *out, const run_profile *pr) {
     "rapl_pkg_j,rapl_core_j,rapl_gpu_j,rapl_dram_j," \
     "pkg_temp_start_c,pkg_temp_end_c,pkg_temp_mean_c,pkg_temp_max_c,core_temp_max_c," \
     "mhz_mean,throttle_core_delta,throttle_pkg_delta,idle_before_s,preheat_s," \
-    "cooldown_wait_s,pkg_watts_mean\n"
+    "cooldown_wait_s,pkg_watts_mean,start_epoch,end_epoch\n"
 
 #define HDR_SAMPLES \
     "timestamp_utc,run_id,pg_version,query,phase,batch_index,copy_index,batchnum,runs," \
@@ -718,7 +720,8 @@ static void write_copy_profile(FILE *out, const run_profile *pr) {
 
 #define HDR_IDLE \
     "timestamp_utc,run_id,pg_version,query,idle_s," \
-    "idle_pkg_w,idle_core_w,idle_gpu_w,idle_dram_w,pkg_temp_mean_c,mhz_mean\n"
+    "idle_pkg_w,idle_core_w,idle_gpu_w,idle_dram_w,pkg_temp_mean_c,mhz_mean," \
+    "start_epoch,end_epoch\n"
 
 #define HDR_RUNINFO \
     "timestamp_utc,run_id,pg_version,host,cpu_model,packages,microcode," \
@@ -967,9 +970,11 @@ static batch_result run_one_batch(runner_state *st, const char *cmd, const char 
     sampler_t sm; sampler_start(&sm);
     double e[4]; int present[4];
     rapl_before(NULL, RAPL_CORE);
+    double start_ep = now_epoch();
     double start = now_sec();
     int rc = run_once(cmd, &meta);
     br.elapsed = now_sec() - start;
+    double end_ep = now_epoch();
     rapl_after_capture(RAPL_CORE, e, present);
     sampler_stop(&sm);
 
@@ -1012,9 +1017,9 @@ static batch_result run_one_batch(runner_state *st, const char *cmd, const char 
     else                fprintf(st->log, ",,");
     fprintf(st->log, "%.6f,%.6f,%ld,%d,", meta.user_cpu_sec, meta.sys_cpu_sec, meta.max_rss_kb, br.failed);
     write_energy_columns(st->log, e, present);
-    fprintf(st->log, ",%s,%s,%s,%s,%s,%s,%s,%s,%s,%.1f,%.1f,%s\n",
+    fprintf(st->log, ",%s,%s,%s,%s,%s,%s,%s,%s,%s,%.1f,%.1f,%s,%.3f,%.3f\n",
             b_start, b_end, b_mean, b_max, b_core, b_mhz, b_thr_core, b_thr_pkg, b_idle,
-            st->preheat_s, st->cooldown_s, b_watts);
+            st->preheat_s, st->cooldown_s, b_watts, start_ep, end_ep);
     fflush(st->log);
     st->preheat_s = st->cooldown_s = 0;    /* only the query's first batch carries them */
 
@@ -1041,11 +1046,13 @@ static void measure_idle(FILE *out, const runner_state *st, const char *query_id
     int present[4];
     sampler_t sm; sampler_start(&sm);
     rapl_snapshot(a);
+    double start_ep = now_epoch();
     double t0 = now_sec();
     struct timespec nap = { (time_t)secs, (long)((secs - floor(secs)) * 1e9) };
     nanosleep(&nap, NULL);
     rapl_snapshot(b);
     double el = now_sec() - t0;
+    double end_ep = now_epoch();
     sampler_stop(&sm);
     rapl_delta(a, b, e, present);
 
@@ -1054,8 +1061,8 @@ static void measure_idle(FILE *out, const runner_state *st, const char *query_id
     for (int d = 0; d < 4; d++) fmt_num(present[d] && el > 0 ? e[d] / el : NAN, 3, w[d], sizeof(w[d]));
     fmt_num(sm.n ? sm.pkg_sum / sm.n : NAN, 2, b_mean, sizeof(b_mean));
     fmt_num(sm.mhz_n ? sm.mhz_sum / sm.mhz_n : NAN, 0, b_mhz, sizeof(b_mhz));
-    fprintf(out, "%s,%s,%s,%s,%.3f,%s,%s,%s,%s,%s,%s\n", ts, st->run_id, st->pg_version,
-            query_id, el, w[0], w[1], w[2], w[3], b_mean, b_mhz);
+    fprintf(out, "%s,%s,%s,%s,%.3f,%s,%s,%s,%s,%s,%s,%.3f,%.3f\n", ts, st->run_id, st->pg_version,
+            query_id, el, w[0], w[1], w[2], w[3], b_mean, b_mhz, start_ep, end_ep);
     fflush(out);
     printf("  idle baseline: %.1fs, package %s W%s%s%s\n", el, w[0],
            present[3] ? ", dram " : "", present[3] ? w[3] : "", present[3] ? " W" : "");

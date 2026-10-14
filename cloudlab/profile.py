@@ -25,7 +25,13 @@ generic `geniuser`, with sudo):
   9. committed to the results repository (default the private
      GreenSQL-RUC/CloudLab-Results), same folder, every "Push results every"
      hours (0 = off). Both also run when a run/detach.sh job ends; by hand:
-     `sudo greensql-save-logs`, `sudo greensql-push-results`.
+     `sudo greensql-save-logs`, `sudo greensql-push-results`;
+ 10. background power log (when "BMC power log" is on and the node's BMC,
+     e.g. a Dell iDRAC, answers in-band IPMI): run/power_logger.py as the
+     greensql-power-log service, ~1 reading/s of the BMC's whole-node power
+     plus the RAPL counters, into logs/power/ (saved and pushed like the other
+     logs; match it to runs with compare/match_power.py). Nodes without an
+     in-band BMC (the m510) skip it and run exactly as before.
 
 The deploy key (private half) is never in a repository. It is kept once in
 /proj/<project>/greensql/.deploy/results_key (owned by geniuser, mode 600),
@@ -36,6 +42,7 @@ Follow it:      tail -f /mydata/greensql_setup.log
 Done when:      /mydata/greensql_setup.done exists (greensql_setup.failed on error)
 Then, e.g.:     cd ~/GreenSQL && ENTRIES=6 bash compare/run_compare.sh smoke
 Log saving:     /mydata/greensql_save.log, /mydata/greensql_push.log
+Power log:      systemctl status greensql-power-log; ls ~/GreenSQL/logs/power
 """
 
 import base64
@@ -59,9 +66,13 @@ pc.defineParameter("sharedBuffers", "shared_buffers (e.g. 4GB; the laptops use 4
                    portal.ParameterType.STRING, "4GB")
 pc.defineParameter("effectiveCacheSize", "effective_cache_size (e.g. 12GB; the laptops use 12GB)",
                    portal.ParameterType.STRING, "12GB")
-pc.defineParameter("clockKhz", "Clock ceiling for compare/run_compare.sh in kHz "
-                   "(m510: 2000000 = its 2.0 GHz base, turbo off; the laptops use 2500000)",
-                   portal.ParameterType.INTEGER, 2000000)
+pc.defineParameter("clockKhz", "Clock ceiling for compare/run_compare.sh: kHz, or base "
+                   "(each node's base frequency, turbo off) or max (top turbo bin). "
+                   "2000000 = the m510's base; the laptops use 2500000; c6620 base is 2100000",
+                   portal.ParameterType.STRING, "2000000")
+pc.defineParameter("powerLog", "BMC power log (whole-node watts ~1/s from the iDRAC via "
+                   "in-band IPMI, plus RAPL; only on nodes whose BMC answers, e.g. c6620)",
+                   portal.ParameterType.BOOLEAN, True)
 pc.defineParameter("saveEvery", "Save logs to /proj every N minutes (0 = off; 1-59 or 60)",
                    portal.ParameterType.INTEGER, 30)
 pc.defineParameter("pushEvery", "Push results to GitHub every N hours (0 = off; 1-23)",
@@ -74,10 +85,17 @@ pc.defineParameter("repoUrl", "GreenSQL repository", portal.ParameterType.STRING
 pc.defineParameter("repoBranch", "Branch", portal.ParameterType.STRING, "main", advanced=True)
 pc.defineParameter("dataSize", "Local blockstore for PostgreSQL, repo and logs",
                    portal.ParameterType.STRING, "60GB", advanced=True)
+pc.defineParameter("nodeTypes", "Mixed node types, one per node, comma-separated (e.g. "
+                   "m510,m510,c6620); overrides Node type and Number of nodes when set",
+                   portal.ParameterType.STRING, "", advanced=True)
 params = pc.bindParameters()
 
 SIZE = re.compile(r"^[0-9]+(MB|GB)$")
-if params.nodeCount < 1:
+TYPES = [t.strip() for t in params.nodeTypes.split(",") if t.strip()] if params.nodeTypes.strip() \
+    else [params.nodeType] * params.nodeCount
+if params.nodeTypes.strip() and not all(re.match(r"^[a-z0-9][a-z0-9-]*$", t) for t in TYPES):
+    pc.reportError(portal.ParameterError("Node type names like m510,m510,c6620", ["nodeTypes"]))
+if params.nodeCount < 1 and not params.nodeTypes.strip():
     pc.reportError(portal.ParameterError("At least one node is needed", ["nodeCount"]))
 if params.pgVersion not in ("15", "16", "17", "18"):
     pc.reportError(portal.ParameterError("bootstrap_ubuntu.sh pins 15, 16, 17 and 18 only",
@@ -86,8 +104,9 @@ if not SIZE.match(params.sharedBuffers):
     pc.reportError(portal.ParameterError("Use a size like 4GB or 512MB", ["sharedBuffers"]))
 if not SIZE.match(params.effectiveCacheSize):
     pc.reportError(portal.ParameterError("Use a size like 12GB or 512MB", ["effectiveCacheSize"]))
-if params.clockKhz < 400000 or params.clockKhz > 6000000:
-    pc.reportError(portal.ParameterError("kHz, e.g. 2000000 for 2.0 GHz", ["clockKhz"]))
+CLOCK = params.clockKhz.strip()
+if CLOCK not in ("base", "max") and not (CLOCK.isdigit() and 400000 <= int(CLOCK) <= 6000000):
+    pc.reportError(portal.ParameterError("kHz (e.g. 2000000 for 2.0 GHz), base or max", ["clockKhz"]))
 if params.saveEvery < 0 or params.saveEvery > 60:
     pc.reportError(portal.ParameterError("Use 0 (off), 1-59 or 60 minutes", ["saveEvery"]))
 if params.pushEvery < 0 or params.pushEvery > 23:
@@ -112,6 +131,7 @@ CLOCK=@CLOCK@
 SAVE_CRON="@SAVECRON@"
 PUSH_CRON="@PUSHCRON@"
 RESULTS_REPO="@RESULTS@"
+POWER_LOG=@POWERLOG@
 DATA=/mydata
 mkdir -p "$DATA"
 LOG="$DATA/greensql_setup.log"
@@ -191,6 +211,10 @@ step "6. testing parameters (shared_buffers=$SB, effective_cache_size=$ECS)"
 make set-parameters PGVER="$PGV" SHARED_BUFFERS="$SB" EFFECTIVE_CACHE_SIZE="$ECS"
 
 step "7. login defaults, node identity, ownership"
+# msr: query_runner's RAPL fallback when the kernel has no powercap zones for
+# this CPU (too new for the kernel) reads the MSRs directly.
+echo msr > /etc/modules-load.d/greensql-msr.conf
+modprobe msr || echo "    !! could not load the msr module"
 printf 'export PGVER=%s\nexport SHARED_BUFFERS=%s\nexport EFFECTIVE_CACHE_SIZE=%s\nexport CLOCK_KHZ=%s\n' \
     "$PGV" "$SB" "$ECS" "$CLOCK" > /etc/profile.d/greensql.sh
 home=$(getent passwd "$RUN_USER" | cut -d: -f6 || true)
@@ -337,6 +361,39 @@ if [ -n "$RESULTS_REPO" ]; then
     /usr/local/bin/greensql-push-results >> "$DATA/greensql_push.log" 2>&1 \
         || echo "    !! first push failed (see $DATA/greensql_push.log)"
 fi
+step "10. background power log (BMC via in-band IPMI)"
+if [ "$POWER_LOG" = 1 ]; then
+    apt-get install -y -qq ipmitool || echo "    !! ipmitool did not install"
+    # The driver's kipmi0 thread busy-waits on the BMC by default, which would
+    # put CPU load (and package power) under every measurement; capped at 100 us.
+    echo "options ipmi_si kipmid_max_busy_us=100" > /etc/modprobe.d/greensql-ipmi.conf
+    modprobe ipmi_si 2>/dev/null || true
+    modprobe ipmi_devintf 2>/dev/null || true
+    if python3 "$DATA/GreenSQL/run/power_logger.py" --check; then
+        printf 'ipmi_si\nipmi_devintf\n' > /etc/modules-load.d/greensql-ipmi.conf
+        cat > /etc/systemd/system/greensql-power-log.service <<UNITEOF
+[Unit]
+Description=GreenSQL background power log (BMC DCMI + RAPL, ~1/s) into $DATA/GreenSQL/logs/power
+After=multi-user.target
+
+[Service]
+ExecStart=/usr/bin/nice -n 10 /usr/bin/python3 $DATA/GreenSQL/run/power_logger.py $DATA/GreenSQL/logs/power
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+UNITEOF
+        systemctl daemon-reload
+        systemctl enable --now greensql-power-log.service || echo "    !! the power log service did not start"
+        echo "    logging to $DATA/GreenSQL/logs/power (systemctl status greensql-power-log)"
+    else
+        echo "    no BMC power reading on this node (no in-band IPMI); no power log"
+    fi
+else
+    echo "    off (profile parameter)"
+fi
+
 date -u +%Y-%m-%dT%H:%M:%SZ > "$DONE"
 step "setup finished"
 """
@@ -348,7 +405,8 @@ script = (SETUP.replace("@PGV@", params.pgVersion)
                .replace("@TPCH@", "1" if params.tpch else "0")
                .replace("@SB@", params.sharedBuffers)
                .replace("@ECS@", params.effectiveCacheSize)
-               .replace("@CLOCK@", str(params.clockKhz))
+               .replace("@CLOCK@", CLOCK)
+               .replace("@POWERLOG@", "1" if params.powerLog else "0")
                .replace("@SAVECRON@", "" if params.saveEvery == 0 else
                         ("0 * * * *" if params.saveEvery == 60 else "*/%d * * * *" % params.saveEvery))
                .replace("@PUSHCRON@", "" if params.pushEvery == 0 else "17 */%d * * *" % params.pushEvery)
@@ -362,9 +420,9 @@ command = ("echo %s | base64 -d | gunzip > /tmp/greensql_setup.sh && sudo bash /
            % encoded)
 
 request = pc.makeRequestRSpec()
-for i in range(params.nodeCount):
+for i, ntype in enumerate(TYPES):
     node = request.RawPC("node%d" % i)          # bare metal: the whole machine
-    node.hardware_type = params.nodeType
+    node.hardware_type = ntype
     node.disk_image = IMAGE
     bs = node.Blockstore("data%d" % i, "/mydata")
     bs.size = params.dataSize

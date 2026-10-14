@@ -24,6 +24,7 @@
 #   bash clock_control.sh apply   [statefile]   # save current values, pin
 #   bash clock_control.sh restore [statefile]   # put the saved values back
 #   bash clock_control.sh status               # print the current settings
+#   bash clock_control.sh base | max            # print the base / hardware maximum, kHz
 #   bash clock_control.sh with <command...>     # apply, run, restore (also on Ctrl-C)
 #
 # ENV: CLOCK_MAX_KHZ  explicit ceiling in kHz (e.g. 2100000); unset = base freq.
@@ -168,6 +169,8 @@ restore() {
 
 case "$MODE" in
     status)  status ;;
+    base)    base_khz ;;
+    max)     hw_max_khz ;;
     apply)   apply ;;
     restore) restore ;;
     with)
@@ -179,5 +182,5 @@ case "$MODE" in
         rc=$?
         exit $rc
         ;;
-    *) echo "usage: $0 {status|apply|restore|with <command...>} [statefile]" >&2; exit 2 ;;
+    *) echo "usage: $0 {status|base|max|apply|restore|with <command...>} [statefile]" >&2; exit 2 ;;
 esac

@@ -228,10 +228,11 @@ archive/ matrix_logs/ old/ tpch-dbgen/   run artifacts, prior project, upstream 
 | **`write_runner.c`** | The **cold write** runner for mutating SQL (`queries/write/`), only against a scratch `*_write` DB. Per execution: run the file's SETUP (above `@MEASURE`), quiesce (autovacuum off on `w_*`, `CHECKPOINT`), drop caches + restart the cluster, then time only the `@MEASURE` section (RAPL, psql `\timing`, WAL bytes). No warm-up, no batching: a write cannot be repeated warm without drifting. Writes `write_cold_<db>.csv`. |
 | **`rapl.c` / `rapl.h`** | RAPL reader (package / core / gpu-uncore / dram joules): kernel powercap zones, else the Intel MSRs; every CPU package summed, per-counter wrap corrected, DRAM in its own unit (also through powercap, where the kernel uses the package unit on some models, e.g. the CloudLab m510's Broadwell-DE: rescaled, and noted in the RAPL description). Also a snapshot/delta API (the idle baseline). |
 | **`node_info.sh`** | The machine's identity (host, CPU, packages, microcode, BIOS, frequency driver, governor, turbo, kernel, RAPL zones) for `summary.txt`. |
+| **`power_logger.py`** | Background power log for servers with a BMC (Dell iDRAC etc.): the BMC's whole-node DCMI power reading about once a second plus the raw RAPL counters (package, dram, psys), timestamped, one CSV per UTC hour (`--check` = one reading). Started as the `greensql-power-log` service by the CloudLab profile; matched to runs with `compare/match_power.py`. |
 | **`run_warm_stepup.sh`** | **The main benchmark driver** (`make warm-stepup`). Builds and saves the random order (with per-entry `run_id`s and each group's predecessor), does the per-entry cold start, invokes `query_runner` on one file at a time, writes `summary.txt` with every parameter plus clock/RAPL-limit state. Handles `FIX_CLOCK`. |
 | **`run_matrix.sh`** | `warm-stepup` across `PGVERS × DBS`, unattended and resumable (`make matrix` / `make matrix-plan`). Each combination is one warm-stepup run folder under `logs/matrix/`. |
 | **`run_equivalent.sh`** | One overnight sequence over `queries/equivalent/tpch`: plan snapshots, cold runs, warm matrix. |
-| **`clock_control.sh`** | `apply` / `restore` / `status` / `with <cmd>`: performance governor and a clock ceiling (base frequency with turbo off, or `CLOCK_MAX_KHZ`, with turbo on only above base), and put it back. Used by `FIX_CLOCK=1`. |
+| **`clock_control.sh`** | `apply` / `restore` / `status` / `with <cmd>`, and `base` / `max` (print the base / top turbo frequency in kHz): performance governor and a clock ceiling (base frequency with turbo off, or `CLOCK_MAX_KHZ`, with turbo on only above base), and put it back. Used by `FIX_CLOCK=1`. |
 | **`set_test_parameters.sh`** / **`reset_all_parameters.sh`** | Apply / undo the fixed testing GUCs (`make set-parameters` / `make reset-parameters`); `SHARED_BUFFERS` / `EFFECTIVE_CACHE_SIZE` resize those two for another machine. Reset works even when the server is down. |
 | **`archive_partial.sh`** | Move a query's / a run's rows out of the live CSVs into `archive/partial/` (reversible). `make partial-archive`. |
 | **`post_to_sigless.sh`** | Start/stop markers to an external power meter (optional, `SIGLESS_ADDR`). |
@@ -273,7 +274,8 @@ Invoke as `make test-<param>` (dashes for underscores):
 
 | File | Purpose |
 |---|---|
-| **`run_compare.sh [session]`** | One ~3.3 h session: pre-flight (PostgreSQL `PGVER`, default 18, at its pinned minor, e.g. 18.6 or 16.15; StackOverflow 1 GB on that cluster; no other runner), testing GUCs, automatic upgrades paused for the run, then the fixed set as a (1,16) warm step-up with the 40–60 °C gate, the clock at `CLOCK_KHZ` (default 2.5 GHz; a CloudLab m510 runs at its 2.0 GHz base), a 5 s idle baseline and a 15 s timeout, into `logs/compare/warm_stepup/compare_<host>_<session>_<stamp>/` (`compare_<host>_pg16_<session>_...` for `PGVER=16`; the io_* testing GUCs do not exist before PG18 and are skipped); ends with a protocol check (`CHECK OK`). `ENTRIES=N` runs only the first N entries (smoke test). |
+| **`run_compare.sh [session]`** | One ~3.3 h session: pre-flight (PostgreSQL `PGVER`, default 18, at its pinned minor, e.g. 18.6 or 16.15; StackOverflow 1 GB on that cluster; no other runner), testing GUCs, automatic upgrades paused for the run, then the fixed set as a (1,16) warm step-up with the thermal gate (`T_LO`/`T_HI`, default 40–60 °C), the clock at `CLOCK_KHZ` (default 2.5 GHz, or `base` / `max`; a CloudLab m510 runs at its 2.0 GHz base), a 5 s idle baseline and a 15 s timeout, into `logs/compare/warm_stepup/compare_<host>_<session>_<stamp>/` (`compare_<host>_pg16_<session>_...` for `PGVER=16`; the io_* testing GUCs do not exist before PG18 and are skipped); ends with a protocol check (`CHECK OK`, plus the total gate waits). `ENTRIES=N` runs only the first N entries (smoke test). |
+| **`match_power.py <run> <power dir>`** | Lines the background power log (`run/power_logger.py`: BMC whole-node watts ~1/s plus RAPL counters) up with a run's batches and idle baselines by their `start_epoch` / `end_epoch`; writes `power_match_<db>.csv` (BMC readings and mean watts per window, `--lag` for the BMC's delay, and each RAPL zone incl. psys from the 1 Hz counters). |
 | **`build_compare_set.py`** | Chooses the set once from laptop 1's StackOverflow pass: 10 queries per warm 1-copy time band (0.1–6 s, five bands) + the 4 probes, 6 rounds each in a fresh shuffle → `set/manifest.csv`, `set/order.txt` (committed; every machine replays the same order). |
 | **`probes/`** | Synthetic probes: pure CPU, memory bandwidth (parallel scans), memory latency (large hash joins), in-memory sort. |
 
@@ -281,7 +283,7 @@ Invoke as `make test-<param>` (dashes for underscores):
 
 | File | Purpose |
 |---|---|
-| **`profile.py`** | The CloudLab profile (pasted into the portal): bare-metal nodes (default 1 × m510), Ubuntu 24.04, PostgreSQL at the pinned minor (default 16), the chosen databases, the testing GUCs with `shared_buffers` / `effective_cache_size` as parameters, `PGVER` / `CLOCK_KHZ` exported for `compare/run_compare.sh`, and the node's own logs copied to the project's `/proj` share and pushed to GreenSQL-RUC/CloudLab-Results on a schedule and when a `run/detach.sh` job ends. |
+| **`profile.py`** | The CloudLab profile (pasted into the portal): bare-metal nodes (default 1 × m510), Ubuntu 24.04, PostgreSQL at the pinned minor (default 16), the chosen databases, the testing GUCs with `shared_buffers` / `effective_cache_size` as parameters, `PGVER` / `CLOCK_KHZ` exported for `compare/run_compare.sh`, mixed node types (e.g. `m510,m510,c6620`), the background BMC power log where the node's iDRAC answers in-band IPMI, and the node's own logs copied to the project's `/proj` share and pushed to GreenSQL-RUC/CloudLab-Results on a schedule and when a `run/detach.sh` job ends. |
 | **`README.md`** | Every command: keys, creating the profile, starting an experiment, the first-time deploy key, the compare test, finishing, troubleshooting. |
 
 ### `queries/` — all SQL
@@ -346,9 +348,14 @@ from what it writes.
   rapl_pkg_j, rapl_core_j, rapl_gpu_j, rapl_dram_j,`
   `pkg_temp_start_c, pkg_temp_end_c, pkg_temp_mean_c, pkg_temp_max_c,
   core_temp_max_c, mhz_mean, throttle_core_delta, throttle_pkg_delta,
-  idle_before_s, preheat_s, cooldown_wait_s, pkg_watts_mean`.
+  idle_before_s, preheat_s, cooldown_wait_s, pkg_watts_mean, start_epoch,
+  end_epoch`.
   `phase` is `warmup`/`measured`; `batchnum` is the batch size N;
-  `timestamp_utc` is taken at batch **end**. The thermal block: package
+  `timestamp_utc` is taken at batch **end** (whole seconds); `start_epoch` /
+  `end_epoch` are the measured window in Unix seconds to the millisecond, for
+  matching outside time series such as the BMC power log (runs from
+  2026-10-14 on; an older CSV has no such columns, and a runner refuses to
+  append to it). The thermal block: package
   temperature at start (the key state variable) and end, its mean/max sampled
   every 200 ms during the batch, the hottest core, mean `scaling_cur_freq` over
   all CPUs and samples, throttle-counter deltas (non-zero = hard throttling),
@@ -366,7 +373,8 @@ from what it writes.
 - **`query_idle_<db>.csv`** — only with `IDLE_BASELINE_S` > 0: one row per
   query, the power drawn with nothing running for that many seconds after the
   warm-ups and just before the measured batches (`idle_s, idle_pkg_w,
-  idle_core_w, idle_gpu_w, idle_dram_w, pkg_temp_mean_c, mhz_mean`). Net energy
+  idle_core_w, idle_gpu_w, idle_dram_w, pkg_temp_mean_c, mhz_mean, start_epoch,
+  end_epoch`). Net energy
   of a batch = `rapl_*_j - idle_*_w x elapsed_sec`; this matters on servers,
   whose packages idle at tens of watts.
 - **`query_runinfo_<db>.csv`** — one row per runner invocation (so per entry in

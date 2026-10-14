@@ -18,7 +18,7 @@
 #   3. pauses automatic upgrades (stops apt-daily.timer / apt-daily-upgrade.timer
 #      if active, waits for any apt/dpkg in progress); the timers it stopped are
 #      started again on exit, so a box with them disabled stays disabled;
-#   4. make warm-stepup with the gate (T_LO=40 T_HI=60) and the clock pinned at
+#   4. make warm-stepup with the gate (T_LO, T_HI; default 40-60 C) and the clock pinned at
 #      CLOCK_KHZ, default 2.5 GHz (FIX_CLOCK=1, performance governor; restored
 #      afterwards);
 #   5. checks from the run's own CSVs that every entry ran at CLOCK_KHZ with the
@@ -40,10 +40,15 @@
 #                  sessions are PG18; another major gets "pg<N>_" in its RUNID.
 #      PG_MINOR    required minor (default: build/bootstrap_ubuntu.sh's pin for
 #                  PGVER, e.g. 18.6 or 16.15)
-#      CLOCK_KHZ   clock ceiling in kHz (default 2500000, the laptop sessions).
-#                  Above the CPU's base frequency it needs turbo, which then
-#                  wanders with load; a server is steadier at its base with
-#                  turbo off (CloudLab m510: CLOCK_KHZ=2000000).
+#      CLOCK_KHZ   clock ceiling in kHz (default 2500000, the laptop sessions),
+#                  or "base" (the CPU's base frequency, turbo off) or "max" (its
+#                  highest turbo bin, i.e. not capped). Above the base frequency
+#                  it needs turbo, which then wanders with load; a server is
+#                  steadier at its base with turbo off (CloudLab m510: 2000000).
+#      T_LO, T_HI  the thermal gate, default 40 and 60 C (the laptops). A
+#                  server that idles below T_LO pays up to 60 s of preheating
+#                  per entry: check preheat_s in a smoke test and lower T_LO
+#                  if it is large (the run's summary records the gate used).
 # The testing parameters a major lacks (io_* before PG18) are skipped by
 # make set-parameters, so a PG16 session runs without them.
 #
@@ -55,7 +60,13 @@ ORDER=compare/set/order.txt
 PGVER="${PGVER:-18}"
 PG_MINOR="${PG_MINOR:-$(sed -n "s/^ *\[$PGVER\]=\([0-9.]*\)$/\1/p" build/bootstrap_ubuntu.sh)}"
 CLOCK_KHZ="${CLOCK_KHZ:-2500000}"
-[[ "$CLOCK_KHZ" =~ ^[0-9]+$ ]] || { echo "!! CLOCK_KHZ must be in kHz, e.g. 2000000; got '$CLOCK_KHZ'" >&2; exit 1; }
+case "$CLOCK_KHZ" in
+    base|max) CLOCK_KHZ="$(bash run/clock_control.sh "$CLOCK_KHZ")" ;;
+esac
+[[ "$CLOCK_KHZ" =~ ^[0-9]+$ ]] || { echo "!! CLOCK_KHZ must be in kHz (e.g. 2000000), base or max; got '$CLOCK_KHZ'" >&2; exit 1; }
+T_LO="${T_LO:-40}"; T_HI="${T_HI:-60}"
+[[ "$T_LO" =~ ^[0-9]+$ && "$T_HI" =~ ^[0-9]+$ && "$T_LO" -lt "$T_HI" ]] \
+    || { echo "!! T_LO and T_HI must be whole degrees C with T_LO < T_HI; got $T_LO and $T_HI" >&2; exit 1; }
 DB=stackoverflow_1gb
 PW="${SUDO_PASSWORD:-a}"
 ENTRIES="${ENTRIES:-}"
@@ -95,7 +106,7 @@ if [ -n "$ENTRIES" ]; then
     ORDER="$sub"
 fi
 RUN_DIR="logs/compare/warm_stepup/$RUNID"
-echo "==> compare session $SESSION on $(hostname -s), PostgreSQL $ver, clock $((CLOCK_KHZ / 1000)) MHz: $RUNID"
+echo "==> compare session $SESSION on $(hostname -s), PostgreSQL $ver, clock $((CLOCK_KHZ / 1000)) MHz, gate $T_LO-$T_HI C: $RUNID"
 echo "    $(grep -vcE '^\s*(#|$)' "$ORDER") entries from $ORDER; $(sed -n 's/^# estimate: //p' compare/set/order.txt)"
 echo "    process group $(ps -o pgid= $$ | tr -d ' ')"
 
@@ -129,16 +140,17 @@ apt_busy && die "apt/dpkg still running after 10 min"
 make --no-print-directory warm-stepup SUDO_PASSWORD="$PW" \
     PGVER="$PGVER" DB_NAME="$DB" DIR=queries/stackoverflow/SQLStorm ORDER_FILE="$ORDER" \
     "BATCH_SIZES=1 16" WARMUP=2 RUNS=1 STATEMENT_TIMEOUT=15 WARMUP_FAIL_SKIP=1 \
-    THERMAL_EQUALISE=1 T_LO=40 T_HI=60 FIX_CLOCK=1 CLOCK_MAX_KHZ="$CLOCK_KHZ" \
+    THERMAL_EQUALISE=1 T_LO="$T_LO" T_HI="$T_HI" FIX_CLOCK=1 CLOCK_MAX_KHZ="$CLOCK_KHZ" \
     IDLE_BASELINE_S=5 LOGS_DIR=logs/compare RUNID="$RUNID"
 rc=$?
 resume_upgrades
 
 # --- 5. check the run against the protocol -------------------------------------
 echo "==> checking $RUN_DIR"
-python3 - "$RUN_DIR" "$DB" "$CLOCK_KHZ" "$PG_MINOR" <<'EOF'
+python3 - "$RUN_DIR" "$DB" "$CLOCK_KHZ" "$PG_MINOR" "$T_LO" "$T_HI" <<'EOF'
 import csv, os, sys
-d, db, khz, pg = sys.argv[1:]
+d, db, khz, pg, t_lo, t_hi = sys.argv[1:]
+t_lo, t_hi = float(t_lo), float(t_hi)
 bad = []
 info = list(csv.DictReader(open(os.path.join(d, f"query_runinfo_{db}.csv"))))
 rows = list(csv.DictReader(open(os.path.join(d, f"query_timing_{db}.csv"))))
@@ -148,8 +160,10 @@ for k, want in (("scaling_max_khz", khz), ("governor", "performance"), ("pg_vers
     if got != [want]:
         bad.append(f"{k} not always {want}")
 gate = [r for r in rows if r["phase"] == "warmup" and r["batch_index"] == "1"]
-outside = [r for r in gate if r["pkg_temp_start_c"] and not 40 <= float(r["pkg_temp_start_c"]) <= 60]
-print(f"    gate             {len(gate)} entries gated, {len(outside)} started outside 40-60 C")
+outside = [r for r in gate if r["pkg_temp_start_c"] and not t_lo <= float(r["pkg_temp_start_c"]) <= t_hi]
+waits = sorted(float(r["preheat_s"] or 0) + float(r["cooldown_wait_s"] or 0) for r in gate)
+print(f"    gate             {len(gate)} entries gated, {len(outside)} started outside {t_lo:g}-{t_hi:g} C; "
+      f"waits {sum(waits) / 60:.1f} min in total, longest {waits[-1] if waits else 0:.0f} s")
 skipped = sum(1 for r in gate if r["failed"] == "1")
 meas = [r for r in rows if r["phase"] == "measured"]
 print(f"    entries          {len(info)} run, {skipped} warm-up failures, "

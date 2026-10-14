@@ -20,9 +20,10 @@ shell on the CloudLab node), or **portal** (the CloudLab website).
 | 4 | `build/bootstrap_ubuntu.sh`: PostgreSQL at the pinned minor (16.15, 18.6, ...), held there by apt |
 | 5 | `make`, then the chosen databases (StackOverflow 1 GB and/or TPC-H SF1 + `tpch_idx`) |
 | 6 | `make set-parameters`: the laptops' testing settings, with `shared_buffers` and `effective_cache_size` from the profile |
-| 7 | exports `PGVER`, `SHARED_BUFFERS`, `EFFECTIVE_CACHE_SIZE` and `CLOCK_KHZ` in login shells, so `make` and `compare/run_compare.sh` pick them up |
+| 7 | exports `PGVER`, `SHARED_BUFFERS`, `EFFECTIVE_CACHE_SIZE` and `CLOCK_KHZ` in login shells, so `make` and `compare/run_compare.sh` pick them up; loads `msr` (the RAPL fallback for CPUs the kernel's powercap does not know) |
 | 8 | copies the logs the node makes (not the laptop logs the repository ships) to `/proj/<project>/greensql/<experiment>/<node>/` every 30 min |
 | 9 | commits the same files to [GreenSQL-RUC/CloudLab-Results](https://github.com/GreenSQL-RUC/CloudLab-Results), same folder, every 3 h |
+| 10 | if the node's BMC answers in-band IPMI (Dell iDRAC: c6620, c6525, r650, ...): starts the background power log, `greensql-power-log`, into `logs/power/` ([below](#the-power-log-c6620-and-other-dell-nodes)); the m510 has none and runs as before |
 
 Both copies also run as soon as any job started with `run/detach.sh` ends. Logs:
 `/mydata/greensql_setup.log`, `/mydata/greensql_save.log`, `/mydata/greensql_push.log`.
@@ -80,13 +81,15 @@ Experiments → **Start Experiment** → the profile → parameters:
 
 | Parameter | Default | Notes |
 |---|---|---|
-| Node type | `m510` | 8-core Xeon D-1548, 2.0 GHz base, 64 GB |
+| Node type | `m510` | 8-core Xeon D-1548, 2.0 GHz base, 64 GB; `c6620`: 28-core Xeon Gold 5512U, 2.1 GHz base, 128 GB |
 | Number of nodes | 1 | within your reservation's count |
+| Mixed node types (advanced) | empty | e.g. `m510,m510,c6620`: one node per entry (node0, node1, node2), overrides the two above |
 | PostgreSQL major | 16 | 15–18; the minor is pinned by `bootstrap_ubuntu.sh` |
 | StackOverflow / TPC-H | on / off | databases to build |
 | shared_buffers | 4GB | laptops: 4GB |
 | effective_cache_size | 12GB | laptops: 12GB; a 64 GB m510 could take ~48GB |
-| Clock ceiling (kHz) | 2000000 | exported as `CLOCK_KHZ`; m510 = its 2.0 GHz base, turbo off |
+| Clock ceiling | 2000000 | exported as `CLOCK_KHZ`: kHz, `base` (each node's own base, turbo off) or `max` (top turbo bin). 2000000 is the m510's base and below the c6620's 2.1 GHz, so with mixed nodes it gives both the same clock |
+| BMC power log | on | whole-node watts from the iDRAC about once a second, plus RAPL; only where the BMC answers |
 | Save logs every (min) | 30 | `/proj` copies; 0 = off |
 | Push results every (h) | 3 | GitHub pushes; 0 = off |
 
@@ -154,6 +157,14 @@ cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors
 test only starts an entry between 40 and 60 °C, so an idle package far outside
 that window means long waits. `performance` must be among the governors.
 
+On a c6620 expect `package-0`, `dram` and probably `psys` (the runner records
+package and DRAM; the power log also keeps `psys`), and check:
+
+```bash
+bash ~/GreenSQL/run/clock_control.sh base; bash ~/GreenSQL/run/clock_control.sh max    # 2100000 / about 3700000
+systemctl status greensql-power-log --no-pager; tail -3 ~/GreenSQL/logs/power/power_*.csv
+```
+
 ## The compare test
 
 `compare/run_compare.sh` runs the fixed 54-query StackOverflow set, 6 rounds
@@ -174,9 +185,18 @@ tail -f ~/GreenSQL/logs/compare/console_s1.log
 tail -3 ~/GreenSQL/logs/compare/console_s1.log      # a quick look later
 ```
 
-Override per run if needed: `CLOCK_KHZ=2500000`, `PGVER=18` (needs that
-cluster and its database), `T_LO`/`T_HI` are fixed at 40/60 in the script.
+Override per run if needed: `CLOCK_KHZ=2500000` (or `base`, or `max` for an
+uncapped turbo session), `PGVER=18` (needs that cluster and its database),
+`T_LO=30 T_HI=60` (the gate; default 40-60 C, the laptops). The check at the
+end prints the total gate waits: if a smoke test shows long preheats (a server
+idling below 40 C), lower `T_LO` for that machine's sessions and note it.
 Results: `logs/compare/warm_stepup/compare_node0_pg16_s1_<stamp>/`.
+
+Turbo session (top turbo bin, otherwise identical):
+
+```bash
+cd ~/GreenSQL && CLOCK_KHZ=max setsid nohup bash run/detach.sh logs/compare/console_turbo.log bash compare/run_compare.sh turbo > /dev/null 2>&1 < /dev/null &
+```
 
 Other benchmarks work the same way, e.g.
 
@@ -186,6 +206,57 @@ cd ~/GreenSQL && setsid nohup bash run/detach.sh logs/so_full/console.log \
     WARMUP=2 STATEMENT_TIMEOUT=15 WARMUP_FAIL_SKIP=1 THERMAL_EQUALISE=1 T_LO=40 T_HI=60 \
     FIX_CLOCK=1 CLOCK_MAX_KHZ=$CLOCK_KHZ > /dev/null 2>&1 < /dev/null &
 ```
+
+## The power log (c6620 and other Dell nodes)
+
+RAPL covers the CPU package and DRAM only. The node's BMC (on Dell, the
+iDRAC) reads the power-supply input of the whole node: CPU, memory, disks,
+NICs, fans and PSU losses. It answers only about once a second and averages
+inside itself, so it is not tied to batches while they run:
+`run/power_logger.py` (the `greensql-power-log` service) logs it in the
+background with exact timestamps, with the RAPL counters (package, DRAM,
+psys) next to it, one file per UTC hour in `logs/power/`. Since 2026-10-14
+every batch and idle baseline also carries its exact `start_epoch` /
+`end_epoch`, and `compare/match_power.py` lines the two up afterwards.
+
+Before the first full session on a c6620 (node):
+
+```bash
+sudo python3 ~/GreenSQL/run/power_logger.py --check          # one BMC reading + the RAPL zones
+```
+
+The BMC's delay, once per node type: idle 20 s, full load 20 s, idle 20 s,
+then see in the newest `logs/power/power_*.csv` how many seconds after the
+load started `bmc_w` jumped (the `uj_package-0` column jumps at once). That
+is `--lag` for matching (default 1.0 s).
+
+```bash
+sleep 20; stress-ng --cpu 0 --timeout 20s; sleep 20; date -u +%s     # sudo apt-get install -y stress-ng first
+```
+
+Does logging disturb the measurements? The service asks the BMC once a
+second; the kernel's IPMI thread is capped at 100 µs of busy-waiting per call.
+Check it once: a smoke test with the service stopped, one with it running, and
+compare `idle_pkg_w` in the two runs' `query_idle_*.csv`:
+
+```bash
+sudo systemctl stop greensql-power-log;  cd ~/GreenSQL && ENTRIES=6 bash compare/run_compare.sh smoke_nolog
+sudo systemctl start greensql-power-log; cd ~/GreenSQL && ENTRIES=6 bash compare/run_compare.sh smoke_log
+```
+
+Matching a finished run (any machine with the results):
+
+```bash
+python3 compare/match_power.py <run folder> <its node's logs/power folder> --lag 1.0
+```
+
+writes `power_match_<db>.csv` in the run folder: per measured batch and idle
+baseline, the runner's RAPL joules, the BMC readings inside the window
+(`bmc_n`, `bmc_mean_w`, `bmc_j`), and each RAPL zone over the same window from
+the 1 Hz counters (including `psys_j_1hz`). Batches shorter than a few
+seconds hold one BMC reading or none: use them only summed over many batches,
+never one by one. A whole session can also be compared directly: total BMC
+energy over its run against total RAPL package + DRAM energy.
 
 ## Finishing
 
@@ -200,6 +271,14 @@ Getting the results onto a laptop (any machine with access to the private repo):
 ```bash
 git clone git@github.com:GreenSQL-RUC/CloudLab-Results.git    # first time
 git -C CloudLab-Results pull                                  # later
+```
+
+Only some folders, without the rest of the files (laptop 1 has this in
+`~/CloudLab-Results`, using the deploy key):
+
+```bash
+git clone --filter=blob:none --no-checkout git@github.com:GreenSQL-RUC/CloudLab-Results.git
+cd CloudLab-Results && git sparse-checkout set --cone <experiment>/<node>-<id>/logs/compare <experiment>/<node>-<id>/logs/power && git checkout main
 ```
 
 Straight from a running node instead (desktop):
@@ -220,6 +299,7 @@ scp -r -i "$env:USERPROFILE\.ssh\id_cloudlab" <you>@<node>:/mydata/GreenSQL/logs
 | `/etc/cron.d/greensql-save-logs`, `greensql-push-results` | the schedules |
 | `/usr/local/bin/greensql-save-logs`, `greensql-push-results`, `greensql-new-logs` | the copy commands (the last lists the node-made logs) |
 | `/proj/<project>/greensql/<experiment>/<node>-<id>/` | the persistent copy |
+| `/mydata/GreenSQL/logs/power/` | the power log, one CSV per UTC hour (service `greensql-power-log`) |
 
 ## Troubleshooting
 
