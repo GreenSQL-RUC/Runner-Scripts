@@ -171,12 +171,14 @@ typedef struct {
   int cpu, msr;
   double unit;           /* joules per MSR count                            */
   double range_j;        /* the counter wraps after this many joules         */
+  double scale;          /* powercap joules multiplier (see fix_dram_unit)  */
 } rapl_zone;
 
 static rapl_zone zones[RAPL_MAX_ZONES];
 static int nzones = 0, npackages = 0;
 static char describe_buf[256] = "not initialised";
 static double snap_before[RAPL_MAX_ZONES];
+static double dram_rescaled = 1.0;   /* != 1: powercap DRAM was rescaled */
 
 /* Server Xeons count DRAM energy in a fixed 2^-16 J (15.3 uJ) unit, not the
  * package unit in MSR 0x606 (the Linux intel_rapl driver's list). */
@@ -188,6 +190,39 @@ static int dram_fixed_unit(int model) {
     default:
       return 0;
   }
+}
+
+/* Intel family-6 model from /proc/cpuinfo, or -1 (not Intel / not family 6).
+ * Quiet, unlike detect_cpu(): the powercap path also runs on AMD. */
+static int intel_model(void) {
+  FILE *f = fopen("/proc/cpuinfo", "r");
+  if (!f) return -1;
+  char line[256];
+  int intel = 0, family = -1, model = -1;
+  while (fgets(line, sizeof(line), f) && model < 0) {
+    if (!strncmp(line, "vendor_id", 9)) intel = strstr(line, "GenuineIntel") != NULL;
+    else if (!strncmp(line, "cpu family", 10)) sscanf(strchr(line, ':') + 1, "%d", &family);
+    else if (!strncmp(line, "model", 5) && line[5] != ' ') sscanf(strchr(line, ':') + 1, "%d", &model);
+  }
+  fclose(f);
+  return intel && family == 6 ? model : -1;
+}
+
+/* The kernel's powercap driver does not use the fixed 2^-16 J DRAM unit on
+ * every model that has it: on Broadwell-DE (model 86, the CloudLab m510's
+ * Xeon D-1548) it applies the package unit, so DRAM reads 4x high with a
+ * 2^-14 J package unit (perf's RAPL PMU and the SDM say 2^-16). Its
+ * max_energy_range_uj is 2^32 counts times the unit it used, so on a fixed-unit
+ * model a range other than 2^32 x 2^-16 J = 65536 J gives the correction; it
+ * is rounded to a power of two (unit ratios always are). */
+static void fix_dram_unit(rapl_zone *z, int model) {
+  const double want = 4294967296.0 * pow(0.5, 16);
+  if (!dram_fixed_unit(model) || z->range_j <= 0) return;
+  double s = pow(2.0, round(log2(want / z->range_j)));
+  if (s == 1.0) return;                       /* the kernel got it right */
+  z->scale = s;
+  z->range_j *= s;
+  dram_rescaled = s;
 }
 
 static int read_text(const char *path, char *buf, size_t len) {
@@ -213,7 +248,7 @@ static int read_zone(const rapl_zone *z, double *joules) {
   } else {
     char buf[64];
     if (read_text(z->path, buf, sizeof(buf)) != 0) return -1;
-    *joules = strtod(buf, NULL) * 1e-6;
+    *joules = strtod(buf, NULL) * 1e-6 * z->scale;
   }
   return 0;
 }
@@ -232,6 +267,7 @@ static int init_powercap(void) {
   const char *base = "/sys/class/powercap";
   DIR *d = opendir(base);
   if (!d) return -1;
+  int model = intel_model();
   struct dirent *e;
   while ((e = readdir(d)) != NULL) {
     int n, used = 0;
@@ -244,10 +280,11 @@ static int init_powercap(void) {
     if (top_domain < 0) continue;
 
     rapl_zone z; memset(&z, 0, sizeof(z));
-    z.domain = top_domain;
+    z.domain = top_domain; z.scale = 1.0;
     snprintf(z.path, sizeof(z.path), "%s/energy_uj", zdir);
     snprintf(p, sizeof(p), "%s/max_energy_range_uj", zdir);
     z.range_j = read_text(p, buf, sizeof(buf)) == 0 ? strtod(buf, NULL) * 1e-6 : 0;
+    if (top_domain == D_DRAM) fix_dram_unit(&z, model);
     if (add_zone(&z) != 0) { closedir(d); return -1; }   /* unreadable: not root */
     if (top_domain == D_PKG) npackages++;
 
@@ -260,10 +297,11 @@ static int init_powercap(void) {
               : !strcmp(name, "dram") ? D_DRAM : -1;
       if (dom < 0) continue;
       memset(&z, 0, sizeof(z));
-      z.domain = dom;
+      z.domain = dom; z.scale = 1.0;
       snprintf(z.path, sizeof(z.path), "%s/energy_uj", sdir);
       snprintf(p, sizeof(p), "%s/max_energy_range_uj", sdir);
       z.range_j = read_text(p, buf, sizeof(buf)) == 0 ? strtod(buf, NULL) * 1e-6 : 0;
+      if (dom == D_DRAM) fix_dram_unit(&z, model);
       add_zone(&z);
     }
   }
@@ -319,6 +357,7 @@ int rapl_init(int core)
 {
   (void)core;   /* every package is read now; kept for the old call sites */
   nzones = npackages = 0;
+  dram_rescaled = 1.0;
   const char *backend = "powercap";
   if (init_powercap() != 0) {
     nzones = npackages = 0;
@@ -333,10 +372,13 @@ int rapl_init(int core)
 
   int present[4] = {0, 0, 0, 0};
   for (int i = 0; i < nzones; i++) present[zones[i].domain] = 1;
-  snprintf(describe_buf, sizeof(describe_buf), "%s, %d package%s, domains:%s%s%s%s",
+  char fix[64] = "";
+  if (dram_rescaled != 1.0)
+    snprintf(fix, sizeof(fix), " (dram x%g: kernel used the package unit)", dram_rescaled);
+  snprintf(describe_buf, sizeof(describe_buf), "%s, %d package%s, domains:%s%s%s%s%s",
            backend, npackages, npackages == 1 ? "" : "s",
            present[D_PKG] ? " pkg" : "", present[D_CORE] ? " core" : "",
-           present[D_GPU] ? " gpu/uncore" : "", present[D_DRAM] ? " dram" : "");
+           present[D_GPU] ? " gpu/uncore" : "", present[D_DRAM] ? " dram" : "", fix);
   return 0;
 }
 
