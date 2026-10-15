@@ -12,7 +12,9 @@
 #   work_mem                         = 64MB
 #   effective_cache_size             = 12GB   (EFFECTIVE_CACHE_SIZE overrides)
 #   effective_io_concurrency         = 64
-#   max_parallel_workers_per_gather  = 4
+#   max_parallel_workers_per_gather  = 4      (MAX_PARALLEL_WORKERS_PER_GATHER overrides)
+#   max_parallel_workers             = PostgreSQL's default 8 (MAX_PARALLEL_WORKERS overrides;
+#   max_worker_processes             = default 8   with it set, MAX_PARALLEL_WORKERS + 8, restart)
 #   io_combine_limit                 = 1MB    (PG18+; needs io_max_combine_limit)
 #   io_max_combine_limit             = 1MB    (PG18+, restart)
 #
@@ -23,6 +25,17 @@
 # SHARED_BUFFERS / EFFECTIVE_CACHE_SIZE (e.g. 16GB, 512MB) size those two for a
 # machine with more or less memory than the 16 GB laptops; unset = the values
 # above. A CloudLab node from cloudlab/profile.py exports them in login shells.
+#
+# Parallel query: max_parallel_workers_per_gather is what one Gather may ask
+# for, but every running query draws its workers from ONE pool of
+# max_parallel_workers (inside max_worker_processes), 8 by default - so 16
+# concurrent copies already share 8 workers, and raising the per-gather value
+# alone changes little. MAX_PARALLEL_WORKERS raises the pool (and
+# max_worker_processes to it + 8, room for the other background workers); unset,
+# both are RESET to the default, so a run without it is always at 8/8 whatever
+# an earlier run set. The planner also sizes workers by table size (one more
+# each time a table triples past min_parallel_table_scan_size, 8MB): on the
+# 1.2 GB StackOverflow DB that is about 4-5 workers per scan at most.
 #
 # Run as root (ALTER SYSTEM + pg_ctlcluster need root):
 #   sudo bash set_test_parameters.sh            # PG18
@@ -39,15 +52,24 @@ set -uo pipefail
 # values are single-quoted in the ALTER SYSTEM; PostgreSQL accepts quoted ints.
 SHARED_BUFFERS="${SHARED_BUFFERS:-4GB}"
 EFFECTIVE_CACHE_SIZE="${EFFECTIVE_CACHE_SIZE:-12GB}"
+MPWG="${MAX_PARALLEL_WORKERS_PER_GATHER:-4}"
+MPW="${MAX_PARALLEL_WORKERS:-}"
 for v in "$SHARED_BUFFERS" "$EFFECTIVE_CACHE_SIZE"; do
     [[ "$v" =~ ^[0-9]+(MB|GB)$ ]] || { echo "!! sizes must look like 512MB or 4GB, got '$v'; aborting" >&2; exit 1; }
 done
+[[ "$MPWG" =~ ^[0-9]+$ ]] || { echo "!! MAX_PARALLEL_WORKERS_PER_GATHER must be a whole number, got '$MPWG'; aborting" >&2; exit 1; }
+[[ -z "$MPW" || "$MPW" =~ ^[0-9]+$ ]] || { echo "!! MAX_PARALLEL_WORKERS must be a whole number, got '$MPW'; aborting" >&2; exit 1; }
+[ "$MPWG" -le "${MPW:-8}" ] \
+    || echo "   note: max_parallel_workers_per_gather=$MPWG is above the pool of ${MPW:-8} (MAX_PARALLEL_WORKERS), so PostgreSQL caps it" >&2
+# DEFAULT = ALTER SYSTEM RESET (back to PostgreSQL's default).
 PAIRS=(
     "shared_buffers=$SHARED_BUFFERS"
     "work_mem=64MB"
     "effective_cache_size=$EFFECTIVE_CACHE_SIZE"
     "effective_io_concurrency=64"
-    "max_parallel_workers_per_gather=4"
+    "max_worker_processes=$([ -n "$MPW" ] && echo $((MPW + 8)) || echo DEFAULT)"
+    "max_parallel_workers=${MPW:-DEFAULT}"
+    "max_parallel_workers_per_gather=$MPWG"
     "io_max_combine_limit=1MB"
     "io_combine_limit=1MB"
 )
@@ -80,7 +102,11 @@ for ver in $VERS; do
             echo "   -- $name not on PG$ver, skipping"
             continue
         fi
-        pgq "$port" "ALTER SYSTEM SET $name = '$value';" >/dev/null
+        if [ "$value" = DEFAULT ]; then
+            pgq "$port" "ALTER SYSTEM RESET $name;" >/dev/null
+        else
+            pgq "$port" "ALTER SYSTEM SET $name = '$value';" >/dev/null
+        fi
     done
 
     if pg_ctlcluster "$ver" main restart 2>/dev/null || pg_ctlcluster "$ver" main start 2>/dev/null; then

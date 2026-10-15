@@ -191,7 +191,10 @@ tail -3 ~/GreenSQL/logs/compare/console_s1.log      # a quick look later
 
 Override per run if needed: `CLOCK_KHZ=2500000` (or `base`, or `max` for an
 uncapped turbo session), `PGVER=18` (needs that cluster and its database),
-`T_LO=30 T_HI=60` (the gate; default 40-60 C, the laptops). The check at the
+`T_LO=30 T_HI=60` (the gate; default 40-60 C, the laptops), and the testing
+GUCs `SHARED_BUFFERS`, `EFFECTIVE_CACHE_SIZE`, `MAX_PARALLEL_WORKERS_PER_GATHER`
+(default 4) and `MAX_PARALLEL_WORKERS` (the worker pool every query shares,
+default 8; without raising it a higher per-gather value changes little). The check at the
 end prints the total gate waits: if a smoke test shows long preheats (a server
 idling below 40 C), lower `T_LO` for that machine's sessions and note it.
 Results: `logs/compare/warm_stepup/compare_node0_pg16_s1_<stamp>/`.

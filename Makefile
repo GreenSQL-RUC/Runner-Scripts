@@ -136,6 +136,7 @@ SHARED_BUFFERS                  ?= 4GB
 EFFECTIVE_CACHE_SIZE            ?= 12GB
 WORK_MEM                        ?= 64MB
 MAX_PARALLEL_WORKERS_PER_GATHER ?= 4
+MAX_PARALLEL_WORKERS            ?=
 # Versions set-parameters / reset-parameters act on (default: PGVER).
 SET_VERS ?= $(PGVER)
 
@@ -338,6 +339,7 @@ index-drop-db:
 set-parameters:
 	@$(SUDO_PRIME) || { echo "sudo authentication failed"; exit 1; }; \
 	  sudo -n env SHARED_BUFFERS="$(SHARED_BUFFERS)" EFFECTIVE_CACHE_SIZE="$(EFFECTIVE_CACHE_SIZE)" \
+	    MAX_PARALLEL_WORKERS_PER_GATHER="$(MAX_PARALLEL_WORKERS_PER_GATHER)" MAX_PARALLEL_WORKERS="$(MAX_PARALLEL_WORKERS)" \
 	    bash $(RUN)/set_test_parameters.sh $(SET_VERS)
 
 reset-parameters:
