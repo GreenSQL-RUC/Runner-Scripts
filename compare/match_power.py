@@ -12,7 +12,8 @@ the same node. Both are only read. Writes <run_dir>/power_match_<db>.csv (or
 match), one row per measured batch and per idle baseline:
 
   kind, query, phase, batch_index, batchnum, start_epoch, end_epoch, elapsed_sec,
-  rapl_pkg_j, rapl_dram_j      from the run (the runner's own, exact window)
+  rapl_pkg_j, rapl_dram_j,     from the run (the runner's own, exact window;
+  rapl_psys_j                  psys blank before 2026-10-15 or without psys)
   bmc_n                        BMC readings inside the window (shifted by --lag)
   bmc_mean_w, bmc_j            their mean, and mean x elapsed_sec
   bmc_nearest_w                the reading nearest the window's middle (for
@@ -105,16 +106,18 @@ def main():
             continue
         windows.append(dict(kind="batch", query=r["query"], phase=r["phase"], batch_index=r["batch_index"],
                             batchnum=r["batchnum"], start_epoch=r.get("start_epoch", ""), end_epoch=r.get("end_epoch", ""),
-                            elapsed_sec=r["elapsed_sec"], rapl_pkg_j=r["rapl_pkg_j"], rapl_dram_j=r["rapl_dram_j"]))
+                            elapsed_sec=r["elapsed_sec"], rapl_pkg_j=r["rapl_pkg_j"], rapl_dram_j=r["rapl_dram_j"],
+                            rapl_psys_j=r.get("rapl_psys_j", "")))
     idle = os.path.join(a.run_dir, "query_idle_%s.csv" % db)
     if os.path.exists(idle):
         for r in csv.DictReader(open(idle)):
             el = float(r["idle_s"])
             pkg = "%.3f" % (float(r["idle_pkg_w"]) * el) if r["idle_pkg_w"] else ""
             dram = "%.3f" % (float(r["idle_dram_w"]) * el) if r["idle_dram_w"] else ""
+            psys = "%.3f" % (float(r["idle_psys_w"]) * el) if r.get("idle_psys_w") else ""
             windows.append(dict(kind="idle", query=r["query"], phase="idle", batch_index="", batchnum="",
                                 start_epoch=r.get("start_epoch", ""), end_epoch=r.get("end_epoch", ""),
-                                elapsed_sec=r["idle_s"], rapl_pkg_j=pkg, rapl_dram_j=dram))
+                                elapsed_sec=r["idle_s"], rapl_pkg_j=pkg, rapl_dram_j=dram, rapl_psys_j=psys))
     if not any(w["start_epoch"] for w in windows):
         sys.exit("%s has no start_epoch/end_epoch columns (made by an older query_runner); "
                  "it cannot be matched" % timing[0])

@@ -226,7 +226,7 @@ archive/ matrix_logs/ old/ tpch-dbgen/   run artifacts, prior project, upstream 
 | **`plan_builder.c`** | Saves each query's `EXPLAIN ANALYZE` plan to `plans/<db>/…`. `APPEND=1` appends a dated snapshot section instead of replacing, and reports whether the plan **shape** changed vs the previous snapshot (consistency testing). |
 | **`output_runner.c`** | Saves each query's result rows to `outputs/<db>/…` (strips a leading `EXPLAIN`). Correctness companion to `plan_builder`. |
 | **`write_runner.c`** | The **cold write** runner for mutating SQL (`queries/write/`), only against a scratch `*_write` DB. Per execution: run the file's SETUP (above `@MEASURE`), quiesce (autovacuum off on `w_*`, `CHECKPOINT`), drop caches + restart the cluster, then time only the `@MEASURE` section (RAPL, psql `\timing`, WAL bytes). No warm-up, no batching: a write cannot be repeated warm without drifting. Writes `write_cold_<db>.csv`. |
-| **`rapl.c` / `rapl.h`** | RAPL reader (package / core / gpu-uncore / dram joules): kernel powercap zones, else the Intel MSRs; every CPU package summed, per-counter wrap corrected, DRAM in its own unit (also through powercap, where the kernel uses the package unit on some models, e.g. the CloudLab m510's Broadwell-DE: rescaled, and noted in the RAPL description). Also a snapshot/delta API (the idle baseline). |
+| **`rapl.c` / `rapl.h`** | RAPL reader (package / core / gpu-uncore / dram joules): kernel powercap zones, else the Intel MSRs; every CPU package summed, per-counter wrap corrected, DRAM in its own unit (also through powercap, where the kernel uses the package unit on some models, e.g. the CloudLab m510's Broadwell-DE: rescaled, and noted in the RAPL description). Also a snapshot/delta API (the idle baseline), and psys (platform energy) read on its own, outside the four domains. |
 | **`node_info.sh`** | The machine's identity (host, CPU, packages, microcode, BIOS, frequency driver, governor, turbo, kernel, RAPL zones) for `summary.txt`. |
 | **`power_logger.py`** | Background power log for servers with a BMC (Dell iDRAC etc.): the BMC's whole-node DCMI power reading about once a second plus the raw RAPL counters (package, dram, psys), timestamped, one CSV per UTC hour (`--check` = one reading). Started as the `greensql-power-log` service by the CloudLab profile; matched to runs with `compare/match_power.py`. |
 | **`run_warm_stepup.sh`** | **The main benchmark driver** (`make warm-stepup`). Builds and saves the random order (with per-entry `run_id`s and each group's predecessor), does the per-entry cold start, invokes `query_runner` on one file at a time, writes `summary.txt` with every parameter plus clock/RAPL-limit state. Handles `FIX_CLOCK`. |
@@ -349,13 +349,17 @@ from what it writes.
   `pkg_temp_start_c, pkg_temp_end_c, pkg_temp_mean_c, pkg_temp_max_c,
   core_temp_max_c, mhz_mean, throttle_core_delta, throttle_pkg_delta,
   idle_before_s, preheat_s, cooldown_wait_s, pkg_watts_mean, start_epoch,
-  end_epoch`.
+  end_epoch, rapl_psys_j`.
   `phase` is `warmup`/`measured`; `batchnum` is the batch size N;
   `timestamp_utc` is taken at batch **end** (whole seconds); `start_epoch` /
   `end_epoch` are the measured window in Unix seconds to the millisecond, for
   matching outside time series such as the BMC power log (runs from
   2026-10-14 on; an older CSV has no such columns, and a runner refuses to
-  append to it). The thermal block: package
+  append to it). `rapl_psys_j` (from 2026-10-15) is the platform energy the
+  board reports over the batch (psys; blank where there is none): on the
+  CloudLab c6620 it reads well above package + DRAM (board, regulators and
+  more, as Dell wires it), on the laptops it is the laptop platform. It counts
+  in whole joules there, so short batches carry ±1 J. The thermal block: package
   temperature at start (the key state variable) and end, its mean/max sampled
   every 200 ms during the batch, the hottest core, mean `scaling_cur_freq` over
   all CPUs and samples, throttle-counter deltas (non-zero = hard throttling),
@@ -374,7 +378,7 @@ from what it writes.
   query, the power drawn with nothing running for that many seconds after the
   warm-ups and just before the measured batches (`idle_s, idle_pkg_w,
   idle_core_w, idle_gpu_w, idle_dram_w, pkg_temp_mean_c, mhz_mean, start_epoch,
-  end_epoch`). Net energy
+  end_epoch, idle_psys_w`). Net energy
   of a batch = `rapl_*_j - idle_*_w x elapsed_sec`; this matters on servers,
   whose packages idle at tens of watts.
 - **`query_runinfo_<db>.csv`** — one row per runner invocation (so per entry in

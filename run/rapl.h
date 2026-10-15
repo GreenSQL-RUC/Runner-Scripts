@@ -75,3 +75,12 @@ void rapl_delta(const double a[RAPL_MAX_ZONES], const double b[RAPL_MAX_ZONES],
                 double out[4], int present[4]);
 int rapl_packages(void);
 const char *rapl_describe(void);
+
+/* psys: the platform energy the board reports (Skylake+ laptops, Sapphire
+ * Rapids+ servers; on the CloudLab c6620 well above package + dram, so the
+ * board, its regulators and more). What it covers is the board maker's
+ * choice, and it often counts in whole joules. Kept apart from the four
+ * domains above. rapl_psys_read gives the cumulative counter in joules (0, or
+ * -1 when this machine has no psys zone); rapl_psys_delta corrects a wrap. */
+int rapl_psys_read(double *joules);
+double rapl_psys_delta(double before, double after);

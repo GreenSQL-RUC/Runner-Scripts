@@ -157,8 +157,12 @@ cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors
 test only starts an entry between 40 and 60 °C, so an idle package far outside
 that window means long waits. `performance` must be among the governors.
 
-On a c6620 expect `package-0`, `dram` and probably `psys` (the runner records
-package and DRAM; the power log also keeps `psys`), and check:
+On a c6620 expect `package-0`, `dram` and `psys`. The runner records all
+three (`rapl_psys_j` per batch, `idle_psys_w` per idle baseline). On er063,
+psys read 68 W at idle (package 34.9 + DRAM 2.7 W) and 249 W with all 28
+cores busy (165.8 + 6.9 W): the board and its regulators on top of the CPU and
+memory, as Dell wires it (not the wall: PSU losses and the chassis fans are
+probably outside), in whole joules. Check:
 
 ```bash
 bash ~/GreenSQL/run/clock_control.sh base; bash ~/GreenSQL/run/clock_control.sh max    # 2100000 / about 3700000
@@ -208,6 +212,13 @@ cd ~/GreenSQL && setsid nohup bash run/detach.sh logs/so_full/console.log \
 ```
 
 ## The power log (c6620 and other Dell nodes)
+
+On the c6620 at Utah the iDRAC is NOT reachable from the OS (no IPMI device in
+SMBIOS, `ipmi_si` finds no interface), so setup skips this service there;
+psys in the run CSVs is the platform figure instead. The rest of this section
+applies to a node whose BMC answers. The logger can still be started by hand
+for 1 Hz RAPL + psys series (BMC columns blank):
+`sudo systemd-run --unit greensql-power-log nice -n 10 python3 /mydata/GreenSQL/run/power_logger.py /mydata/GreenSQL/logs/power`.
 
 RAPL covers the CPU package and DRAM only. The node's BMC (on Dell, the
 iDRAC) reads the power-supply input of the whole node: CPU, memory, disks,

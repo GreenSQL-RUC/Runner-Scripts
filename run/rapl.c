@@ -179,6 +179,8 @@ static int nzones = 0, npackages = 0;
 static char describe_buf[256] = "not initialised";
 static double snap_before[RAPL_MAX_ZONES];
 static double dram_rescaled = 1.0;   /* != 1: powercap DRAM was rescaled */
+static rapl_zone psys_zone;          /* platform energy, outside the domains */
+static int has_psys = 0;
 
 /* Server Xeons count DRAM energy in a fixed 2^-16 J (15.3 uJ) unit, not the
  * package unit in MSR 0x606 (the Linux intel_rapl driver's list). */
@@ -276,6 +278,16 @@ static int init_powercap(void) {
     snprintf(zdir, sizeof(zdir), "%s/intel-rapl:%d", base, n);
     snprintf(p, sizeof(p), "%s/name", zdir);
     if (read_text(p, name, sizeof(name)) != 0) continue;
+    if (!strcmp(name, "psys") && !has_psys) {
+      rapl_zone z; memset(&z, 0, sizeof(z));
+      z.scale = 1.0;
+      snprintf(z.path, sizeof(z.path), "%s/energy_uj", zdir);
+      snprintf(p, sizeof(p), "%s/max_energy_range_uj", zdir);
+      z.range_j = read_text(p, buf, sizeof(buf)) == 0 ? strtod(buf, NULL) * 1e-6 : 0;
+      double j;
+      if (read_zone(&z, &j) == 0) { psys_zone = z; has_psys = 1; }
+      continue;
+    }
     int top_domain = !strncmp(name, "package-", 8) ? D_PKG : !strcmp(name, "dram") ? D_DRAM : -1;
     if (top_domain < 0) continue;
 
@@ -358,9 +370,11 @@ int rapl_init(int core)
   (void)core;   /* every package is read now; kept for the old call sites */
   nzones = npackages = 0;
   dram_rescaled = 1.0;
+  has_psys = 0;
   const char *backend = "powercap";
   if (init_powercap() != 0) {
     nzones = npackages = 0;
+    has_psys = 0;
     backend = "msr";
     cpu_model = detect_cpu();
     if (cpu_model < 0) {
@@ -375,14 +389,27 @@ int rapl_init(int core)
   char fix[64] = "";
   if (dram_rescaled != 1.0)
     snprintf(fix, sizeof(fix), " (dram x%g: kernel used the package unit)", dram_rescaled);
-  snprintf(describe_buf, sizeof(describe_buf), "%s, %d package%s, domains:%s%s%s%s%s",
+  snprintf(describe_buf, sizeof(describe_buf), "%s, %d package%s, domains:%s%s%s%s%s%s",
            backend, npackages, npackages == 1 ? "" : "s",
            present[D_PKG] ? " pkg" : "", present[D_CORE] ? " core" : "",
-           present[D_GPU] ? " gpu/uncore" : "", present[D_DRAM] ? " dram" : "", fix);
+           present[D_GPU] ? " gpu/uncore" : "", present[D_DRAM] ? " dram" : "",
+           has_psys ? " (+ psys)" : "", fix);
   return 0;
 }
 
 int rapl_packages(void) { return npackages; }
+
+int rapl_psys_read(double *joules) {
+  if (!has_psys) return -1;
+  return read_zone(&psys_zone, joules);
+}
+
+double rapl_psys_delta(double before, double after) {
+  if (isnan(before) || isnan(after)) return NAN;
+  double d = after - before;
+  if (d < 0 && psys_zone.range_j > 0) d += psys_zone.range_j;
+  return d;
+}
 const char *rapl_describe(void) { return describe_buf; }
 
 void rapl_snapshot(double raw[RAPL_MAX_ZONES]) {
