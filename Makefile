@@ -137,6 +137,8 @@ EFFECTIVE_CACHE_SIZE            ?= 12GB
 WORK_MEM                        ?= 64MB
 MAX_PARALLEL_WORKERS_PER_GATHER ?= 4
 MAX_PARALLEL_WORKERS            ?=
+MIN_PARALLEL_TABLE_SCAN_SIZE    ?=
+MIN_PARALLEL_INDEX_SCAN_SIZE    ?=
 # Versions set-parameters / reset-parameters act on (default: PGVER).
 SET_VERS ?= $(PGVER)
 
@@ -340,6 +342,7 @@ set-parameters:
 	@$(SUDO_PRIME) || { echo "sudo authentication failed"; exit 1; }; \
 	  sudo -n env SHARED_BUFFERS="$(SHARED_BUFFERS)" EFFECTIVE_CACHE_SIZE="$(EFFECTIVE_CACHE_SIZE)" \
 	    MAX_PARALLEL_WORKERS_PER_GATHER="$(MAX_PARALLEL_WORKERS_PER_GATHER)" MAX_PARALLEL_WORKERS="$(MAX_PARALLEL_WORKERS)" \
+	    MIN_PARALLEL_TABLE_SCAN_SIZE="$(MIN_PARALLEL_TABLE_SCAN_SIZE)" MIN_PARALLEL_INDEX_SCAN_SIZE="$(MIN_PARALLEL_INDEX_SCAN_SIZE)" \
 	    bash $(RUN)/set_test_parameters.sh $(SET_VERS)
 
 reset-parameters:

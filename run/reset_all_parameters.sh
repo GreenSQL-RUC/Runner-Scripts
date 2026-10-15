@@ -11,7 +11,9 @@
 #
 # The parameters reset (all set by test_shared_buffer.sh / test_work_mem.sh):
 #   shared_buffers  work_mem  effective_cache_size  max_parallel_workers_per_gather
-#   max_parallel_workers  max_worker_processes (MAX_PARALLEL_WORKERS in set_test_parameters.sh)
+#   max_parallel_workers  max_worker_processes  min_parallel_table_scan_size
+#   min_parallel_index_scan_size (MAX_PARALLEL_WORKERS / MIN_PARALLEL_* in
+#   set_test_parameters.sh)
 #
 # The per-knob sweeps (test_hash_mem_multiplier.sh, test_io_method.sh, ...) also
 # set a GUC outside that core four; they pass it via EXTRA_PARAMS so it is reset
@@ -27,7 +29,7 @@ set -uo pipefail
 
 # The GUCs to strip from postgresql.auto.conf: the core four always, plus any the
 # caller names in EXTRA_PARAMS (space-separated) for the per-knob sweeps.
-PARAMS=(shared_buffers work_mem effective_cache_size max_parallel_workers_per_gather max_parallel_workers max_worker_processes)
+PARAMS=(shared_buffers work_mem effective_cache_size max_parallel_workers_per_gather max_parallel_workers max_worker_processes min_parallel_table_scan_size min_parallel_index_scan_size)
 # shellcheck disable=SC2206  # word-splitting EXTRA_PARAMS into GUC names is intended
 PARAMS+=( ${EXTRA_PARAMS:-} )
 

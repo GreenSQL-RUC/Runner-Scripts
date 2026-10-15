@@ -193,8 +193,13 @@ Override per run if needed: `CLOCK_KHZ=2500000` (or `base`, or `max` for an
 uncapped turbo session), `PGVER=18` (needs that cluster and its database),
 `T_LO=30 T_HI=60` (the gate; default 40-60 C, the laptops), and the testing
 GUCs `SHARED_BUFFERS`, `EFFECTIVE_CACHE_SIZE`, `MAX_PARALLEL_WORKERS_PER_GATHER`
-(default 4) and `MAX_PARALLEL_WORKERS` (the worker pool every query shares,
-default 8; without raising it a higher per-gather value changes little). The check at the
+(default 4), `MIN_PARALLEL_TABLE_SCAN_SIZE` (default 8MB),
+`MIN_PARALLEL_INDEX_SCAN_SIZE` (default 512kB) and `MAX_PARALLEL_WORKERS` (the
+shared pool, default 8). On stackoverflow_1gb the planner's size rule already
+stops at 4 workers, so a higher per-gather value needs the two thresholds
+lowered to change anything (1MB / 64kB: up to 6 on posthistory and posts); the pool only matters above 8, since a batch runs its copies one
+after another. `workers_launched` in `query_samples_*.csv` shows what each
+copy got. The check at the
 end prints the total gate waits: if a smoke test shows long preheats (a server
 idling below 40 C), lower `T_LO` for that machine's sessions and note it.
 Results: `logs/compare/warm_stepup/compare_node0_pg16_s1_<stamp>/`.

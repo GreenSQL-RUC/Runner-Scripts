@@ -46,11 +46,12 @@
 #                  it needs turbo, which then wanders with load; a server is
 #                  steadier at its base with turbo off (CloudLab m510: 2000000).
 #      SHARED_BUFFERS, EFFECTIVE_CACHE_SIZE, MAX_PARALLEL_WORKERS_PER_GATHER,
-#      MAX_PARALLEL_WORKERS
-#                  the testing GUCs for this session (defaults 4GB, 12GB, 4 and
-#                  PostgreSQL's 8; see run/set_test_parameters.sh). The console
-#                  log lists the values applied ("PG16 now: ..."). Name such a
-#                  session after them, e.g. s1_sb16g_w16.
+#      MAX_PARALLEL_WORKERS, MIN_PARALLEL_TABLE_SCAN_SIZE, MIN_PARALLEL_INDEX_SCAN_SIZE
+#                  the testing GUCs for this session (defaults 4GB, 12GB, 4,
+#                  PostgreSQL's 8, 8MB and 512kB; see run/set_test_parameters.sh for
+#                  which of them actually limits the workers a query gets). The
+#                  console log lists the values applied ("PG16 now: ...").
+#                  Name such a session after them, e.g. s1_g8_scan1mb.
 #      T_LO, T_HI  the thermal gate, default 40 and 60 C (the laptops). A
 #                  server that idles below T_LO pays up to 60 s of preheating
 #                  per entry: check preheat_s in a smoke test and lower T_LO

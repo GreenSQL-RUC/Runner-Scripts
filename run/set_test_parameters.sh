@@ -15,6 +15,8 @@
 #   max_parallel_workers_per_gather  = 4      (MAX_PARALLEL_WORKERS_PER_GATHER overrides)
 #   max_parallel_workers             = PostgreSQL's default 8 (MAX_PARALLEL_WORKERS overrides;
 #   max_worker_processes             = default 8   with it set, MAX_PARALLEL_WORKERS + 8, restart)
+#   min_parallel_table_scan_size     = PostgreSQL's default 8MB (MIN_PARALLEL_TABLE_SCAN_SIZE overrides)
+#   min_parallel_index_scan_size     = PostgreSQL's default 512kB (MIN_PARALLEL_INDEX_SCAN_SIZE overrides)
 #   io_combine_limit                 = 1MB    (PG18+; needs io_max_combine_limit)
 #   io_max_combine_limit             = 1MB    (PG18+, restart)
 #
@@ -26,16 +28,25 @@
 # machine with more or less memory than the 16 GB laptops; unset = the values
 # above. A CloudLab node from cloudlab/profile.py exports them in login shells.
 #
-# Parallel query: max_parallel_workers_per_gather is what one Gather may ask
-# for, but every running query draws its workers from ONE pool of
-# max_parallel_workers (inside max_worker_processes), 8 by default - so 16
-# concurrent copies already share 8 workers, and raising the per-gather value
-# alone changes little. MAX_PARALLEL_WORKERS raises the pool (and
-# max_worker_processes to it + 8, room for the other background workers); unset,
-# both are RESET to the default, so a run without it is always at 8/8 whatever
-# an earlier run set. The planner also sizes workers by table size (one more
-# each time a table triples past min_parallel_table_scan_size, 8MB): on the
-# 1.2 GB StackOverflow DB that is about 4-5 workers per scan at most.
+# Parallel query: how many workers a query gets is the SMALLEST of
+#   - max_parallel_workers_per_gather (here 4);
+#   - the planner's size rule: a scan gets 1 worker once its table reaches
+#     min_parallel_table_scan_size (8MB), or its index min_parallel_index_scan_size
+#     (512kB) for a parallel index scan, and one more each time it triples. On
+#     stackoverflow_1gb that is 4 for posthistory (493 MB) and posts (246 MB),
+#     3 for comments, 2 for users/votes/badges, and 4 for posthistory_pkey
+#     (18 MB) - so per-gather above 4 changes nothing there unless the two
+#     thresholds are lowered too (checked on PG18: 8 per gather with 1MB / 64kB
+#     gives posthistory 6 workers, by seq scan and by index-only scan alike);
+#   - what is free in the pool, max_parallel_workers (8) inside
+#     max_worker_processes (8), shared by every query running at that moment.
+#     A warm step-up batch runs its N copies one after another in one psql
+#     session, so a single query at a time: the pool only binds if per-gather
+#     goes above 8. MAX_PARALLEL_WORKERS raises it (and max_worker_processes to
+#     it + 8, room for the other background workers).
+# Unset, MAX_PARALLEL_WORKERS and the two MIN_PARALLEL_* are RESET to the
+# defaults, so a run without them is always at 8 / 8MB / 512kB whatever an
+# earlier run set. workers_launched in query_samples_<db>.csv shows what each copy got.
 #
 # Run as root (ALTER SYSTEM + pg_ctlcluster need root):
 #   sudo bash set_test_parameters.sh            # PG18
@@ -54,11 +65,16 @@ SHARED_BUFFERS="${SHARED_BUFFERS:-4GB}"
 EFFECTIVE_CACHE_SIZE="${EFFECTIVE_CACHE_SIZE:-12GB}"
 MPWG="${MAX_PARALLEL_WORKERS_PER_GATHER:-4}"
 MPW="${MAX_PARALLEL_WORKERS:-}"
+MPTSS="${MIN_PARALLEL_TABLE_SCAN_SIZE:-}"
+MPISS="${MIN_PARALLEL_INDEX_SCAN_SIZE:-}"
 for v in "$SHARED_BUFFERS" "$EFFECTIVE_CACHE_SIZE"; do
     [[ "$v" =~ ^[0-9]+(MB|GB)$ ]] || { echo "!! sizes must look like 512MB or 4GB, got '$v'; aborting" >&2; exit 1; }
 done
 [[ "$MPWG" =~ ^[0-9]+$ ]] || { echo "!! MAX_PARALLEL_WORKERS_PER_GATHER must be a whole number, got '$MPWG'; aborting" >&2; exit 1; }
 [[ -z "$MPW" || "$MPW" =~ ^[0-9]+$ ]] || { echo "!! MAX_PARALLEL_WORKERS must be a whole number, got '$MPW'; aborting" >&2; exit 1; }
+for v in "$MPTSS" "$MPISS"; do
+    [[ -z "$v" || "$v" =~ ^[0-9]+(kB|MB|GB)?$ ]] || { echo "!! MIN_PARALLEL_*_SCAN_SIZE must look like 0, 64kB or 1MB, got '$v'; aborting" >&2; exit 1; }
+done
 [ "$MPWG" -le "${MPW:-8}" ] \
     || echo "   note: max_parallel_workers_per_gather=$MPWG is above the pool of ${MPW:-8} (MAX_PARALLEL_WORKERS), so PostgreSQL caps it" >&2
 # DEFAULT = ALTER SYSTEM RESET (back to PostgreSQL's default).
@@ -70,6 +86,8 @@ PAIRS=(
     "max_worker_processes=$([ -n "$MPW" ] && echo $((MPW + 8)) || echo DEFAULT)"
     "max_parallel_workers=${MPW:-DEFAULT}"
     "max_parallel_workers_per_gather=$MPWG"
+    "min_parallel_table_scan_size=${MPTSS:-DEFAULT}"
+    "min_parallel_index_scan_size=${MPISS:-DEFAULT}"
     "io_max_combine_limit=1MB"
     "io_combine_limit=1MB"
 )
