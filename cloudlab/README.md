@@ -241,6 +241,14 @@ The harness handles AMD EPYC (Zen) since 2026-10-22:
   cores run at the P-state BELOW it (clock_control warns). With `amd-pstate`,
   `base` and `max` are the nominal and the top boost frequency. The profile's
   default 2000000 is wrong for AMD: set the clock parameter to `base`.
+- **No frequency driver at all** (seen on the c6525-25g, 2026-10-22: no
+  `cpu0/cpufreq`, dmesg `amd_pstate: the _CPC object is not present in SBIOS`):
+  the BIOS sets the clock itself, boost included (busy cores ~3.29 GHz, idle
+  ~1.8 GHz in /proc/cpuinfo), and nothing can be pinned from the OS. Run with
+  `CLOCK_KHZ=none`: the clock is left alone, the check reports
+  `scaling_max_khz` / `governor` as `(none)` instead of failing and prints the
+  measured `mhz_mean` range. `base`, `max` or a number stop with a message
+  saying so.
 
 Checks on a fresh AMD node (all three should print something):
 

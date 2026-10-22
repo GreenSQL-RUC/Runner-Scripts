@@ -42,7 +42,11 @@
 #                  PGVER, e.g. 18.6 or 16.15)
 #      CLOCK_KHZ   clock ceiling in kHz (default 2500000, the laptop sessions),
 #                  or "base" (the CPU's base frequency, turbo off) or "max" (its
-#                  highest turbo bin, i.e. not capped). Above the base frequency
+#                  highest turbo bin, i.e. not capped), or "none": no frequency
+#                  driver on the machine (no cpu0/cpufreq: the BIOS/firmware
+#                  sets the clock, e.g. a Dell server in a firmware-managed
+#                  power profile), so the clock is left alone and the check
+#                  only reports it. Above the base frequency
 #                  it needs turbo, which then wanders with load; a server is
 #                  steadier at its base with turbo off (CloudLab m510: 2000000).
 #      SHARED_BUFFERS, EFFECTIVE_CACHE_SIZE, MAX_PARALLEL_WORKERS_PER_GATHER,
@@ -70,11 +74,16 @@ CLOCK_KHZ="${CLOCK_KHZ:-2500000}"
 # "max" goes to clock_control as the word (turbo/boost on): on AMD's
 # acpi-cpufreq the hardware maximum is the same number as the base.
 CLOCK_ARG="$CLOCK_KHZ"
+FIX=1
+NO_CPUFREQ="no CPU frequency driver on this machine (no /sys/devices/system/cpu/cpu0/cpufreq): the firmware sets the clock; run with CLOCK_KHZ=none"
 case "$CLOCK_KHZ" in
+    none) FIX=0; CLOCK_ARG="" ;;
     base|max) CLOCK_KHZ="$(bash run/clock_control.sh "$CLOCK_KHZ")"
+              [ -n "$CLOCK_KHZ" ] || { echo "!! CLOCK_KHZ=$CLOCK_ARG: $NO_CPUFREQ" >&2; exit 1; }
               [ "$CLOCK_ARG" = base ] && CLOCK_ARG="$CLOCK_KHZ" ;;
+    *) [ -e /sys/devices/system/cpu/cpu0/cpufreq ] || { echo "!! $NO_CPUFREQ" >&2; exit 1; } ;;
 esac
-[[ "$CLOCK_KHZ" =~ ^[0-9]+$ ]] || { echo "!! CLOCK_KHZ must be in kHz (e.g. 2000000), base or max; got '$CLOCK_KHZ'" >&2; exit 1; }
+[[ "$CLOCK_KHZ" = none || "$CLOCK_KHZ" =~ ^[0-9]+$ ]] || { echo "!! CLOCK_KHZ must be in kHz (e.g. 2000000), base, max or none; got '$CLOCK_KHZ'" >&2; exit 1; }
 T_LO="${T_LO:-40}"; T_HI="${T_HI:-60}"
 [[ "$T_LO" =~ ^[0-9]+$ && "$T_HI" =~ ^[0-9]+$ && "$T_LO" -lt "$T_HI" ]] \
     || { echo "!! T_LO and T_HI must be whole degrees C with T_LO < T_HI; got $T_LO and $T_HI" >&2; exit 1; }
@@ -117,7 +126,8 @@ if [ -n "$ENTRIES" ]; then
     ORDER="$sub"
 fi
 RUN_DIR="logs/compare/warm_stepup/$RUNID"
-echo "==> compare session $SESSION on $(hostname -s), PostgreSQL $ver, clock $((CLOCK_KHZ / 1000)) MHz, gate $T_LO-$T_HI C: $RUNID"
+clock_note="clock $([ "$FIX" = 1 ] && echo "$((CLOCK_KHZ / 1000)) MHz" || echo "firmware-controlled (not pinned)")"
+echo "==> compare session $SESSION on $(hostname -s), PostgreSQL $ver, $clock_note, gate $T_LO-$T_HI C: $RUNID"
 echo "    $(grep -vcE '^\s*(#|$)' "$ORDER") entries from $ORDER; $(sed -n 's/^# estimate: //p' compare/set/order.txt)"
 echo "    process group $(ps -o pgid= $$ | tr -d ' ')"
 
@@ -151,7 +161,7 @@ apt_busy && die "apt/dpkg still running after 10 min"
 make --no-print-directory warm-stepup SUDO_PASSWORD="$PW" \
     PGVER="$PGVER" DB_NAME="$DB" DIR=queries/stackoverflow/SQLStorm ORDER_FILE="$ORDER" \
     "BATCH_SIZES=1 16" WARMUP=2 RUNS=1 STATEMENT_TIMEOUT=15 WARMUP_FAIL_SKIP=1 \
-    THERMAL_EQUALISE=1 T_LO="$T_LO" T_HI="$T_HI" FIX_CLOCK=1 CLOCK_MAX_KHZ="$CLOCK_ARG" \
+    THERMAL_EQUALISE=1 T_LO="$T_LO" T_HI="$T_HI" FIX_CLOCK="$FIX" CLOCK_MAX_KHZ="$CLOCK_ARG" \
     IDLE_BASELINE_S=5 LOGS_DIR=logs/compare RUNID="$RUNID"
 rc=$?
 resume_upgrades
@@ -165,11 +175,17 @@ t_lo, t_hi = float(t_lo), float(t_hi)
 bad = []
 info = list(csv.DictReader(open(os.path.join(d, f"query_runinfo_{db}.csv"))))
 rows = list(csv.DictReader(open(os.path.join(d, f"query_timing_{db}.csv"))))
-for k, want in (("scaling_max_khz", khz), ("governor", "performance"), ("pg_version", pg)):
+checks = (("scaling_max_khz", khz), ("governor", "performance"), ("pg_version", pg))
+if khz == "none":                                  # firmware clock: report, do not demand
+    checks = (("scaling_max_khz", None), ("governor", None), ("pg_version", pg))
+for k, want in checks:
     got = sorted({r[k] for r in info})
-    print(f"    {k:16s} {', '.join(got)}")
-    if got != [want]:
+    print(f"    {k:16s} {', '.join(x or '(none)' for x in got)}{'   (not pinned: CLOCK_KHZ=none)' if want is None else ''}")
+    if want is not None and got != [want]:
         bad.append(f"{k} not always {want}")
+mhz = sorted(float(r["mhz_mean"]) for r in rows if r["phase"] == "measured" and r["mhz_mean"])
+if mhz:
+    print(f"    mhz_mean         median {mhz[len(mhz) // 2]:.0f}, range {mhz[0]:.0f}-{mhz[-1]:.0f} MHz over {len(mhz)} measured batches")
 gate = [r for r in rows if r["phase"] == "warmup" and r["batch_index"] == "1"]
 outside = [r for r in gate if r["pkg_temp_start_c"] and not t_lo <= float(r["pkg_temp_start_c"]) <= t_hi]
 waits = sorted(float(r["preheat_s"] or 0) + float(r["cooldown_wait_s"] or 0) for r in gate)
