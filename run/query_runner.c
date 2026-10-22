@@ -528,6 +528,7 @@ static void rapl_after_capture(int core, double d[4], int present[4]) {
 }
 
 static void write_energy_columns(FILE *out, const double e[4], const int present[4]) {
+    if (!present[0]) { fprintf(out, ",,,"); return; }    /* no RAPL (RAPL_OPTIONAL=1) */
     fprintf(out, "%.18f,%.18f,", e[0], e[1]);
     if (present[2]) fprintf(out, "%.18f", e[2]);
     fprintf(out, ",");
@@ -1267,9 +1268,15 @@ int main(void) {
     printf("Found %d quer%s under %s\n\n", count, count == 1 ? "y" : "ies", query_dir);
 
     if (rapl_init(RAPL_CORE) != 0) {
-        fprintf(stderr, "rapl_init failed (need root and the 'msr' module: sudo modprobe msr)\n");
-        for (int i = 0; i < count; i++) free(files[i]);
-        return 1;
+        if (env_int("RAPL_OPTIONAL", 0) == 1) {
+            /* A machine with no RAPL at all (a VM such as WSL2): timing only. */
+            rapl_disable("RAPL_OPTIONAL=1, no RAPL on this machine: timing only");
+        } else {
+            fprintf(stderr, "rapl_init failed (need root and the 'msr' module: sudo modprobe msr;"
+                            " on a machine without RAPL, e.g. WSL2, RAPL_OPTIONAL=1 runs timing only)\n");
+            for (int i = 0; i < count; i++) free(files[i]);
+            return 1;
+        }
     }
     printf("RAPL: %s\n\n", rapl_describe());
 

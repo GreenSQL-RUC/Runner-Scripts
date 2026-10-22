@@ -79,6 +79,10 @@ void rapl_delta(const double a[RAPL_MAX_ZONES], const double b[RAPL_MAX_ZONES],
                 double out[4], int present[4]);
 int rapl_packages(void);
 const char *rapl_describe(void);
+/* No energy at all (a VM such as WSL2 has no RAPL): every later read returns
+ * nothing, so the runners write blank energy columns; `why` goes into
+ * rapl_describe(). */
+void rapl_disable(const char *why);
 
 /* psys: the platform energy the board reports (Skylake+ laptops, Sapphire
  * Rapids+ servers; on the CloudLab c6620 well above package + dram, so the

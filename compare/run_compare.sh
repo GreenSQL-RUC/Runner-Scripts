@@ -56,6 +56,10 @@
 #                  which of them actually limits the workers a query gets). The
 #                  console log lists the values applied ("PG16 now: ...").
 #                  Name such a session after them, e.g. s1_g8_scan1mb.
+#      RAPL_OPTIONAL=1
+#                  run on a machine without RAPL (a VM such as WSL2): timing
+#                  only, energy columns blank (with CLOCK_KHZ=none there; the
+#                  gate skips itself without a temperature sensor)
 #      T_LO, T_HI  the thermal gate, default 40 and 60 C (the laptops). A
 #                  server that idles below T_LO pays up to 60 s of preheating
 #                  per entry: check preheat_s in a smoke test and lower T_LO
@@ -162,7 +166,7 @@ make --no-print-directory warm-stepup SUDO_PASSWORD="$PW" \
     PGVER="$PGVER" DB_NAME="$DB" DIR=queries/stackoverflow/SQLStorm ORDER_FILE="$ORDER" \
     "BATCH_SIZES=1 16" WARMUP=2 RUNS=1 STATEMENT_TIMEOUT=15 WARMUP_FAIL_SKIP=1 \
     THERMAL_EQUALISE=1 T_LO="$T_LO" T_HI="$T_HI" FIX_CLOCK="$FIX" CLOCK_MAX_KHZ="$CLOCK_ARG" \
-    IDLE_BASELINE_S=5 LOGS_DIR=logs/compare RUNID="$RUNID"
+    IDLE_BASELINE_S=5 LOGS_DIR=logs/compare RUNID="$RUNID" RAPL_OPTIONAL="${RAPL_OPTIONAL:-}"
 rc=$?
 resume_upgrades
 

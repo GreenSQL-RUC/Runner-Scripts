@@ -502,6 +502,13 @@ described:;
 
 int rapl_packages(void) { return npackages; }
 
+void rapl_disable(const char *why) {
+  nzones = npackages = 0;
+  has_psys = 0;
+  amd_cores = -1;
+  snprintf(describe_buf, sizeof(describe_buf), "none (%s)", why);
+}
+
 static int is_percore(const rapl_zone *z) { return z->msr == MSR_AMD_CORE_ENERGY_STATUS; }
 
 int rapl_percore_count(void) {

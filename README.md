@@ -127,6 +127,77 @@ decision is in `queries/stackoverflow/SQLStorm.selection.csv`
   `FORCE_MINOR=1` is set (`PIN_MINOR=0` disables pinning altogether). Bumping
   a pin is a change in the thing being measured: note it next to the results.
 
+## Running on Windows (WSL2)
+
+A Windows PC runs the harness inside WSL2 (a real Linux kernel in a light VM),
+so it gets the same PostgreSQL build, the same `psql`-per-batch mechanics and
+the same compare protocol as the laptops and CloudLab. What the VM does not
+have: RAPL (no energy; `RAPL_OPTIONAL=1` runs timing only, energy columns
+blank), a frequency driver (`CLOCK_KHZ=none`: the clock is Windows'), and CPU
+temperature sensors (the gate skips itself). Timings carry a small VM
+overhead, and Windows background work can disturb them more than on a
+dedicated Linux box.
+
+1. **Install** (PowerShell as administrator; reboot if asked, then open
+   "Ubuntu 24.04" from the Start menu and create a user and password):
+
+   ```powershell
+   wsl --install -d Ubuntu-24.04
+   ```
+
+2. **Memory** (WSL gives the VM half the PC's memory by default; the test
+   uses `shared_buffers` 4GB, so give it 8GB or more). In
+   `%UserProfile%\.wslconfig`:
+
+   ```ini
+   [wsl2]
+   memory=12GB
+   ```
+
+   then `wsl --shutdown` in PowerShell and reopen Ubuntu. Check with `free -g`.
+
+3. **systemd** must be on (it is in new Ubuntu installs): `cat /etc/wsl.conf`
+   should show `systemd=true` under `[boot]`; if not, add those two lines with
+   `sudo nano /etc/wsl.conf`, then `wsl --shutdown`.
+
+4. **The repository, PostgreSQL 16 and the database** (in Ubuntu; keep the
+   clone in the Linux home, not under `/mnt/c`, which is much slower):
+
+   ```bash
+   git clone https://github.com/GreenSQL-RUC/Runner-Scripts.git ~/GreenSQL
+   cd ~/GreenSQL && sudo bash build/bootstrap_ubuntu.sh 16
+   make all
+   make build-stackoverflow PGVER=16 SUDO_PASSWORD=<your Ubuntu password>
+   ```
+
+   The bootstrap ends with PostgreSQL 16.15 (the pinned minor); the database
+   build downloads 0.4 GB and loads `stackoverflow_1gb` (~2 min).
+
+5. **Windows during the run**: plugged in, sleep off
+   (`powercfg /change standby-timeout-ac 0` in PowerShell), heavy programs
+   closed, and the Ubuntu window left open (WSL may stop a distro with no
+   terminal attached).
+
+6. **Smoke test** (~3 min, must end `CHECK OK`):
+
+   ```bash
+   cd ~/GreenSQL && SUDO_PASSWORD=<pw> PGVER=16 RAPL_OPTIONAL=1 CLOCK_KHZ=none ENTRIES=6 bash compare/run_compare.sh smoke
+   ```
+
+7. **Full session** (~2-4 h depending on the PC):
+
+   ```bash
+   cd ~/GreenSQL && SUDO_PASSWORD=<pw> PGVER=16 RAPL_OPTIONAL=1 CLOCK_KHZ=none setsid nohup bash run/detach.sh logs/compare/console_pc.log bash compare/run_compare.sh pc > /dev/null 2>&1 < /dev/null &
+   tail -f ~/GreenSQL/logs/compare/console_pc.log
+   ```
+
+8. **Results**: `logs/compare/warm_stepup/compare_<host>_pg16_pc_<stamp>/`,
+   visible from Windows Explorer at
+   `\\wsl$\Ubuntu-24.04\home\<user>\GreenSQL\logs\compare\warm_stepup\`.
+   `query_timing_stackoverflow_1gb.csv` has the batch timings (and
+   `start_epoch` / `end_epoch`), comparable row for row with every other
+   machine's compare sessions.
+
 ## Installation debugging
 
 Common problems bringing the harness up on a new box, and how to fix them.
