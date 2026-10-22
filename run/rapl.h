@@ -88,3 +88,14 @@ const char *rapl_describe(void);
  * -1 when this machine has no psys zone); rapl_psys_delta corrects a wrap. */
 int rapl_psys_read(double *joules);
 double rapl_psys_delta(double before, double after);
+
+/* Per-core energy (AMD Zen: one counter per physical core, which its two
+ * threads share). rapl_percore_count is how many (0 on Intel), rapl_percore_cpu
+ * the CPU number that names core i (its first thread). rapl_percore_delta gives
+ * each core's joules between two rapl_snapshot()s, wraps corrected;
+ * rapl_percore_last the same over the last rapl_before/rapl_after window.
+ * out[] needs rapl_percore_count() entries. */
+int rapl_percore_count(void);
+int rapl_percore_cpu(int i);
+void rapl_percore_delta(const double a[RAPL_MAX_ZONES], const double b[RAPL_MAX_ZONES], double *out);
+void rapl_percore_last(double *out);

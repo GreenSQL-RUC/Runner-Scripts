@@ -168,7 +168,8 @@ typedef struct {
   int domain;
   int is_msr;            /* 1 = read MSR `msr` on `cpu`; 0 = sysfs `path`  */
   char path[256];        /* powercap .../energy_uj                          */
-  int cpu, msr;
+  int cpu;
+  unsigned int msr;      /* MSR address; AMD's (0xC00102xx) do not fit an int */
   double unit;           /* joules per MSR count                            */
   double range_j;        /* the counter wraps after this many joules         */
   double scale;          /* powercap joules multiplier (see fix_dram_unit)  */
@@ -178,6 +179,7 @@ static rapl_zone zones[RAPL_MAX_ZONES];
 static int nzones = 0, npackages = 0;
 static char describe_buf[256] = "not initialised";
 static double snap_before[RAPL_MAX_ZONES];
+static double snap_after[RAPL_MAX_ZONES];   /* the last rapl_after() snapshot */
 static double dram_rescaled = 1.0;   /* != 1: powercap DRAM was rescaled */
 static rapl_zone psys_zone;          /* platform energy, outside the domains */
 static int has_psys = 0;
@@ -500,6 +502,31 @@ described:;
 
 int rapl_packages(void) { return npackages; }
 
+static int is_percore(const rapl_zone *z) { return z->msr == MSR_AMD_CORE_ENERGY_STATUS; }
+
+int rapl_percore_count(void) {
+  int n = 0;
+  for (int i = 0; i < nzones; i++) n += is_percore(&zones[i]);
+  return n;
+}
+
+int rapl_percore_cpu(int k) {
+  for (int i = 0, n = 0; i < nzones; i++)
+    if (is_percore(&zones[i]) && n++ == k) return zones[i].cpu;
+  return -1;
+}
+
+void rapl_percore_delta(const double a[RAPL_MAX_ZONES], const double b[RAPL_MAX_ZONES], double *out) {
+  for (int i = 0, n = 0; i < nzones; i++) {
+    if (!is_percore(&zones[i])) continue;
+    double d = b[i] - a[i];
+    if (d < 0 && zones[i].range_j > 0) d += zones[i].range_j;
+    out[n++] = d;
+  }
+}
+
+void rapl_percore_last(double *out) { rapl_percore_delta(snap_before, snap_after, out); }
+
 int rapl_psys_read(double *joules) {
   if (!has_psys) return -1;
   return read_zone(&psys_zone, joules);
@@ -605,6 +632,7 @@ void rapl_after(FILE * fp , int core)
   int present[4];
   (void)core;
   rapl_snapshot(after);
+  memcpy(snap_after, after, sizeof(snap_after));
   rapl_delta(snap_before, after, e, present);
   for (int d = 0; d < 4; d++) {
     if (present[d]) fprintf(fp, "%.18f", e[d]);

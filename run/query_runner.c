@@ -965,6 +965,8 @@ static int build_batch_file(const char *src, const char *dst, int copies) {
 /* Everything the runner carries from batch to batch. */
 typedef struct {
     FILE *log, *samples;
+    FILE *percore;                 /* query_percore_<db>.csv, NULL without per-core counters */
+    int ncores;
     const char *run_id, *pg_version;
     run_profile *profiles;         /* one per copy, sized to the widest batch */
     double prev_end_epoch;         /* end of the previous batch (NAN = unknown) */
@@ -1051,6 +1053,18 @@ static batch_result run_one_batch(runner_state *st, const char *cmd, const char 
     fflush(st->log);
     st->preheat_s = st->cooldown_s = 0;    /* only the query's first batch carries them */
 
+    /* --- per-core energy (AMD), same window ---------------------------- */
+    if (st->percore) {
+        double pc[RAPL_MAX_ZONES];
+        rapl_percore_last(pc);
+        fprintf(st->percore, "%s,%s,%s,%s,%s,%d,%d,%.6f,%.3f,%.3f",
+                ts, st->run_id, st->pg_version, query_id, phase, batch_index, copies,
+                br.elapsed, start_ep, end_ep);
+        for (int c = 0; c < st->ncores; c++) fprintf(st->percore, ",%.6f", pc[c]);
+        fprintf(st->percore, "\n");
+        fflush(st->percore);
+    }
+
     /* --- one row per COPY --------------------------------------------- */
     int rows = br.ncopies > 0 ? br.ncopies : 1;
     run_profile empty; profile_reset(&empty);
@@ -1096,6 +1110,15 @@ static void measure_idle(FILE *out, const runner_state *st, const char *query_id
     fprintf(out, "%s,%s,%s,%s,%.3f,%s,%s,%s,%s,%s,%s,%.3f,%.3f,%s\n", ts, st->run_id, st->pg_version,
             query_id, el, w[0], w[1], w[2], w[3], b_mean, b_mhz, start_ep, end_ep, w_psys);
     fflush(out);
+    if (st->percore) {                     /* the idle window, joules per core */
+        double pc[RAPL_MAX_ZONES];
+        rapl_percore_delta(a, b, pc);
+        fprintf(st->percore, "%s,%s,%s,%s,idle,,,%.6f,%.3f,%.3f",
+                ts, st->run_id, st->pg_version, query_id, el, start_ep, end_ep);
+        for (int c = 0; c < st->ncores; c++) fprintf(st->percore, ",%.6f", pc[c]);
+        fprintf(st->percore, "\n");
+        fflush(st->percore);
+    }
     printf("  idle baseline: %.1fs, package %s W%s%s%s%s%s%s\n", el, w[0],
            present[3] ? ", dram " : "", present[3] ? w[3] : "", present[3] ? " W" : "",
            *w_psys ? ", psys " : "", w_psys, *w_psys ? " W" : "");
@@ -1119,12 +1142,13 @@ int main(void) {
     (void)mkdir(logs_dir, 0755);
 
     char log_file[PATH_MAX], sample_file[PATH_MAX], catalog_file[PATH_MAX],
-         idle_file[PATH_MAX], runinfo_file[PATH_MAX];
+         idle_file[PATH_MAX], runinfo_file[PATH_MAX], percore_file[PATH_MAX];
     snprintf(log_file, sizeof(log_file), "%s/query_timing_%s.csv", logs_dir, db_name);
     snprintf(idle_file, sizeof(idle_file), "%s/query_idle_%s.csv", logs_dir, db_name);
     snprintf(runinfo_file, sizeof(runinfo_file), "%s/query_runinfo_%s.csv", logs_dir, db_name);
     snprintf(sample_file, sizeof(sample_file), "%s/query_samples_%s.csv", logs_dir, db_name);
     snprintf(catalog_file, sizeof(catalog_file), "%s/query_catalog_%s.csv", logs_dir, db_name);
+    snprintf(percore_file, sizeof(percore_file), "%s/query_percore_%s.csv", logs_dir, db_name);
 
     int runs   = env_int("RUNS", DEFAULT_RUNS);     if (runs < 1) runs = 1;
     int warmup = env_int("WARMUP", DEFAULT_WARMUP); if (warmup < 0) warmup = 0;
@@ -1248,6 +1272,23 @@ int main(void) {
     write_runinfo(runinfo_file, run_id, pg_version);
     FILE *idle_out = idle_s > 0 ? open_csv_append(idle_file, HDR_IDLE) : NULL;
 
+    /* Per-core energy, only where the CPU has per-core counters (AMD Zen): one
+     * row per batch (warm-ups too) and per idle baseline, one column per
+     * physical core, named by its first CPU. Same window as rapl_core_j, which
+     * is the row's sum. */
+    st.ncores = rapl_percore_count();
+    if (st.ncores > 0) {
+        char *hdr = malloc(256 + (size_t)st.ncores * 24);
+        if (!hdr) { fprintf(stderr, "out of memory\n"); return 1; }
+        int len = sprintf(hdr, "timestamp_utc,run_id,pg_version,query,phase,batch_index,batchnum,"
+                               "elapsed_sec,start_epoch,end_epoch");
+        for (int c = 0; c < st.ncores; c++) len += sprintf(hdr + len, ",core%d_j", rapl_percore_cpu(c));
+        sprintf(hdr + len, "\n");
+        st.percore = open_csv_append(percore_file, hdr);
+        free(hdr);
+        if (!st.percore) return 1;
+    }
+
     st.profiles = malloc((size_t)max_batch * sizeof(run_profile));
     if (!st.profiles) { fprintf(stderr, "out of memory for a %d-copy batch\n", max_batch); return 1; }
 
@@ -1342,11 +1383,13 @@ int main(void) {
     fclose(st.log);
     fclose(st.samples);
     if (idle_out) fclose(idle_out);
+    if (st.percore) fclose(st.percore);
 
     printf("\nDone. Batch rows appended to %s\n", log_file);
     printf("Per-copy samples appended to %s\n", sample_file);
     if (!skip_catalog) printf("Relation sizes appended to %s\n", catalog_file);
     if (idle_out) printf("Idle baselines appended to %s\n", idle_file);
+    if (st.percore) printf("Per-core energy (%d cores) appended to %s\n", st.ncores, percore_file);
     printf("Machine identity appended to %s\n", runinfo_file);
     printf("Last batch ended at epoch %.3f (PREV_END_EPOCH for the next invocation)\n", st.prev_end_epoch);
     if (total_failures) printf("%d batch failure%s (see the failed column)\n", total_failures, total_failures == 1 ? "" : "s");

@@ -381,6 +381,14 @@ from what it writes.
   end_epoch, idle_psys_w`). Net energy
   of a batch = `rapl_*_j - idle_*_w x elapsed_sec`; this matters on servers,
   whose packages idle at tens of watts.
+- **`query_percore_<db>.csv`** — only on CPUs with per-core energy counters
+  (AMD Zen; never on Intel): one row per batch (warm-ups too) and per idle
+  baseline (`phase` = `idle`), `timestamp_utc, run_id, pg_version, query, phase,
+  batch_index, batchnum, elapsed_sec, start_epoch, end_epoch`, then one
+  `core<cpu>_j` column per physical core, named by its first CPU. Same window
+  as the matching `query_timing` row (join on `query + phase + batch_index +
+  batchnum + start_epoch`), whose `rapl_core_j` is the sum of these. Shows which
+  cores a query and its parallel workers used, and what idle cores still draw.
 - **`query_runinfo_<db>.csv`** — one row per runner invocation (so per entry in
   a warm-stepup run): host, CPU model, packages, microcode, BIOS, product,
   frequency driver, governor, turbo, max frequency, kernel and the RAPL backend

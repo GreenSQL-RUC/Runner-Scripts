@@ -227,7 +227,9 @@ The harness handles AMD EPYC (Zen) since 2026-10-22:
   physical core's own counter (read from the MSRs; the kernel's own `core`
   zone covers one core only, so it is not used). The run's RAPL description
   ends with `(core = sum of N per-core counters)`; N should be the physical
-  core count (16 on a c6525-25g). No DRAM and no psys on AMD, so those columns
+  core count (16 on a c6525-25g). Each core's own figure is in
+  `query_percore_<db>.csv` (one column per core, per batch and per idle
+  baseline), next to the other CSVs of the run. No DRAM and no psys on AMD, so those columns
   stay blank, and so do the throttle counters (Intel-only). AMD's RAPL is a
   model-based estimate, not a measurement: compare AMD with AMD.
 - **Temperature**: `k10temp` `Tdie`, else `Tctl` (equal on EPYC), for the
@@ -249,10 +251,11 @@ grep . /sys/class/powercap/intel-rapl*/name; paste <(cat /sys/class/hwmon/hwmon*
 
 Then the smoke test with `CLOCK_KHZ=base`. After it, the `rapl` column of
 the run's `query_runinfo_*.csv` must end with `(core = sum of N per-core
-counters)`, and `pkg_temp_start_c` in `query_timing_*.csv` must be filled:
+counters)`, `pkg_temp_start_c` in `query_timing_*.csv` must be filled, and a
+`query_percore_*.csv` must exist with one `core<N>_j` column per core:
 
 ```bash
-cd "$(ls -dt ~/GreenSQL/logs/compare/warm_stepup/smoke_* | head -1)"; python3 -c "import csv; r = list(csv.DictReader(open([f for f in __import__('os').listdir('.') if f.startswith('query_runinfo')][0]))); print(r[0]['rapl'])"; cut -d, -f5,7,18,19,22 query_timing_*.csv | head -4
+cd "$(ls -dt ~/GreenSQL/logs/compare/warm_stepup/smoke_* | head -1)"; python3 -c "import csv; r = list(csv.DictReader(open([f for f in __import__('os').listdir('.') if f.startswith('query_runinfo')][0]))); print(r[0]['rapl'])"; cut -d, -f5,7,18,19,22 query_timing_*.csv | head -4; head -2 query_percore_*.csv | cut -c1-200
 ```
 
 ## The power log (c6620 and other Dell nodes)
