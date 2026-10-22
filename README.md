@@ -362,7 +362,8 @@ from what it writes.
   in whole joules there, so short batches carry ±1 J. The thermal block: package
   temperature at start (the key state variable) and end, its mean/max sampled
   every 200 ms during the batch, the hottest core, mean `scaling_cur_freq` over
-  all CPUs and samples, throttle-counter deltas (non-zero = hard throttling),
+  all CPUs and samples (on a machine without a cpufreq driver, the mean of
+  `/proc/cpuinfo`'s `cpu MHz` instead, from the CPUs' APERF/MPERF counters), throttle-counter deltas (non-zero = hard throttling),
   wall time since the previous batch ended, the seconds the equalisation step
   took before this query's first batch (0 when off), and `rapl_pkg_j /
   elapsed_sec`.

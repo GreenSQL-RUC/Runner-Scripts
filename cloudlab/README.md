@@ -248,7 +248,11 @@ The harness handles AMD EPYC (Zen) since 2026-10-22:
   `CLOCK_KHZ=none`: the clock is left alone, the check reports
   `scaling_max_khz` / `governor` as `(none)` instead of failing and prints the
   measured `mhz_mean` range. `base`, `max` or a number stop with a message
-  saying so.
+  saying so. Without cpufreq the runner takes `mhz_mean` from `/proc/cpuinfo`
+  (`cpu MHz`, the kernel's APERF/MPERF reading), so the clocks the firmware
+  chose are still recorded (runners built from 2026-10-22 on; `make all`).
+  This node idles at ~35 C, below the gate's 40 C: use `T_LO=30`, otherwise
+  every entry preheats 10-50 s for nothing (the batches start at 35-37 C anyway).
 
 Checks on a fresh AMD node (all three should print something):
 

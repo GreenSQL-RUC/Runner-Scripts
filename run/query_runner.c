@@ -253,7 +253,11 @@ static const char *query_pg_version(const char *env_prefix, const char *db_user,
  *                  some desktop Ryzens offset Tctl by up to 27 C)
  *   core temps     the other coretemp inputs ("Core N"); AMD: k10temp "Tccd N",
  *                  one per core chiplet (AMD has no per-core sensor)
- *   frequency      cpuN/cpufreq/scaling_cur_freq (kHz)
+ *   frequency      cpuN/cpufreq/scaling_cur_freq (kHz); without a cpufreq
+ *                  driver (the firmware sets the clock, e.g. the CloudLab
+ *                  c6525-25g), the "cpu MHz" lines of /proc/cpuinfo, which the
+ *                  kernel fills from each CPU's APERF/MPERF counters as sampled
+ *                  at the scheduler tick (no IPIs, so idle CPUs are not woken)
  *   throttling     cpuN/thermal_throttle/{core,package}_throttle_count
  * Discovered once; anything missing just leaves its column empty.
  */
@@ -263,6 +267,7 @@ typedef struct {
     char cur_freq[MAX_CPUS][PATH_MAX];  int n_cur_freq;
     char core_thr[MAX_CPUS][PATH_MAX];  int n_core_thr;
     char pkg_thr[MAX_CPUS][PATH_MAX];   int n_pkg_thr;
+    int proc_mhz;                       /* no scaling_cur_freq: use /proc/cpuinfo */
 } sensors_t;
 
 static sensors_t S;
@@ -324,6 +329,7 @@ static void discover_sensors(void) {
         snprintf(path, sizeof(path), "/sys/devices/system/cpu/cpu%d/thermal_throttle/package_throttle_count", c);
         if (access(path, R_OK) == 0) snprintf(S.pkg_thr[S.n_pkg_thr++], PATH_MAX, "%s", path);
     }
+    S.proc_mhz = (S.n_cur_freq == 0);
 }
 
 /* Package temperature in C, or NAN. */
@@ -345,9 +351,22 @@ static double read_core_temp_max_c(void) {
     return mx;
 }
 
-/* Mean scaling_cur_freq over all cpus, in MHz, or NAN. */
+/* Mean scaling_cur_freq over all cpus, in MHz, or NAN. Without cpufreq, the
+ * mean of /proc/cpuinfo's "cpu MHz" lines instead. */
 static double read_mhz_mean(void) {
     double sum = 0; int n = 0;
+    if (S.proc_mhz) {
+        FILE *f = fopen("/proc/cpuinfo", "r");
+        if (!f) return NAN;
+        char line[256];
+        while (fgets(line, sizeof(line), f)) {
+            if (strncmp(line, "cpu MHz", 7) != 0) continue;
+            char *colon = strchr(line, ':');
+            if (colon) { sum += atof(colon + 1); n++; }
+        }
+        fclose(f);
+        return n ? sum / n : NAN;
+    }
     for (int i = 0; i < S.n_cur_freq; i++) {
         long khz = read_long_file(S.cur_freq[i], LONG_MIN);
         if (khz == LONG_MIN) continue;
