@@ -27,7 +27,14 @@
 #   bash clock_control.sh base | max            # print the base / hardware maximum, kHz
 #   bash clock_control.sh with <command...>     # apply, run, restore (also on Ctrl-C)
 #
-# ENV: CLOCK_MAX_KHZ  explicit ceiling in kHz (e.g. 2100000); unset = base freq.
+# ENV: CLOCK_MAX_KHZ  explicit ceiling in kHz (e.g. 2100000), or "max" (turbo /
+#                     boost on, ceiling = the hardware maximum); unset = base freq.
+#
+# AMD: amd-pstate publishes the base as amd_pstate_nominal_freq; acpi-cpufreq
+# lists only P-states, its cpuinfo_max_freq IS the base, and boost (above it)
+# is the cpufreq/boost switch - so there "max" is the only way to say "boost
+# on", and a ceiling between P-states (see scaling_available_frequencies)
+# lands on the next P-state BELOW it.
 #
 # Needs root for apply/restore. If the sysfs knobs are missing (VM, non-Intel),
 # apply prints what it skipped and exits 0, so a run continues un-pinned but
@@ -52,6 +59,10 @@ CLOCK_MAX_KHZ="${CLOCK_MAX_KHZ:-}"
 base_khz() {
     local b
     b="$(cat "$CPU0/base_frequency" 2>/dev/null || true)"
+    [ -z "$b" ] && b="$(cat "$CPU0/amd_pstate_nominal_freq" 2>/dev/null || true)"
+    if [ -z "$b" ] && [ "$(cat "$CPU0/scaling_driver" 2>/dev/null)" = acpi-cpufreq ] && [ -e "$BOOST" ]; then
+        b="$(cat "$CPU0/cpuinfo_max_freq" 2>/dev/null || true)"     # P0 = base; boost is above it
+    fi
     [ -z "$b" ] && b="$(sed -n 's/^model name.*@ *\([0-9.]*\)GHz.*/\1/p' /proc/cpuinfo 2>/dev/null | head -1 \
                         | awk '{ if ($1 != "") printf "%d", $1 * 1000000 }')"
     echo "$b"
@@ -79,7 +90,10 @@ apply() {
 
     local base hwmax want_turbo=0
     base="$(base_khz)"; hwmax="$(hw_max_khz)"
-    if [ -n "$CLOCK_MAX_KHZ" ]; then
+    if [ "$CLOCK_MAX_KHZ" = max ]; then
+        [ -n "$hwmax" ] || { echo "clock_control: CLOCK_MAX_KHZ=max but no cpuinfo_max_freq; refusing" >&2; return 1; }
+        CLOCK_MAX_KHZ="$hwmax"; want_turbo=1
+    elif [ -n "$CLOCK_MAX_KHZ" ]; then
         case "$CLOCK_MAX_KHZ" in
             ''|*[!0-9]*) echo "clock_control: CLOCK_MAX_KHZ must be an integer in kHz, got \"$CLOCK_MAX_KHZ\"" >&2; return 1 ;;
         esac
@@ -89,6 +103,12 @@ apply() {
         fi
         # Above base = a turbo bin, which is only reachable with turbo enabled.
         [ -n "$base" ] && [ "$CLOCK_MAX_KHZ" -gt "$base" ] && want_turbo=1
+        local avail
+        avail="$(cat "$CPU0/scaling_available_frequencies" 2>/dev/null || true)"
+        if [ -n "$avail" ] && ! printf ' %s ' "$avail" | grep -q " $CLOCK_MAX_KHZ "; then
+            echo "clock_control: WARNING $CLOCK_MAX_KHZ kHz is not one of this driver's frequencies ($avail);" \
+                 "the cores will run at the next one below it" >&2
+        fi
     fi
 
     # The original per-CPU ceilings, read BEFORE turbo is touched: turning turbo

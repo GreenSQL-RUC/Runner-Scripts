@@ -248,8 +248,11 @@ static const char *query_pg_version(const char *env_prefix, const char *db_user,
 /* ================================================================== */
 /*
  * All read from sysfs (no turbostat, no root needed for reading):
- *   package temp   coretemp hwmon "Package id 0" (fallback: x86_pkg_temp zone)
- *   core temps     the other coretemp inputs ("Core N")
+ *   package temp   coretemp hwmon "Package id 0" (fallback: x86_pkg_temp zone);
+ *                  AMD: k10temp "Tdie", else "Tctl" (on EPYC the two are equal;
+ *                  some desktop Ryzens offset Tctl by up to 27 C)
+ *   core temps     the other coretemp inputs ("Core N"); AMD: k10temp "Tccd N",
+ *                  one per core chiplet (AMD has no per-core sensor)
  *   frequency      cpuN/cpufreq/scaling_cur_freq (kHz)
  *   throttling     cpuN/thermal_throttle/{core,package}_throttle_count
  * Discovered once; anything missing just leaves its column empty.
@@ -268,9 +271,27 @@ static void discover_sensors(void) {
     char name[64], label[64], path[PATH_MAX], fallback[PATH_MAX] = "";
     memset(&S, 0, sizeof(S));
 
+    int amd_rank = 0;                          /* k10temp package: 1 Tctl, 2 Tdie */
     for (int h = 0; h < 64; h++) {
         snprintf(path, sizeof(path), "/sys/class/hwmon/hwmon%d/name", h);
         if (read_first_line(path, name, sizeof(name)) != 0) continue;
+        if (strcmp(name, "k10temp") == 0) {
+            for (int t = 1; t < 64; t++) {
+                char lpath[PATH_MAX];
+                snprintf(path, sizeof(path), "/sys/class/hwmon/hwmon%d/temp%d_input", h, t);
+                if (access(path, R_OK) != 0) continue;
+                snprintf(lpath, sizeof(lpath), "/sys/class/hwmon/hwmon%d/temp%d_label", h, t);
+                if (read_first_line(lpath, label, sizeof(label)) != 0) continue;
+                int rank = !strcmp(label, "Tdie") ? 2 : !strcmp(label, "Tctl") ? 1 : 0;
+                if (rank > amd_rank) {                  /* the first socket's best */
+                    snprintf(S.pkg_temp, sizeof(S.pkg_temp), "%s", path);
+                    amd_rank = rank;
+                } else if (!strncmp(label, "Tccd", 4) && S.n_core_temp < MAX_CPUS) {
+                    snprintf(S.core_temp[S.n_core_temp++], PATH_MAX, "%s", path);
+                }
+            }
+            continue;
+        }
         if (strcmp(name, "coretemp") != 0) continue;
         for (int t = 1; t < 64; t++) {
             snprintf(path, sizeof(path), "/sys/class/hwmon/hwmon%d/temp%d_input", h, t);

@@ -219,6 +219,42 @@ cd ~/GreenSQL && setsid nohup bash run/detach.sh logs/so_full/console.log \
     FIX_CLOCK=1 CLOCK_MAX_KHZ=$CLOCK_KHZ > /dev/null 2>&1 < /dev/null &
 ```
 
+## AMD nodes (c6525-25g, c6525-100g, d6515, r6525, ...)
+
+The harness handles AMD EPYC (Zen) since 2026-10-22:
+
+- **Energy**: package from the kernel's powercap zone; core = the sum of every
+  physical core's own counter (read from the MSRs; the kernel's own `core`
+  zone covers one core only, so it is not used). The run's RAPL description
+  ends with `(core = sum of N per-core counters)`; N should be the physical
+  core count (16 on a c6525-25g). No DRAM and no psys on AMD, so those columns
+  stay blank, and so do the throttle counters (Intel-only). AMD's RAPL is a
+  model-based estimate, not a measurement: compare AMD with AMD.
+- **Temperature**: `k10temp` `Tdie`, else `Tctl` (equal on EPYC), for the
+  package and the gate; the per-chiplet `Tccd` sensors stand in for cores.
+- **Clock**: use `base` or `max`, not a number. With the `acpi-cpufreq`
+  driver the CPU has only a few P-states (`scaling_available_frequencies`),
+  the top one IS the base, and boost above it is a switch: `base` = top
+  P-state, boost off; `max` = boost on. A number between P-states makes the
+  cores run at the P-state BELOW it (clock_control warns). With `amd-pstate`,
+  `base` and `max` are the nominal and the top boost frequency. The profile's
+  default 2000000 is wrong for AMD: set the clock parameter to `base`.
+
+Checks on a fresh AMD node (all three should print something):
+
+```bash
+cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_driver /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies 2>&1; bash ~/GreenSQL/run/clock_control.sh base; bash ~/GreenSQL/run/clock_control.sh max
+grep . /sys/class/powercap/intel-rapl*/name; paste <(cat /sys/class/hwmon/hwmon*/name) <(cat /sys/class/hwmon/hwmon*/temp1_input 2>/dev/null)
+```
+
+Then the smoke test with `CLOCK_KHZ=base`. After it, the `rapl` column of
+the run's `query_runinfo_*.csv` must end with `(core = sum of N per-core
+counters)`, and `pkg_temp_start_c` in `query_timing_*.csv` must be filled:
+
+```bash
+cd "$(ls -dt ~/GreenSQL/logs/compare/warm_stepup/smoke_* | head -1)"; python3 -c "import csv; r = list(csv.DictReader(open([f for f in __import__('os').listdir('.') if f.startswith('query_runinfo')][0]))); print(r[0]['rapl'])"; cut -d, -f5,7,18,19,22 query_timing_*.csv | head -4
+```
+
 ## The power log (c6620 and other Dell nodes)
 
 On the c6620 at Utah the iDRAC is NOT reachable from the OS (no IPMI device in

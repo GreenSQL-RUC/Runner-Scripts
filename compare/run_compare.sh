@@ -67,8 +67,12 @@ ORDER=compare/set/order.txt
 PGVER="${PGVER:-18}"
 PG_MINOR="${PG_MINOR:-$(sed -n "s/^ *\[$PGVER\]=\([0-9.]*\)$/\1/p" build/bootstrap_ubuntu.sh)}"
 CLOCK_KHZ="${CLOCK_KHZ:-2500000}"
+# "max" goes to clock_control as the word (turbo/boost on): on AMD's
+# acpi-cpufreq the hardware maximum is the same number as the base.
+CLOCK_ARG="$CLOCK_KHZ"
 case "$CLOCK_KHZ" in
-    base|max) CLOCK_KHZ="$(bash run/clock_control.sh "$CLOCK_KHZ")" ;;
+    base|max) CLOCK_KHZ="$(bash run/clock_control.sh "$CLOCK_KHZ")"
+              [ "$CLOCK_ARG" = base ] && CLOCK_ARG="$CLOCK_KHZ" ;;
 esac
 [[ "$CLOCK_KHZ" =~ ^[0-9]+$ ]] || { echo "!! CLOCK_KHZ must be in kHz (e.g. 2000000), base or max; got '$CLOCK_KHZ'" >&2; exit 1; }
 T_LO="${T_LO:-40}"; T_HI="${T_HI:-60}"
@@ -147,7 +151,7 @@ apt_busy && die "apt/dpkg still running after 10 min"
 make --no-print-directory warm-stepup SUDO_PASSWORD="$PW" \
     PGVER="$PGVER" DB_NAME="$DB" DIR=queries/stackoverflow/SQLStorm ORDER_FILE="$ORDER" \
     "BATCH_SIZES=1 16" WARMUP=2 RUNS=1 STATEMENT_TIMEOUT=15 WARMUP_FAIL_SKIP=1 \
-    THERMAL_EQUALISE=1 T_LO="$T_LO" T_HI="$T_HI" FIX_CLOCK=1 CLOCK_MAX_KHZ="$CLOCK_KHZ" \
+    THERMAL_EQUALISE=1 T_LO="$T_LO" T_HI="$T_HI" FIX_CLOCK=1 CLOCK_MAX_KHZ="$CLOCK_ARG" \
     IDLE_BASELINE_S=5 LOGS_DIR=logs/compare RUNID="$RUNID"
 rc=$?
 resume_upgrades

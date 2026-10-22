@@ -227,6 +227,90 @@ static void fix_dram_unit(rapl_zone *z, int model) {
   dram_rescaled = s;
 }
 
+/* ---- AMD (Zen) ----------------------------------------------------------- */
+#define MSR_AMD_RAPL_POWER_UNIT    0xC0010299
+#define MSR_AMD_CORE_ENERGY_STATUS 0xC001029A
+#define MSR_AMD_PKG_ENERGY_STATUS  0xC001029B
+static int amd_cores = -1;            /* per-core zones added (-1: not AMD) */
+
+/* AuthenticAMD / HygonGenuine, family 17h or later (Zen): the RAPL MSRs above. */
+static int cpu_is_amd_zen(void) {
+  FILE *f = fopen("/proc/cpuinfo", "r");
+  if (!f) return 0;
+  char line[256];
+  int amd = 0, family = -1;
+  while (fgets(line, sizeof(line), f) && family < 0) {
+    if (!strncmp(line, "vendor_id", 9)) amd = strstr(line, "AuthenticAMD") || strstr(line, "HygonGenuine");
+    else if (!strncmp(line, "cpu family", 10)) sscanf(strchr(line, ':') + 1, "%d", &family);
+  }
+  fclose(f);
+  return amd && family >= 0x17;
+}
+
+/* One MSR, without the exit-on-error of open_msr(): 0 on success. */
+static int msr_read_quiet(int cpu, unsigned reg, uint64_t *v) {
+  char fn[64];
+  snprintf(fn, sizeof(fn), "/dev/cpu/%d/msr", cpu);
+  int fd = open(fn, O_RDONLY);
+  if (fd < 0) return -1;
+  int ok = pread(fd, v, sizeof(*v), reg) == (ssize_t)sizeof(*v);
+  close(fd);
+  return ok ? 0 : -1;
+}
+
+static int read_text(const char *path, char *buf, size_t len);
+static int add_zone(const rapl_zone *z);
+
+/* One zone per physical core (the first thread of each), domain core, summed
+ * by rapl_delta. Returns how many were added (0: MSRs unreadable - not root,
+ * or the msr module is not loaded). */
+static int add_amd_core_zones(void) {
+  uint64_t u;
+  if (msr_read_quiet(0, MSR_AMD_RAPL_POWER_UNIT, &u) != 0) return 0;
+  double unit = pow(0.5, (double)((u >> 8) & 0x1f));
+  int added = 0;
+  for (int c = 0; c < 4096; c++) {
+    char p[128], buf[64];
+    snprintf(p, sizeof(p), "/sys/devices/system/cpu/cpu%d", c);
+    if (access(p, F_OK) != 0) break;
+    snprintf(p, sizeof(p), "/sys/devices/system/cpu/cpu%d/topology/thread_siblings_list", c);
+    if (read_text(p, buf, sizeof(buf)) != 0) continue;           /* offline cpu */
+    if (atoi(buf) != c) continue;                                /* not the core's first thread */
+    rapl_zone z; memset(&z, 0, sizeof(z));
+    z.domain = D_CORE; z.is_msr = 1; z.cpu = c; z.msr = MSR_AMD_CORE_ENERGY_STATUS;
+    z.unit = unit; z.range_j = 4294967296.0 * unit; z.scale = 1.0;
+    if (add_zone(&z) == 0) added++;
+  }
+  return added;
+}
+
+/* No powercap zones on an AMD machine (an old kernel): the package counters
+ * straight from the MSRs, one per socket, plus the per-core ones. */
+static int init_msr_amd(void) {
+  uint64_t u;
+  if (msr_read_quiet(0, MSR_AMD_RAPL_POWER_UNIT, &u) != 0) return -1;
+  double unit = pow(0.5, (double)((u >> 8) & 0x1f));
+  int seen[64], np = 0;
+  for (int c = 0; c < 4096 && np < 64; c++) {
+    char p[128], buf[32];
+    snprintf(p, sizeof(p), "/sys/devices/system/cpu/cpu%d", c);
+    if (access(p, F_OK) != 0) break;
+    snprintf(p, sizeof(p), "/sys/devices/system/cpu/cpu%d/topology/physical_package_id", c);
+    if (read_text(p, buf, sizeof(buf)) != 0) continue;
+    int id = atoi(buf), dup = 0;
+    for (int i = 0; i < np; i++) if (seen[i] == id) dup = 1;
+    if (dup) continue;
+    seen[np++] = id;
+    rapl_zone z; memset(&z, 0, sizeof(z));
+    z.domain = D_PKG; z.is_msr = 1; z.cpu = c; z.msr = MSR_AMD_PKG_ENERGY_STATUS;
+    z.unit = unit; z.range_j = 4294967296.0 * unit; z.scale = 1.0;
+    if (add_zone(&z) != 0) return -1;
+  }
+  npackages = np;
+  amd_cores = add_amd_core_zones();
+  return np > 0 ? 0 : -1;
+}
+
 static int read_text(const char *path, char *buf, size_t len) {
   FILE *f = fopen(path, "r");
   if (!f) return -1;
@@ -270,6 +354,7 @@ static int init_powercap(void) {
   DIR *d = opendir(base);
   if (!d) return -1;
   int model = intel_model();
+  int amd = cpu_is_amd_zen();
   struct dirent *e;
   while ((e = readdir(d)) != NULL) {
     int n, used = 0;
@@ -308,6 +393,7 @@ static int init_powercap(void) {
       int dom = !strcmp(name, "core") ? D_CORE : !strcmp(name, "uncore") ? D_GPU
               : !strcmp(name, "dram") ? D_DRAM : -1;
       if (dom < 0) continue;
+      if (amd && dom == D_CORE) continue;        /* one core only: per-core MSRs below */
       memset(&z, 0, sizeof(z));
       z.domain = dom; z.scale = 1.0;
       snprintf(z.path, sizeof(z.path), "%s/energy_uj", sdir);
@@ -318,6 +404,7 @@ static int init_powercap(void) {
     }
   }
   closedir(d);
+  if (npackages > 0 && amd) amd_cores = add_amd_core_zones();
   return npackages > 0 ? 0 : -1;
 }
 
@@ -371,11 +458,20 @@ int rapl_init(int core)
   nzones = npackages = 0;
   dram_rescaled = 1.0;
   has_psys = 0;
+  amd_cores = -1;
   const char *backend = "powercap";
   if (init_powercap() != 0) {
     nzones = npackages = 0;
     has_psys = 0;
+    amd_cores = -1;
     backend = "msr";
+    if (cpu_is_amd_zen()) {
+      if (init_msr_amd() != 0) {
+        printf("No readable RAPL: no powercap zones, and the AMD MSRs need root and the msr module (sudo modprobe msr)\n");
+        return -1;
+      }
+      goto described;
+    }
     cpu_model = detect_cpu();
     if (cpu_model < 0) {
       printf("Unsupported CPU type (no readable powercap RAPL zones, and not an Intel CPU for the MSR path)\n");
@@ -384,11 +480,16 @@ int rapl_init(int core)
     if (init_msr() != 0) return -1;
   }
 
+described:;
   int present[4] = {0, 0, 0, 0};
   for (int i = 0; i < nzones; i++) present[zones[i].domain] = 1;
-  char fix[64] = "";
+  char fix[96] = "";
   if (dram_rescaled != 1.0)
     snprintf(fix, sizeof(fix), " (dram x%g: kernel used the package unit)", dram_rescaled);
+  else if (amd_cores > 0)
+    snprintf(fix, sizeof(fix), " (core = sum of %d per-core counters)", amd_cores);
+  else if (amd_cores == 0)
+    snprintf(fix, sizeof(fix), " (no core: per-core MSRs unreadable, load msr)");
   snprintf(describe_buf, sizeof(describe_buf), "%s, %d package%s, domains:%s%s%s%s%s%s",
            backend, npackages, npackages == 1 ? "" : "s",
            present[D_PKG] ? " pkg" : "", present[D_CORE] ? " core" : "",
