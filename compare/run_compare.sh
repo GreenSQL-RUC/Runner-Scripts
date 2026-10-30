@@ -56,6 +56,9 @@
 #                  which of them actually limits the workers a query gets). The
 #                  console log lists the values applied ("PG16 now: ...").
 #                  Name such a session after them, e.g. s1_g8_scan1mb.
+#      RAPL_BACKEND
+#                  auto (default: the MSRs, else powercap), msr or powercap;
+#                  the run's RAPL description says which was used
 #      RAPL_OPTIONAL=1
 #                  run on a machine without RAPL (a VM such as WSL2): timing
 #                  only, energy columns blank (with CLOCK_KHZ=none there; the
@@ -166,7 +169,8 @@ make --no-print-directory warm-stepup SUDO_PASSWORD="$PW" \
     PGVER="$PGVER" DB_NAME="$DB" DIR=queries/stackoverflow/SQLStorm ORDER_FILE="$ORDER" \
     "BATCH_SIZES=1 16" WARMUP=2 RUNS=1 STATEMENT_TIMEOUT=15 WARMUP_FAIL_SKIP=1 \
     THERMAL_EQUALISE=1 T_LO="$T_LO" T_HI="$T_HI" FIX_CLOCK="$FIX" CLOCK_MAX_KHZ="$CLOCK_ARG" \
-    IDLE_BASELINE_S=5 LOGS_DIR=logs/compare RUNID="$RUNID" RAPL_OPTIONAL="${RAPL_OPTIONAL:-}"
+    IDLE_BASELINE_S=5 LOGS_DIR=logs/compare RUNID="$RUNID" RAPL_OPTIONAL="${RAPL_OPTIONAL:-}" \
+    RAPL_BACKEND="${RAPL_BACKEND:-}"
 rc=$?
 resume_upgrades
 

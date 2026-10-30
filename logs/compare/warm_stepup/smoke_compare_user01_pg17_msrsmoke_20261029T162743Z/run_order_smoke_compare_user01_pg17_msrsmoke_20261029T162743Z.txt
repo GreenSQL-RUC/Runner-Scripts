@@ -1,0 +1,12 @@
+# warm step-up run order
+# run_id=smoke_compare_user01_pg17_msrsmoke_20261029T162743Z
+# generated 2026-10-29T16:27:47Z  DIR=queries/stackoverflow/SQLStorm  REPEATS=1  total=3
+# thermal_policy: gate T_LO=40 T_HI=60 PREHEAT_MAX_S=60 COOLDOWN_MAX_S=120   fix_clock: 1   clock_max_khz: 2500000
+# replayed from logs/compare/order_smoke_compare_user01_pg17_msrsmoke_20261029T162743Z.txt
+queries/stackoverflow/SQLStorm/5502.sql
+queries/stackoverflow/SQLStorm/7612.sql
+queries/stackoverflow/SQLStorm/16399.sql
+# per-entry run ids (group n, its run_id, the predecessor group's run_id):
+# order: 1 D4310D3D687BD54F prev=none
+# order: 2 0AA3EFDC205D405F prev=D4310D3D687BD54F
+# order: 3 AB53F1590EEC52A0 prev=0AA3EFDC205D405F

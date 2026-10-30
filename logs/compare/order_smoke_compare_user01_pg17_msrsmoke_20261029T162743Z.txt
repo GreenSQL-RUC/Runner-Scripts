@@ -1,0 +1,4 @@
+# first 3 entries of compare/set/order.txt (smoke test)
+queries/stackoverflow/SQLStorm/5502.sql
+queries/stackoverflow/SQLStorm/7612.sql
+queries/stackoverflow/SQLStorm/16399.sql

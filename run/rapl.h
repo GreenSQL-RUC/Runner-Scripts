@@ -39,6 +39,9 @@
 #define MSR_DRAM_PERF_STATUS		0x61B
 #define MSR_DRAM_POWER_INFO		0x61C
 
+/* Platform (psys) energy, Skylake and later */
+#define MSR_PLATFORM_ENERGY_STATUS	0x64D
+
 /* RAPL UNIT BITMASK */
 #define POWER_UNIT_OFFSET	0
 #define POWER_UNIT_MASK		0x0F
@@ -52,19 +55,20 @@
 
 
 
-/* Energy is read from every CPU package (socket) and summed per domain, from
- * the kernel's powercap interface (/sys/class/powercap/intel-rapl:*) when it is
- * readable, else straight from the MSRs. Domains, in CSV order:
+/* Energy is read from every CPU package (socket) and summed per domain,
+ * straight from the MSRs (/dev/cpu/N/msr: root and the msr module) when they
+ * are readable, else from the kernel's powercap interface
+ * (/sys/class/powercap/intel-rapl:*); RAPL_BACKEND=auto|msr|powercap, see
+ * rapl_init. Domains, in CSV order:
  * 0 package, 1 core (PP0), 2 gpu/uncore (PP1), 3 dram.
- * AMD (Zen, family 17h+): package from powercap (or MSR 0xC001029B), and core
- * as the SUM of every physical core's own counter (MSR 0xC001029A, one per
- * core; the kernel's powercap "core" zone reads only the first core, so it is
- * not used). No gpu or dram domain on AMD. */
+ * AMD (Zen, family 17h+): package (MSR 0xC001029B), and core as the SUM of
+ * every physical core's own counter (MSR 0xC001029A, one per core; the
+ * kernel's powercap "core" zone reads only the first core, so it is not used).
+ * No gpu or dram domain on AMD. */
 #define RAPL_MAX_ZONES 512   /* AMD: one zone per physical core (2 x 64-core EPYC = 128) */
 
 int open_msr(int core);
 long long read_msr(int fd, int which);
-int detect_cpu(void) ;
 int rapl_init(int core);
 void show_power_info(int core);
 void show_power_limit(int core);

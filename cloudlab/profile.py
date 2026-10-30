@@ -211,8 +211,8 @@ step "6. testing parameters (shared_buffers=$SB, effective_cache_size=$ECS)"
 make set-parameters PGVER="$PGV" SHARED_BUFFERS="$SB" EFFECTIVE_CACHE_SIZE="$ECS"
 
 step "7. login defaults, node identity, ownership"
-# msr: query_runner's RAPL fallback when the kernel has no powercap zones for
-# this CPU (too new for the kernel) reads the MSRs directly.
+# msr: query_runner reads RAPL from the MSRs (powercap is its fallback), and
+# AMD's per-core counters exist only there.
 echo msr > /etc/modules-load.d/greensql-msr.conf
 modprobe msr || echo "    !! could not load the msr module"
 printf 'export PGVER=%s\nexport SHARED_BUFFERS=%s\nexport EFFECTIVE_CACHE_SIZE=%s\nexport CLOCK_KHZ=%s\n' \

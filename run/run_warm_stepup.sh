@@ -236,7 +236,7 @@ for i in "${!ORDER[@]}"; do
            PREHEAT_MAX_S="$PREHEAT_MAX_S" COOLDOWN_MAX_S="$COOLDOWN_MAX_S" PREHEAT_S="$PREHEAT_S" \
            BATCH_CAP_SLOW="$BATCH_CAP_SLOW" SLOW_COPY_SEC="$SLOW_COPY_SEC" \
            IDLE_BASELINE_S="$IDLE_BASELINE_S" WARMUP_FAIL_SKIP="$WARMUP_FAIL_SKIP" \
-           RAPL_OPTIONAL="${RAPL_OPTIONAL:-}" \
+           RAPL_OPTIONAL="${RAPL_OPTIONAL:-}" RAPL_BACKEND="${RAPL_BACKEND:-}" \
            "$BIN/query_runner" >> "$console" 2>&1; then
         echo "  ok"; ok=$((ok + 1))
     else

@@ -2,7 +2,6 @@
 #include <dirent.h>
 
 
-int cpu_model;
 int core=0;
 
 
@@ -49,115 +48,6 @@ long long read_msr(int fd, int which) {
   return (long long)data;
 }
 
-#define CPU_SANDYBRIDGE   42
-#define CPU_SANDYBRIDGE_EP  45
-#define CPU_IVYBRIDGE   58
-#define CPU_IVYBRIDGE_EP  62
-#define CPU_HASWELL   60
-#define CPU_HASWELL2   69
-#define CPU_HASWELL3   70
-#define CPU_HASWELL_EP   63
-#define CPU_SKYLAKE1   78
-#define CPU_SKYLAKE2   94
-#define CPU_BROADWELL  77
-#define CPU_BROADWELL2  79
-#define CPU_KABYLAKE 158
-
-int detect_cpu(void) {
-
-	FILE *fff;
-
-	int family,model=-1;
-	char buffer[BUFSIZ],*result;
-	char vendor[BUFSIZ];
-
-	fff=fopen("/proc/cpuinfo","r");
-	if (fff==NULL) return -1;
-
-	while(1) {
-		result=fgets(buffer,BUFSIZ,fff);
-		if (result==NULL) break;
-
-		if (!strncmp(result,"vendor_id",8)) {
-			sscanf(result,"%*s%*s%s",vendor);
-
-			if (strncmp(vendor,"GenuineIntel",12)) {
-				printf("%s not an Intel chip\n",vendor);
-        fclose(fff);
-				return -1;
-			}
-		}
-
-		if (!strncmp(result,"cpu family",10)) {
-			sscanf(result,"%*s%*s%*s%d",&family);
-			if (family!=6) {
-				printf("Wrong CPU family %d\n",family);
-        fclose(fff);
-				return -1;
-			}
-		}
-
-		if (!strncmp(result,"model",5)) {
-			sscanf(result,"%*s%*s%d",&model);
-		}
-
-	}
-
-	fclose(fff);
-/**
-	switch(model) {
-		case CPU_SANDYBRIDGE:
-			printf("Found Sandybridge CPU\n");
-			break;
-		case CPU_SANDYBRIDGE_EP:
-			printf("Found Sandybridge-EP CPU\n");
-			break;
-		case CPU_IVYBRIDGE:
-			printf("Found Ivybridge CPU\n");
-			break;
-		case CPU_IVYBRIDGE_EP:
-			printf("Found Ivybridge-EP CPU\n");
-			break;
-    case CPU_HASWELL:
-      printf("Found Haswell CPU\n");
-      break;
-    case CPU_HASWELL2:
-      printf("Found Haswell2 CPU\n");
-      break;
-    case CPU_HASWELL3:
-      printf("Found Haswell3 CPU\n");
-      break;
-    case CPU_HASWELL_EP:
-      printf("Found Haswell_EP CPU\n");
-      break;
-    case CPU_SKYLAKE1:
-      printf("Found SKYLAKE1 CPU\n");
-      break;
-    case CPU_SKYLAKE2:
-      printf("Found SKYLAKE2 CPU\n");
-      break;
-    case CPU_BROADWELL:
-      printf("Found BROADWELL CPU\n");
-      break;
-    case CPU_BROADWELL2:
-      printf("Found BROADWELL2 CPU\n");
-      break;
-    case CPU_KABYLAKE:
-      printf("Found KABYLAKE CPU\n");
-      break;
-		default:	printf("Unsupported model %d\n",model);
-				//model=-1;
-				break;
-	}
-**/
-	return model;
-}
-
-
-
-
-
-
 /* ------------------------------------------------------------------ */
 /* Zones: one energy counter each, summed into the four domains        */
 /* ------------------------------------------------------------------ */
@@ -181,6 +71,7 @@ static char describe_buf[256] = "not initialised";
 static double snap_before[RAPL_MAX_ZONES];
 static double snap_after[RAPL_MAX_ZONES];   /* the last rapl_after() snapshot */
 static double dram_rescaled = 1.0;   /* != 1: powercap DRAM was rescaled */
+static int dram_fixed_msr = 0;       /* MSR DRAM read in the fixed 2^-16 J unit */
 static rapl_zone psys_zone;          /* platform energy, outside the domains */
 static int has_psys = 0;
 
@@ -196,10 +87,23 @@ static int dram_fixed_unit(int model) {
   }
 }
 
-/* Intel family-6 model from /proc/cpuinfo, or -1 (not Intel / not family 6).
- * Quiet, unlike detect_cpu(): the powercap path also runs on AMD. */
+/* psys counts in whole joules on Sapphire / Emerald Rapids (the kernel's
+ * rapl_defaults_spr_server; seen on the CloudLab c6620's Xeon Gold 5512U), in
+ * the package unit elsewhere. */
+static int psys_whole_joules(int model) { return model == 143 || model == 207; }
+
+/* RAPL_CPUINFO and RAPL_MSR_DIR stand in for /proc/cpuinfo and /dev/cpu, so
+ * the MSR reader can be tested with fake CPUs (<dir>/<cpu>/msr read at the
+ * MSR's offset; AMD's registers are adjacent, so a file-backed fake needs
+ * its pread wrapped to give each register its own 8 bytes). */
+static const char *cpuinfo_path(void) {
+  const char *p = getenv("RAPL_CPUINFO");
+  return p && *p ? p : "/proc/cpuinfo";
+}
+
+/* Intel family-6 model from /proc/cpuinfo, or -1 (not Intel / not family 6). */
 static int intel_model(void) {
-  FILE *f = fopen("/proc/cpuinfo", "r");
+  FILE *f = fopen(cpuinfo_path(), "r");
   if (!f) return -1;
   char line[256];
   int intel = 0, family = -1, model = -1;
@@ -237,7 +141,7 @@ static int amd_cores = -1;            /* per-core zones added (-1: not AMD) */
 
 /* AuthenticAMD / HygonGenuine, family 17h or later (Zen): the RAPL MSRs above. */
 static int cpu_is_amd_zen(void) {
-  FILE *f = fopen("/proc/cpuinfo", "r");
+  FILE *f = fopen(cpuinfo_path(), "r");
   if (!f) return 0;
   char line[256];
   int amd = 0, family = -1;
@@ -249,19 +153,73 @@ static int cpu_is_amd_zen(void) {
   return amd && family >= 0x17;
 }
 
-/* One MSR, without the exit-on-error of open_msr(): 0 on success. */
+/* One MSR, without the exit-on-error of open_msr(): 0 on success. Each CPU's
+ * device is opened once and kept (a run reads every counter twice per batch;
+ * on an AMD node that is one per core), close-on-exec so psql never inherits
+ * it; msr_close_all() lets rapl_init start over. */
+#define RAPL_MAX_CPUS 4096
+static int msr_fd[RAPL_MAX_CPUS];
+static int msr_fd_ready = 0;
+
+static void msr_close_all(void) {
+  for (int c = 0; msr_fd_ready && c < RAPL_MAX_CPUS; c++)
+    if (msr_fd[c] >= 0) { close(msr_fd[c]); msr_fd[c] = -1; }
+}
+
 static int msr_read_quiet(int cpu, unsigned reg, uint64_t *v) {
-  char fn[64];
-  snprintf(fn, sizeof(fn), "/dev/cpu/%d/msr", cpu);
-  int fd = open(fn, O_RDONLY);
-  if (fd < 0) return -1;
-  int ok = pread(fd, v, sizeof(*v), reg) == (ssize_t)sizeof(*v);
-  close(fd);
-  return ok ? 0 : -1;
+  if (cpu < 0 || cpu >= RAPL_MAX_CPUS) return -1;
+  if (!msr_fd_ready) {
+    for (int c = 0; c < RAPL_MAX_CPUS; c++) msr_fd[c] = -1;
+    msr_fd_ready = 1;
+  }
+  if (msr_fd[cpu] < 0) {
+    const char *dir = getenv("RAPL_MSR_DIR");
+    char fn[300];
+    snprintf(fn, sizeof(fn), "%s/%d/msr", dir && *dir ? dir : "/dev/cpu", cpu);
+    if ((msr_fd[cpu] = open(fn, O_RDONLY | O_CLOEXEC)) < 0) return -1;
+  }
+  return pread(msr_fd[cpu], v, sizeof(*v), reg) == (ssize_t)sizeof(*v) ? 0 : -1;
+}
+
+/* The kernel's test for a RAPL domain (rapl_check_domain): its energy counter
+ * is readable and not 0. A counter the model lacks faults or reads 0 (PP0 on
+ * most server Xeons); one that exists but stands still while idle (PP1/uncore
+ * with the GPU asleep) is kept, as powercap keeps it. */
+static int msr_counter_present(int cpu, unsigned reg) {
+  uint64_t v;
+  return msr_read_quiet(cpu, reg, &v) == 0 && (v & 0xffffffffULL) != 0;
 }
 
 static int read_text(const char *path, char *buf, size_t len);
 static int add_zone(const rapl_zone *z);
+
+/* The first online CPU of every RAPL unit: each package, and with by_die each
+ * die of a multi-die Intel package (Cascade Lake-AP style), whose counters are
+ * per die. Returns the number of units; *packages gets the number of distinct
+ * packages. */
+static int rapl_units(int by_die, int first_cpu[], int max, int *packages) {
+  int key[256], pkgs[256], n = 0, np = 0;
+  if (max > 256) max = 256;
+  for (int c = 0; c < RAPL_MAX_CPUS && n < max; c++) {
+    char p[128], buf[32];
+    snprintf(p, sizeof(p), "/sys/devices/system/cpu/cpu%d", c);
+    if (access(p, F_OK) != 0) break;
+    snprintf(p, sizeof(p), "/sys/devices/system/cpu/cpu%d/topology/physical_package_id", c);
+    if (read_text(p, buf, sizeof(buf)) != 0) continue;           /* offline cpu */
+    int pkg = atoi(buf), die = 0, seen = 0;
+    snprintf(p, sizeof(p), "/sys/devices/system/cpu/cpu%d/topology/die_id", c);
+    if (by_die && read_text(p, buf, sizeof(buf)) == 0) die = atoi(buf);
+    int k = pkg * 1024 + die;
+    for (int i = 0; i < n; i++) if (key[i] == k) seen = 1;
+    if (seen) continue;
+    key[n] = k; first_cpu[n++] = c;
+    seen = 0;
+    for (int i = 0; i < np; i++) if (pkgs[i] == pkg) seen = 1;
+    if (!seen) pkgs[np++] = pkg;
+  }
+  *packages = np;
+  return n;
+}
 
 /* One zone per physical core (the first thread of each), domain core, summed
  * by rapl_delta. Returns how many were added (0: MSRs unreadable - not root,
@@ -286,31 +244,23 @@ static int add_amd_core_zones(void) {
   return added;
 }
 
-/* No powercap zones on an AMD machine (an old kernel): the package counters
- * straight from the MSRs, one per socket, plus the per-core ones. */
+/* AMD from the MSRs: the package counter of every socket (in that socket's
+ * unit), plus the per-core ones. */
 static int init_msr_amd(void) {
-  uint64_t u;
-  if (msr_read_quiet(0, MSR_AMD_RAPL_POWER_UNIT, &u) != 0) return -1;
-  double unit = pow(0.5, (double)((u >> 8) & 0x1f));
-  int seen[64], np = 0;
-  for (int c = 0; c < 4096 && np < 64; c++) {
-    char p[128], buf[32];
-    snprintf(p, sizeof(p), "/sys/devices/system/cpu/cpu%d", c);
-    if (access(p, F_OK) != 0) break;
-    snprintf(p, sizeof(p), "/sys/devices/system/cpu/cpu%d/topology/physical_package_id", c);
-    if (read_text(p, buf, sizeof(buf)) != 0) continue;
-    int id = atoi(buf), dup = 0;
-    for (int i = 0; i < np; i++) if (seen[i] == id) dup = 1;
-    if (dup) continue;
-    seen[np++] = id;
+  int first[64], np;
+  int nu = rapl_units(0, first, 64, &np);
+  for (int i = 0; i < nu; i++) {
+    uint64_t u;
+    if (msr_read_quiet(first[i], MSR_AMD_RAPL_POWER_UNIT, &u) != 0) return -1;
+    double unit = pow(0.5, (double)((u >> 8) & 0x1f));
     rapl_zone z; memset(&z, 0, sizeof(z));
-    z.domain = D_PKG; z.is_msr = 1; z.cpu = c; z.msr = MSR_AMD_PKG_ENERGY_STATUS;
+    z.domain = D_PKG; z.is_msr = 1; z.cpu = first[i]; z.msr = MSR_AMD_PKG_ENERGY_STATUS;
     z.unit = unit; z.range_j = 4294967296.0 * unit; z.scale = 1.0;
-    if (add_zone(&z) != 0) return -1;
+    if (!msr_counter_present(z.cpu, z.msr) || add_zone(&z) != 0) return -1;
   }
   npackages = np;
   amd_cores = add_amd_core_zones();
-  return np > 0 ? 0 : -1;
+  return nu > 0 ? 0 : -1;
 }
 
 static int read_text(const char *path, char *buf, size_t len) {
@@ -324,14 +274,8 @@ static int read_text(const char *path, char *buf, size_t len) {
 
 static int read_zone(const rapl_zone *z, double *joules) {
   if (z->is_msr) {
-    char fn[64];
     uint64_t data;
-    snprintf(fn, sizeof(fn), "/dev/cpu/%d/msr", z->cpu);
-    int fd = open(fn, O_RDONLY);
-    if (fd < 0) return -1;
-    int ok = pread(fd, &data, sizeof data, z->msr) == sizeof data;
-    close(fd);
-    if (!ok) return -1;
+    if (msr_read_quiet(z->cpu, z->msr, &data) != 0) return -1;
     *joules = (double)(data & 0xffffffffULL) * z->unit;
   } else {
     char buf[64];
@@ -410,90 +354,114 @@ static int init_powercap(void) {
   return npackages > 0 ? 0 : -1;
 }
 
-/* MSR fallback (Intel only): the first CPU of every package, found from the
- * sysfs topology. PP1 and DRAM are read on the models the original code knew,
- * plus DRAM (in its fixed unit) on server Xeons. */
-static int init_msr(void) {
-  int first_cpu[64], pkg_id[64], np = 0;
-  for (int c = 0; c < 4096 && np < 64; c++) {
-    char p[96], buf[32];
-    snprintf(p, sizeof(p), "/sys/devices/system/cpu/cpu%d", c);
-    if (access(p, F_OK) != 0) break;
-    snprintf(p, sizeof(p), "/sys/devices/system/cpu/cpu%d/topology/physical_package_id", c);
-    if (read_text(p, buf, sizeof(buf)) != 0) continue;           /* offline cpu */
-    int id = atoi(buf), seen = 0;
-    for (int i = 0; i < np; i++) if (pkg_id[i] == id) seen = 1;
-    if (!seen) { pkg_id[np] = id; first_cpu[np] = c; np++; }
-  }
-  if (np == 0) { first_cpu[0] = 0; np = 1; }
-
-  int fd = open_msr(first_cpu[0]);
-  long long result = read_msr(fd, MSR_RAPL_POWER_UNIT);
-  close(fd);
-  power_units = pow(0.5, (double)(result & 0xf));
-  energy_units = pow(0.5, (double)((result >> 8) & 0x1f));
-  time_units = pow(0.5, (double)((result >> 16) & 0xf));
-
-  int client_pp1 = (cpu_model == CPU_SANDYBRIDGE) || (cpu_model == CPU_IVYBRIDGE) || (cpu_model == CPU_HASWELL);
-  int old_dram = (cpu_model == CPU_SANDYBRIDGE_EP) || (cpu_model == CPU_IVYBRIDGE_EP) || (cpu_model == CPU_HASWELL);
-  int fixed_dram = dram_fixed_unit(cpu_model);
-  for (int i = 0; i < np; i++) {
+/* Intel from the MSRs, the way the kernel's intel_rapl driver finds its
+ * domains: every RAPL unit (package, or die) in its own unit from MSR 0x606;
+ * package, then PP0 (core), PP1 (uncore) and DRAM wherever the counter is
+ * present (msr_counter_present), DRAM in the fixed 2^-16 J unit on the server
+ * models that have it, and psys once, from the first unit. */
+static int init_msr_intel(void) {
+  int model = intel_model();
+  if (model < 0) return -1;
+  int first[64], np;
+  int nu = rapl_units(1, first, 64, &np);
+  static const struct { int domain; unsigned msr; } sub[] = {
+    { D_CORE, MSR_PP0_ENERGY_STATUS }, { D_GPU, MSR_PP1_ENERGY_STATUS }, { D_DRAM, MSR_DRAM_ENERGY_STATUS },
+  };
+  for (int i = 0; i < nu; i++) {
+    uint64_t u;
+    if (msr_read_quiet(first[i], MSR_RAPL_POWER_UNIT, &u) != 0) return -1;
+    double unit = pow(0.5, (double)((u >> 8) & 0x1f));
+    if (i == 0) {               /* for show_power_info / show_power_limit */
+      power_units = pow(0.5, (double)(u & 0xf));
+      energy_units = unit;
+      time_units = pow(0.5, (double)((u >> 16) & 0xf));
+    }
     rapl_zone z; memset(&z, 0, sizeof(z));
-    z.is_msr = 1; z.cpu = first_cpu[i]; z.unit = energy_units;
-    z.range_j = 4294967296.0 * energy_units;
-    z.domain = D_PKG;  z.msr = MSR_PKG_ENERGY_STATUS; if (add_zone(&z) != 0) return -1;
-    z.domain = D_CORE; z.msr = MSR_PP0_ENERGY_STATUS; add_zone(&z);
-    if (client_pp1) { z.domain = D_GPU; z.msr = MSR_PP1_ENERGY_STATUS; add_zone(&z); }
-    if (old_dram || fixed_dram) {
-      z.domain = D_DRAM; z.msr = MSR_DRAM_ENERGY_STATUS;
-      if (fixed_dram) { z.unit = pow(0.5, 16); z.range_j = 4294967296.0 * z.unit; }
-      add_zone(&z);
+    z.is_msr = 1; z.cpu = first[i]; z.scale = 1.0;
+    z.domain = D_PKG; z.msr = MSR_PKG_ENERGY_STATUS;
+    z.unit = unit; z.range_j = 4294967296.0 * unit;
+    if (!msr_counter_present(z.cpu, z.msr) || add_zone(&z) != 0) return -1;
+    for (size_t k = 0; k < sizeof(sub) / sizeof(sub[0]); k++) {
+      if (!msr_counter_present(z.cpu, sub[k].msr)) continue;
+      z.domain = sub[k].domain; z.msr = sub[k].msr;
+      z.unit = sub[k].domain == D_DRAM && dram_fixed_unit(model) ? pow(0.5, 16) : unit;
+      z.range_j = 4294967296.0 * z.unit;
+      if (add_zone(&z) == 0 && z.domain == D_DRAM && z.unit != unit) dram_fixed_msr = 1;
+    }
+    if (i == 0 && msr_counter_present(z.cpu, MSR_PLATFORM_ENERGY_STATUS)) {
+      z.domain = D_PKG; z.msr = MSR_PLATFORM_ENERGY_STATUS;
+      z.unit = psys_whole_joules(model) ? 1.0 : unit;
+      z.range_j = 4294967296.0 * z.unit;
+      psys_zone = z; has_psys = 1;
     }
   }
   npackages = np;
-  return 0;
+  return nu > 0 ? 0 : -1;
 }
 
+static void reset_state(void) {
+  nzones = npackages = 0;
+  dram_rescaled = 1.0;
+  dram_fixed_msr = 0;
+  has_psys = 0;
+  amd_cores = -1;
+  msr_close_all();
+}
+
+/* RAPL_BACKEND picks the reader: "auto" (the default) tries the MSRs first and
+ * falls back to powercap, "msr" or "powercap" use only that one. The MSRs give
+ * the same domains as powercap, and DRAM in its right unit where the kernel
+ * gets it wrong (the m510); powercap remains for machines where the MSRs are
+ * not readable (no msr module, a VM) or not how the kernel reads RAPL (the
+ * newest Xeons read it through TPMI). The backend is in rapl_describe(). */
 int rapl_init(int core)
 {
   (void)core;   /* every package is read now; kept for the old call sites */
-  nzones = npackages = 0;
-  dram_rescaled = 1.0;
-  has_psys = 0;
-  amd_cores = -1;
-  const char *backend = "powercap";
-  if (init_powercap() != 0) {
-    nzones = npackages = 0;
-    has_psys = 0;
-    amd_cores = -1;
-    backend = "msr";
-    if (cpu_is_amd_zen()) {
-      if (init_msr_amd() != 0) {
-        printf("No readable RAPL: no powercap zones, and the AMD MSRs need root and the msr module (sudo modprobe msr)\n");
+  const char *want = getenv("RAPL_BACKEND");
+  if (!want || !*want) want = "auto";
+  if (strcmp(want, "auto") && strcmp(want, "msr") && strcmp(want, "powercap")) {
+    printf("RAPL_BACKEND=%s: expected auto, msr or powercap\n", want);
+    return -1;
+  }
+  int amd = cpu_is_amd_zen();
+  const char *backend = NULL, *fallback = "";
+  reset_state();
+  if (strcmp(want, "powercap") != 0) {
+    if ((amd ? init_msr_amd() : init_msr_intel()) == 0) {
+      backend = "msr";
+    } else {
+      reset_state();
+      if (!strcmp(want, "msr")) {
+        printf("RAPL_BACKEND=msr: no readable RAPL MSRs (%s)\n",
+               amd || intel_model() >= 0 ? "need root and the msr module: sudo modprobe msr"
+                                         : "not an Intel or AMD Zen CPU");
         return -1;
       }
-      goto described;
+      fallback = " (msr not readable)";
     }
-    cpu_model = detect_cpu();
-    if (cpu_model < 0) {
-      printf("Unsupported CPU type (no readable powercap RAPL zones, and not an Intel CPU for the MSR path)\n");
+  }
+  if (!backend) {
+    if (init_powercap() != 0) {
+      reset_state();
+      printf("No readable RAPL: no MSRs (need root and the msr module: sudo modprobe msr) and no powercap zones\n");
       return -1;
     }
-    if (init_msr() != 0) return -1;
+    backend = "powercap";
   }
 
-described:;
   int present[4] = {0, 0, 0, 0};
   for (int i = 0; i < nzones; i++) present[zones[i].domain] = 1;
   char fix[96] = "";
   if (dram_rescaled != 1.0)
     snprintf(fix, sizeof(fix), " (dram x%g: kernel used the package unit)", dram_rescaled);
+  else if (dram_fixed_msr)
+    snprintf(fix, sizeof(fix), " (dram in its fixed 2^-16 J unit)");
   else if (amd_cores > 0)
     snprintf(fix, sizeof(fix), " (core = sum of %d per-core counters)", amd_cores);
   else if (amd_cores == 0)
     snprintf(fix, sizeof(fix), " (no core: per-core MSRs unreadable, load msr)");
-  snprintf(describe_buf, sizeof(describe_buf), "%s, %d package%s, domains:%s%s%s%s%s%s",
-           backend, npackages, npackages == 1 ? "" : "s",
+  snprintf(describe_buf, sizeof(describe_buf), "%s%s, %d package%s, domains:%s%s%s%s%s%s",
+           backend, fallback, npackages, npackages == 1 ? "" : "s",
            present[D_PKG] ? " pkg" : "", present[D_CORE] ? " core" : "",
            present[D_GPU] ? " gpu/uncore" : "", present[D_DRAM] ? " dram" : "",
            has_psys ? " (+ psys)" : "", fix);

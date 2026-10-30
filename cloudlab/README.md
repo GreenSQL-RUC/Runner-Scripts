@@ -20,7 +20,7 @@ shell on the CloudLab node), or **portal** (the CloudLab website).
 | 4 | `build/bootstrap_ubuntu.sh`: PostgreSQL at the pinned minor (16.15, 18.6, ...), held there by apt |
 | 5 | `make`, then the chosen databases (StackOverflow 1 GB and/or TPC-H SF1 + `tpch_idx`) |
 | 6 | `make set-parameters`: the laptops' testing settings, with `shared_buffers` and `effective_cache_size` from the profile |
-| 7 | exports `PGVER`, `SHARED_BUFFERS`, `EFFECTIVE_CACHE_SIZE` and `CLOCK_KHZ` in login shells, so `make` and `compare/run_compare.sh` pick them up; loads `msr` (the RAPL fallback for CPUs the kernel's powercap does not know) |
+| 7 | exports `PGVER`, `SHARED_BUFFERS`, `EFFECTIVE_CACHE_SIZE` and `CLOCK_KHZ` in login shells, so `make` and `compare/run_compare.sh` pick them up; loads `msr` (the runner reads RAPL from the MSRs first; powercap is the fallback) |
 | 8 | copies the logs the node makes (not the laptop logs the repository ships) to `/proj/<project>/greensql/<experiment>/<node>/` every 30 min |
 | 9 | commits the same files to [GreenSQL-RUC/CloudLab-Results](https://github.com/GreenSQL-RUC/CloudLab-Results), same folder, every 3 h |
 | 10 | if the node's BMC answers in-band IPMI (Dell iDRAC: c6620, c6525, r650, ...): starts the background power log, `greensql-power-log`, into `logs/power/` ([below](#the-power-log-c6620-and-other-dell-nodes)); the m510 has none and runs as before |
@@ -157,6 +157,19 @@ cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors
 test only starts an entry between 40 and 60 °C, so an idle package far outside
 that window means long waits. `performance` must be among the governors.
 
+Once per new node type, the two RAPL readers side by side (the runners read
+the MSRs; powercap is their fallback):
+
+```bash
+sudo ~/GreenSQL/bin/rapl_check 10            # idle; again with stress-ng --cpu 0 running
+```
+
+Both lines must list the same domains, and every ratio should be 1.000 (to
+±0.01 at idle, where the watts are small). On the m510 the MSR description
+ends `(dram in its fixed 2^-16 J unit)` and powercap's `(dram x0.25: kernel
+used the package unit)`, with DRAM still 1.000: the same joules, corrected in
+two ways. `msr not readable` means the module is not loaded (`sudo modprobe msr`).
+
 On a c6620 expect `package-0`, `dram` and `psys`. The runner records all
 three (`rapl_psys_j` per batch, `idle_psys_w` per idle baseline). On er063,
 psys read 68 W at idle (package 34.9 + DRAM 2.7 W) and 249 W with all 28
@@ -223,9 +236,10 @@ cd ~/GreenSQL && setsid nohup bash run/detach.sh logs/so_full/console.log \
 
 The harness handles AMD EPYC (Zen) since 2026-10-22:
 
-- **Energy**: package from the kernel's powercap zone; core = the sum of every
-  physical core's own counter (read from the MSRs; the kernel's own `core`
-  zone covers one core only, so it is not used). The run's RAPL description
+- **Energy**: package from its MSR (the kernel's powercap zone as the
+  fallback); core = the sum of every physical core's own counter (read from
+  the MSRs; the kernel's own `core` zone covers one core only, so it is not
+  used). The run's RAPL description
   ends with `(core = sum of N per-core counters)`; N should be the physical
   core count (16 on a c6525-25g). Each core's own figure is in
   `query_percore_<db>.csv` (one column per core, per batch and per idle

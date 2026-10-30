@@ -43,10 +43,13 @@ drivers. Results are appended to CSV files under `logs/`.
   throttle counts, idle gap and power. The two protocol knobs from
   `run/thermal_runner_brief.md` — `THERMAL_EQUALISE` (temperature-gated start)
   and `FIX_CLOCK` (turbo off + performance governor) — are **off** unless set.
-- **RAPL needs root.** Energy is read from the kernel's powercap interface
-  (`/sys/class/powercap/intel-rapl:*`, root-only) and summed over every CPU
-  package; without it the runners fall back to the Intel MSRs (`msr` module).
-  The Makefile primes `sudo` (`SUDO_PASSWORD`, default `a`) and loads the module.
+- **RAPL needs root.** Energy is read straight from the RAPL MSRs
+  (`/dev/cpu/N/msr`, root-only, `msr` module) and summed over every CPU
+  package; where they cannot be read, from the kernel's powercap interface
+  (`/sys/class/powercap/intel-rapl:*`, also root-only). `RAPL_BACKEND=msr` or
+  `powercap` forces one (default `auto`: MSRs, then powercap); the run records
+  which it used. The Makefile primes `sudo` (`SUDO_PASSWORD`, default `a`) and
+  loads the module.
 - **PostgreSQL version == port.** Each installed major (PG15/16/17/18 by default) runs its own
   `main` cluster on its own port; `PGVER` selects the version, the port is looked
   up. Every CSV row carries `pg_version`.
@@ -249,11 +252,13 @@ sudo bash build/build_tpch.sh <sf> <db> <ver>       # always drops + recreates
 as root; otherwise `sudo apt install -y build-essential git`.
 
 ### `make run` fails with a RAPL / `msr` error
-The runners read RAPL from `/sys/class/powercap/intel-rapl:*` (as root), or
-failing that from the Intel MSRs with the `msr` module (`sudo modprobe msr`;
-the Makefile attempts this). The runner prints which it used (`RAPL: powercap, 1
-package, domains: ...`). VMs usually expose neither — data loading, `make
-plans` and `make outputs` still work.
+The runners read RAPL from the MSRs with the `msr` module (`sudo modprobe msr`;
+the Makefile attempts this), or failing that from `/sys/class/powercap/intel-rapl:*`
+(both as root). The runner prints which it used (`RAPL: msr, 1 package,
+domains: ...`, or `powercap (msr not readable), ...` after a fallback).
+`sudo bin/rapl_check 10` reads both side by side; every ratio should be 1.000.
+VMs usually expose neither (`RAPL_OPTIONAL=1` runs timing only) — data
+loading, `make plans` and `make outputs` still work.
 
 ### `sudo` keeps prompting / "sudo authentication failed"
 The Makefile primes sudo with `SUDO_PASSWORD` (default `a`):
@@ -297,9 +302,10 @@ archive/ matrix_logs/ old/ tpch-dbgen/   run artifacts, prior project, upstream 
 | **`plan_builder.c`** | Saves each query's `EXPLAIN ANALYZE` plan to `plans/<db>/…`. `APPEND=1` appends a dated snapshot section instead of replacing, and reports whether the plan **shape** changed vs the previous snapshot (consistency testing). |
 | **`output_runner.c`** | Saves each query's result rows to `outputs/<db>/…` (strips a leading `EXPLAIN`). Correctness companion to `plan_builder`. |
 | **`write_runner.c`** | The **cold write** runner for mutating SQL (`queries/write/`), only against a scratch `*_write` DB. Per execution: run the file's SETUP (above `@MEASURE`), quiesce (autovacuum off on `w_*`, `CHECKPOINT`), drop caches + restart the cluster, then time only the `@MEASURE` section (RAPL, psql `\timing`, WAL bytes). No warm-up, no batching: a write cannot be repeated warm without drifting. Writes `write_cold_<db>.csv`. |
-| **`rapl.c` / `rapl.h`** | RAPL reader (package / core / gpu-uncore / dram joules): kernel powercap zones, else the Intel MSRs; every CPU package summed, per-counter wrap corrected, DRAM in its own unit (also through powercap, where the kernel uses the package unit on some models, e.g. the CloudLab m510's Broadwell-DE: rescaled, and noted in the RAPL description). Also a snapshot/delta API (the idle baseline), and psys (platform energy) read on its own, outside the four domains. **AMD (Zen)**: package from powercap (or the AMD MSR), core = the sum of every physical core's own counter (the kernel's powercap `core` zone reads only one core); no gpu/dram. |
+| **`rapl.c` / `rapl.h`** | RAPL reader (package / core / gpu-uncore / dram joules): the MSRs first, the kernel's powercap zones where the MSRs are not readable (`RAPL_BACKEND=auto|msr|powercap`); every CPU package summed, per-counter wrap corrected. On the MSRs it finds the domains as the kernel does (a counter that reads and is not 0), reads each package's own unit, DRAM in the fixed 2^-16 J unit on server Xeons (right on the m510, where the kernel's powercap uses the package unit and reads 4x high; powercap DRAM is rescaled there, and noted in the RAPL description) and psys in whole joules on Sapphire/Emerald Rapids. Also a snapshot/delta API (the idle baseline), and psys (platform energy) read on its own, outside the four domains. **AMD (Zen)**: package from MSR 0xC001029B, core = the sum of every physical core's own counter (the kernel's powercap `core` zone reads only one core); no gpu/dram. `RAPL_MSR_DIR` / `RAPL_CPUINFO` replace `/dev/cpu` and `/proc/cpuinfo` for tests with fake CPUs. |
+| **`rapl_check.c`** | `sudo bin/rapl_check [seconds]`: both RAPL backends over the same window, side by side in watts per domain, with both descriptions. Run once per new machine type; every ratio should be 1.000 (DRAM too: on the m510 powercap is rescaled). |
 | **`node_info.sh`** | The machine's identity (host, CPU, packages, microcode, BIOS, frequency driver, governor, turbo, kernel, RAPL zones) for `summary.txt`. |
-| **`power_logger.py`** | Background power log for servers with a BMC (Dell iDRAC etc.): the BMC's whole-node DCMI power reading about once a second plus the raw RAPL counters (package, dram, psys), timestamped, one CSV per UTC hour (`--check` = one reading). Started as the `greensql-power-log` service by the CloudLab profile; matched to runs with `compare/match_power.py`. |
+| **`power_logger.py`** | Background power log for servers with a BMC (Dell iDRAC etc.): the BMC's whole-node DCMI power reading about once a second plus the raw RAPL counters (package, dram, psys; read like `rapl.c`, MSRs first, the backend in each file's header), timestamped, one CSV per UTC hour (`--check` = one reading). Started as the `greensql-power-log` service by the CloudLab profile; matched to runs with `compare/match_power.py`. |
 | **`run_warm_stepup.sh`** | **The main benchmark driver** (`make warm-stepup`). Builds and saves the random order (with per-entry `run_id`s and each group's predecessor), does the per-entry cold start, invokes `query_runner` on one file at a time, writes `summary.txt` with every parameter plus clock/RAPL-limit state. Handles `FIX_CLOCK`. |
 | **`run_matrix.sh`** | `warm-stepup` across `PGVERS × DBS`, unattended and resumable (`make matrix` / `make matrix-plan`). Each combination is one warm-stepup run folder under `logs/matrix/`. |
 | **`run_equivalent.sh`** | One overnight sequence over `queries/equivalent/tpch`: plan snapshots, cold runs, warm matrix. |
@@ -581,7 +587,7 @@ repeats that and summarises every query that drifted.
   cluster per major version, from the PGDG apt repo.
 - `gcc`, `make`, `git`, TPC-H `dbgen` (fetched into `tpch-dbgen/` on demand).
 - Root access (RAPL, cache drop, cluster restarts, `apt`).
-- Linux with RAPL powercap zones (or Intel MSRs + the `msr` module) for the
-  energy columns; the
+- Linux with the RAPL MSRs + the `msr` module (or the kernel's RAPL powercap
+  zones) for the energy columns; the
   thermal columns read `coretemp` / `cpufreq` / `thermal_throttle` from sysfs
   and are simply left empty where a sensor is missing.

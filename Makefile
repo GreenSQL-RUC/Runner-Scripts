@@ -113,6 +113,8 @@ CLOCK_MAX_KHZ    ?=
 # RAPL_OPTIONAL=1: run without RAPL (a VM such as WSL2): timing only, energy
 # columns blank. Unset, a runner that finds no RAPL stops.
 RAPL_OPTIONAL    ?=
+# RAPL_BACKEND: auto (default: the MSRs, else powercap), msr or powercap.
+RAPL_BACKEND     ?=
 # Runtime-tiered batch cap for big suites: when set, a query whose warm 1-copy
 # run takes longer than SLOW_COPY_SEC skips batch sizes above BATCH_CAP_SLOW.
 BATCH_CAP_SLOW ?=
@@ -176,7 +178,7 @@ SUDO_PRIME    = printf '%s\n' '$(SUDO_PASSWORD)' | sudo -S -v >/dev/null 2>&1
 COMMON_ENV = ROOT="$(ROOT)" BIN="$(ROOT)/$(BIN)" PGVER="$(PGVER)" PGPORT="$(PGPORT)" \
              DB_NAME="$(DB_NAME)" DB_USER="$(DB_USER)" QUERY_DIR="$(DIR)" DIR="$(DIR)" \
              LOGS_DIR="$(LOGS_DIR)" WORKERS="$(WORKERS)" STATEMENT_TIMEOUT="$(STATEMENT_TIMEOUT)" \
-             DRYRUN="$(DRYRUN)" RAPL_OPTIONAL="$(RAPL_OPTIONAL)"
+             DRYRUN="$(DRYRUN)" RAPL_OPTIONAL="$(RAPL_OPTIONAL)" RAPL_BACKEND="$(RAPL_BACKEND)"
 
 THERMAL_ENV = THERMAL_EQUALISE="$(THERMAL_EQUALISE)" T_LO="$(T_LO)" T_HI="$(T_HI)" \
               PREHEAT_MAX_S="$(PREHEAT_MAX_S)" COOLDOWN_MAX_S="$(COOLDOWN_MAX_S)" \
@@ -204,7 +206,8 @@ CLOCK_WRAP = $(if $(filter 1,$(FIX_CLOCK)),bash $(RUN)/clock_control.sh with,)
 SUDO_RUN = $(SUDO_PRIME) || { echo "sudo authentication failed (override with: make $@ SUDO_PASSWORD=...)"; exit 1; }; sudo -n modprobe msr 2>/dev/null || true; sudo -n env $(1) $(2)
 
 # ---------------------------------------------------------------- build -----
-RUNNERS = $(BIN)/query_runner $(BIN)/cold_runner $(BIN)/plan_builder $(BIN)/output_runner $(BIN)/write_runner
+RUNNERS = $(BIN)/query_runner $(BIN)/cold_runner $(BIN)/plan_builder $(BIN)/output_runner $(BIN)/write_runner \
+          $(BIN)/rapl_check
 
 .DEFAULT_GOAL := all
 .PHONY: all clean help pg-info check-pg run cold warm-stepup matrix matrix-plan \
@@ -226,6 +229,10 @@ $(BIN)/cold_runner: $(RUN)/cold_runner.c $(RUN)/rapl.c $(RUN)/rapl.h | $(BIN)
 
 $(BIN)/write_runner: $(RUN)/write_runner.c $(RUN)/rapl.c $(RUN)/rapl.h | $(BIN)
 	$(CC) $(CFLAGS) -o $@ $(RUN)/write_runner.c $(RUN)/rapl.c $(LDFLAGS)
+
+# rapl_check: the MSR and powercap backends side by side (sudo bin/rapl_check 10).
+$(BIN)/rapl_check: $(RUN)/rapl_check.c $(RUN)/rapl.c $(RUN)/rapl.h | $(BIN)
+	$(CC) $(CFLAGS) -o $@ $(RUN)/rapl_check.c $(RUN)/rapl.c $(LDFLAGS)
 
 # plan_builder / output_runner need no RAPL.
 $(BIN)/plan_builder: $(RUN)/plan_builder.c | $(BIN)
