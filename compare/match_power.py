@@ -36,9 +36,15 @@ import argparse
 import bisect
 import csv
 import glob
+import gzip
 import os
 import re
 import sys
+
+
+def opencsv(path):
+    """A run's CSV, plain or gzipped (warm-stepup gzips them when it finishes)."""
+    return gzip.open(path, "rt", newline="") if path.endswith(".gz") else open(path, newline="")
 
 
 def load_power(power_dir):
@@ -88,10 +94,11 @@ def main():
     ap.add_argument("--out")
     a = ap.parse_args()
 
-    timing = glob.glob(os.path.join(a.run_dir, "query_timing_*.csv"))
+    timing = glob.glob(os.path.join(a.run_dir, "query_timing_*.csv")) + \
+        glob.glob(os.path.join(a.run_dir, "query_timing_*.csv.gz"))
     if len(timing) != 1:
-        sys.exit("expected one query_timing_<db>.csv in %s" % a.run_dir)
-    db = os.path.basename(timing[0])[len("query_timing_"):-4]
+        sys.exit("expected one query_timing_<db>.csv[.gz] in %s" % a.run_dir)
+    db = re.sub(r"\.csv(\.gz)?$", "", os.path.basename(timing[0])[len("query_timing_"):])
     prow, ranges = load_power(a.power_dir)
     if not prow:
         sys.exit("no power_*.csv rows in %s" % a.power_dir)
@@ -101,7 +108,7 @@ def main():
     zs = {c: series(prow, c, ranges.get(c)) for c in zones}
 
     windows = []
-    for r in csv.DictReader(open(timing[0])):
+    for r in csv.DictReader(opencsv(timing[0])):
         if r.get("phase") != "measured":
             continue
         windows.append(dict(kind="batch", query=r["query"], phase=r["phase"], batch_index=r["batch_index"],
@@ -109,13 +116,16 @@ def main():
                             elapsed_sec=r["elapsed_sec"], rapl_pkg_j=r["rapl_pkg_j"], rapl_dram_j=r["rapl_dram_j"],
                             rapl_psys_j=r.get("rapl_psys_j", "")))
     idle = os.path.join(a.run_dir, "query_idle_%s.csv" % db)
+    if not os.path.exists(idle) and os.path.exists(idle + ".gz"):
+        idle += ".gz"
     if os.path.exists(idle):
-        for r in csv.DictReader(open(idle)):
+        for r in csv.DictReader(opencsv(idle)):
             el = float(r["idle_s"])
             pkg = "%.3f" % (float(r["idle_pkg_w"]) * el) if r["idle_pkg_w"] else ""
             dram = "%.3f" % (float(r["idle_dram_w"]) * el) if r["idle_dram_w"] else ""
             psys = "%.3f" % (float(r["idle_psys_w"]) * el) if r.get("idle_psys_w") else ""
-            windows.append(dict(kind="idle", query=r["query"], phase="idle", batch_index="", batchnum="",
+            ph = "idle_after" if r.get("position") == "after" else "idle"
+            windows.append(dict(kind="idle", query=r["query"], phase=ph, batch_index="", batchnum="",
                                 start_epoch=r.get("start_epoch", ""), end_epoch=r.get("end_epoch", ""),
                                 elapsed_sec=r["idle_s"], rapl_pkg_j=pkg, rapl_dram_j=dram, rapl_psys_j=psys))
     if not any(w["start_epoch"] for w in windows):

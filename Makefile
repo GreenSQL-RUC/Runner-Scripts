@@ -122,6 +122,19 @@ SLOW_COPY_SEC  ?= 1
 # Idle baseline: seconds of package/DRAM power measured with nothing running,
 # before each query's measured batches (query_idle_<db>.csv). 0 = off.
 IDLE_BASELINE_S ?= 0
+# The same window just after each query's last batch (the cool-down tail;
+# position=after in query_idle_<db>.csv). 0 = off.
+IDLE_AFTER_S ?= 0
+# warm-stepup only: order of the batch sizes within each entry, fixed (as
+# written), random or balanced (counterbalanced, Williams design); SIZE_SEED
+# makes it reproducible. See run/run_warm_stepup.sh.
+SIZE_ORDER ?= fixed
+SIZE_SEED  ?=
+# warm-stepup: 1 = gzip the run's CSVs and console.log when it finishes
+# (a long run's files pass GitHub's 100 MB limit otherwise); 0 = keep plain.
+COMPRESS_LOGS ?= 1
+# 1 = keep the plain files, moved to archive/uncompressed/<run path>/ (git-ignored); 0 = delete them.
+KEEP_UNCOMPRESSED ?= 1
 # 1 = a query whose warm-up fails (error / timeout) skips its measured batches.
 WARMUP_FAIL_SKIP ?= 0
 
@@ -185,10 +198,12 @@ THERMAL_ENV = THERMAL_EQUALISE="$(THERMAL_EQUALISE)" T_LO="$(T_LO)" T_HI="$(T_HI
               PREHEAT_S="$(PREHEAT_S)" FIX_CLOCK="$(FIX_CLOCK)" \
               CLOCK_MAX_KHZ="$(CLOCK_MAX_KHZ)" \
               BATCH_CAP_SLOW="$(BATCH_CAP_SLOW)" SLOW_COPY_SEC="$(SLOW_COPY_SEC)" \
-              IDLE_BASELINE_S="$(IDLE_BASELINE_S)" WARMUP_FAIL_SKIP="$(WARMUP_FAIL_SKIP)"
+              IDLE_BASELINE_S="$(IDLE_BASELINE_S)" IDLE_AFTER_S="$(IDLE_AFTER_S)" \
+              WARMUP_FAIL_SKIP="$(WARMUP_FAIL_SKIP)"
 
 WARM_ENV = $(COMMON_ENV) $(THERMAL_ENV) WARMUP="$(WARMUP)" BATCH_SIZES="$(BATCH_SIZES)" \
            RUNS="$(RUNS)" REPEATS="$(REPEATS)" RUNID="$(RUNID)" ORDER_FILE="$(ORDER_FILE)" \
+           SIZE_ORDER="$(SIZE_ORDER)" SIZE_SEED="$(SIZE_SEED)" COMPRESS_LOGS="$(COMPRESS_LOGS)" KEEP_UNCOMPRESSED="$(KEEP_UNCOMPRESSED)" \
            SIGLESS_ADDR="$(SIGLESS_ADDR)" SIGLESS_CHANNEL="$(SIGLESS_CHANNEL)"
 
 SWEEP_ENV = $(WARM_ENV) PGVERS="$(PGVERS)" DBS="$(DBS)" \
@@ -433,4 +448,5 @@ help:
 	@echo "  WARMUP=$(WARMUP)  BATCH_SIZES='$(BATCH_SIZES)'  RUNS=$(RUNS)  REPEATS=$(REPEATS)"
 	@echo "  WORKERS='$(WORKERS)'  STATEMENT_TIMEOUT=$(STATEMENT_TIMEOUT)  PGVERS='$(PGVERS)'  DBS='$(DBS)'"
 	@echo "  THERMAL_EQUALISE=$(THERMAL_EQUALISE) (T_LO=$(T_LO) T_HI=$(T_HI))  FIX_CLOCK=$(FIX_CLOCK) CLOCK_MAX_KHZ='$(CLOCK_MAX_KHZ)'  BATCH_CAP_SLOW='$(BATCH_CAP_SLOW)'"
+	@echo "  SIZE_ORDER=$(SIZE_ORDER) SIZE_SEED='$(SIZE_SEED)'  IDLE_AFTER_S=$(IDLE_AFTER_S)  COMPRESS_LOGS=$(COMPRESS_LOGS)"
 	@echo "  IDLE_BASELINE_S=$(IDLE_BASELINE_S)  WARMUP_FAIL_SKIP=$(WARMUP_FAIL_SKIP)  DRYRUN='$(DRYRUN)'  SUDO_PASSWORD=(set)"

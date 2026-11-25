@@ -384,7 +384,7 @@ Invoke as `make test-<param>` (dashes for underscores):
 
 | Target | What it does |
 |---|---|
-| `make warm-stepup` | **The main benchmark.** `logs/warm_stepup/<RUNID>/`. Knobs: `DB_NAME DIR REPEATS WARMUP BATCH_SIZES RUNS STATEMENT_TIMEOUT RUNID ORDER_FILE THERMAL_EQUALISE FIX_CLOCK BATCH_CAP_SLOW`. |
+| `make warm-stepup` | **The main benchmark.** `logs/warm_stepup/<RUNID>/`. Knobs: `DB_NAME DIR REPEATS WARMUP BATCH_SIZES SIZE_ORDER SIZE_SEED RUNS STATEMENT_TIMEOUT RUNID ORDER_FILE THERMAL_EQUALISE FIX_CLOCK BATCH_CAP_SLOW IDLE_BASELINE_S IDLE_AFTER_S`. |
 | `make cold` | Cold-cache runs (`RUNS` per query). `logs/query_cold_<db>.csv`. |
 | `make run` | One plain warm pass (`WARMUP`, `BATCH_SIZES`, `RUNS`); no restarts. |
 | `make matrix` / `matrix-plan` | `warm-stepup` over `PGVERS × DBS` (resumable) / schedule + ETA only. |
@@ -404,8 +404,10 @@ LOGS_DIR=logs WARMUP=2 BATCH_SIZES="1 16" RUNS=1 REPEATS=1 WORKERS=
 STATEMENT_TIMEOUT=900 PGVERS="15 16 17 18" DBS="tpch tpch_idx" DRYRUN=`.
 Thermal (off by default): `THERMAL_EQUALISE=0|1|burn T_LO=55 T_HI=60
 PREHEAT_MAX_S=60 COOLDOWN_MAX_S=120 PREHEAT_S=30 FIX_CLOCK=0
-BATCH_CAP_SLOW= SLOW_COPY_SEC=1`. Idle baseline (off by default):
-`IDLE_BASELINE_S=0` (seconds before each query's measured batches).
+BATCH_CAP_SLOW= SLOW_COPY_SEC=1`. Idle windows (off by default):
+`IDLE_BASELINE_S=0` (seconds before each query's measured batches) and
+`IDLE_AFTER_S=0` (seconds after its last batch). Batch-size order (warm-stepup
+only): `SIZE_ORDER=fixed|random|balanced SIZE_SEED=`.
 `WARMUP_FAIL_SKIP=1` makes a query whose warm-up fails (error or timeout) skip
 its remaining warm-ups and measured batches.
 
@@ -426,8 +428,10 @@ from what it writes.
   `pkg_temp_start_c, pkg_temp_end_c, pkg_temp_mean_c, pkg_temp_max_c,
   core_temp_max_c, mhz_mean, throttle_core_delta, throttle_pkg_delta,
   idle_before_s, preheat_s, cooldown_wait_s, pkg_watts_mean, start_epoch,
-  end_epoch, rapl_psys_j`.
-  `phase` is `warmup`/`measured`; `batchnum` is the batch size N;
+  end_epoch, rapl_psys_j, size_pos`.
+  `phase` is `warmup`/`measured`; `batchnum` is the batch size N; `size_pos`
+  (from 2026-11-19) is that size's position (1-based) in the entry's size order,
+  which `SIZE_ORDER` may permute (blank on warm-ups);
   `timestamp_utc` is taken at batch **end** (whole seconds); `start_epoch` /
   `end_epoch` are the measured window in Unix seconds to the millisecond, for
   matching outside time series such as the BMC power log (runs from
@@ -447,21 +451,25 @@ from what it writes.
 - **`query_samples_<db>.csv`** — one row per **copy** within a batch: planning /
   execution ms, plan shape (`plan_nodes, scan_nodes, rows_out, rows_processed,
   rows_estimated, bytes_processed, rows_removed_filter, workers_launched,
-  relations`), buffers, `failed`, then `pkg_temp_start_c, mhz_mean` repeated
-  from the batch. Join to the batch row on `run_id + query + phase +
+  relations`), buffers, `failed`, then `pkg_temp_start_c, mhz_mean, size_pos`
+  repeated from the batch. Join to the batch row on `run_id + query + phase +
   batch_index`. Populated only for queries written as `EXPLAIN (ANALYZE, …)`.
 - **`query_catalog_<db>.csv`** — relation sizes, once per runner invocation
   (once per warm-stepup run).
-- **`query_idle_<db>.csv`** — only with `IDLE_BASELINE_S` > 0: one row per
-  query, the power drawn with nothing running for that many seconds after the
-  warm-ups and just before the measured batches (`idle_s, idle_pkg_w,
-  idle_core_w, idle_gpu_w, idle_dram_w, pkg_temp_mean_c, mhz_mean, start_epoch,
-  end_epoch, idle_psys_w`). Net energy
-  of a batch = `rapl_*_j - idle_*_w x elapsed_sec`; this matters on servers,
-  whose packages idle at tens of watts.
+- **`query_idle_<db>.csv`** — only with `IDLE_BASELINE_S` or `IDLE_AFTER_S`
+  > 0: one row per query and window, the power drawn with nothing running
+  (`idle_s, idle_pkg_w, idle_core_w, idle_gpu_w, idle_dram_w, pkg_temp_mean_c,
+  mhz_mean, start_epoch, end_epoch, idle_psys_w, position`). `position=before`
+  (`IDLE_BASELINE_S`): after the warm-ups and just before the measured batches;
+  skipped when a failed warm-up skips them. Net energy of a batch = `rapl_*_j -
+  idle_*_w x elapsed_sec`; this matters on servers, whose packages idle at tens
+  of watts. `position=after` (`IDLE_AFTER_S`, from 2026-11-19): just after the
+  query's last batch, warm-up-only queries included — the cool-down tail the
+  batches leave (power and temperature falling back). Files from before
+  2026-11-19 have no `position` column; their rows are all `before`.
 - **`query_percore_<db>.csv`** — only on CPUs with per-core energy counters
   (AMD Zen; never on Intel): one row per batch (warm-ups too) and per idle
-  baseline (`phase` = `idle`), `timestamp_utc, run_id, pg_version, query, phase,
+  window (`phase` = `idle`, or `idle_after` for `IDLE_AFTER_S`), `timestamp_utc, run_id, pg_version, query, phase,
   batch_index, batchnum, elapsed_sec, start_epoch, end_epoch`, then one
   `core<cpu>_j` column per physical core, named by its first CPU. Same window
   as the matching `query_timing` row (join on `query + phase + batch_index +
@@ -501,7 +509,30 @@ queries/stackoverflow/SQLStorm/22783.sql 1,4
 ```
 
 Here `100.sql` runs `BATCH_SIZES`. Comments must be on their own line. The saved `run_order_<RUNID>.txt` keeps the sizes, so a replay runs the same
-batches. A malformed line aborts the run before anything starts.
+batches. A malformed line aborts the run before anything starts. Sizes run in
+the order written, so `16,1` runs N=16 first.
+
+**Batch-size order** (`SIZE_ORDER`, default `fixed`): the order of the sizes
+within each entry.
+- `fixed` — `BATCH_SIZES` as written (1 then 16), as every run before 2026-11-19.
+- `random` — each entry its own random permutation.
+- `balanced` — counterbalanced (Williams design): k sizes give k orders (2k
+  when k is odd: `1 16` → 2, `1 4 16` → 6, `1 2 4 8 16` → 10) in which every
+  size sits in every position equally often and directly follows every other
+  size equally often, so what one batch carries into the next (heat above all)
+  falls evenly on every size. Each query starts at a random one of the orders
+  and its repeats take the next ones in turn, so the run uses every order
+  equally often; per query it is exact when `REPEATS` is a multiple of the
+  number of orders (`1 16` with `REPEATS=3` gives each query one order twice).
+
+The chosen sizes are written into each line of the saved order (with a
+`# size_order:` header line), so a replay runs the same orders; `SIZE_SEED`
+reproduces them (drawn and recorded when unset; the entry order itself is
+`shuf`'s). Order-file lines that give their own sizes keep them. The console
+and `make warm-stepup DRYRUN=1` print a size × position table to check the
+balance, and every measured row records `size_pos`. Note that the warm-ups are
+single-copy, so under `fixed` the measured N=1 always ran straight after them;
+other orders remove that, and old and new N=1 figures may differ a little.
 
 For each of the `queries × REPEATS` entries, in the saved random order:
 1. drop the OS page cache and restart the cluster (clean cold start);
@@ -509,14 +540,29 @@ For each of the `queries × REPEATS` entries, in the saved random order:
    pre-heat with an all-core burn below `T_LO`, wait above `T_HI`;
 3. `WARMUP` warm-up runs (the first primes the cache);
 4. `RUNS` measured batches at each `N` in `BATCH_SIZES` (default `1 16`; the
-   full curve is `1 2 4 8 16` — never above 16).
+   full curve is `1 2 4 8 16` — never above 16), in the order `SIZE_ORDER`
+   gives;
+5. *(only if `IDLE_AFTER_S` is set)* an idle window after the last batch.
 
 Each run lives in `logs/warm_stepup/<RUNID>/`:
 - `run_order_<RUNID>.txt` — the order, plus `# order: <n> <run_id> prev=<run_id>`
   lines giving every group's `run_id` and its predecessor's;
 - `query_timing_<db>.csv`, `query_samples_<db>.csv`, `query_catalog_<db>.csv`,
-  `query_runinfo_<db>.csv` (and `query_idle_<db>.csv` with `IDLE_BASELINE_S`);
+  `query_runinfo_<db>.csv` (and `query_idle_<db>.csv` with `IDLE_BASELINE_S`
+  or `IDLE_AFTER_S`);
 - `console.log` — the per-entry runner output;
+- when the run finishes, every CSV above and `console.log` are **gzipped**
+  (`query_timing_<db>.csv.gz`, …; `COMPRESS_LOGS=1`, the default), since a long
+  run's samples CSV passes GitHub's 100 MB file limit (the 5-repeat PG16 run:
+  about 400 MB → 42 MB). pandas, R and DuckDB read `.csv.gz` directly, as do
+  `compare/match_power.py`, `test/thermal_check.py` and the compare check; on
+  the command line use `zcat`/`zless`/`zgrep`. `run_order_<RUNID>.txt` and
+  `summary.txt` stay plain. The plain files are **kept on the machine**, moved
+  to `archive/uncompressed/<run folder path>/` (e.g.
+  `archive/uncompressed/logs/warm_stepup/<RUNID>/`; `archive/` is git-ignored),
+  unless `KEEP_UNCOMPRESSED=0`. An interrupted run is left uncompressed.
+  `COMPRESS_LOGS=0` keeps everything plain in place; `make run` (which appends
+  to one set of CSVs) never compresses;
 - `summary.txt` — total runtime, tallies, every parameter, the thermal policy,
   and the clock state (`no_turbo`, governor, min/max freq), RAPL PL1/PL2 limits,
   a `dmesg` throttle-message count and a `-- node --` section (`node_info.sh`,

@@ -24,7 +24,7 @@ With REPEATS=3 a per-query correlation has only three points, so the pooled
 number is the one to read; the brief's per-query median is printed too.
 Pure Python (csv + math), no numpy needed.
 """
-import csv, glob, math, os, statistics, sys
+import csv, glob, gzip, math, os, statistics, sys
 from collections import defaultdict
 from datetime import datetime, timezone
 
@@ -64,12 +64,16 @@ def fmt(v, pct=False, nd=2):
 def ts(s):
     return datetime.strptime(s, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc).timestamp()
 
+def opencsv(path):  # plain or gzipped (warm-stepup gzips a finished run's CSVs)
+    return gzip.open(path, "rt", newline="") if path.endswith(".gz") else open(path, newline="")
+
 def analyse(run_dir, batch_max=16):
-    timing = glob.glob(os.path.join(run_dir, "query_timing_*.csv"))
-    samples = glob.glob(os.path.join(run_dir, "query_samples_*.csv"))
-    if not timing: raise SystemExit(f"no query_timing_*.csv in {run_dir}")
-    rows = list(csv.DictReader(open(timing[0])))
-    srows = list(csv.DictReader(open(samples[0]))) if samples else []
+    find = lambda name: glob.glob(os.path.join(run_dir, name)) + glob.glob(os.path.join(run_dir, name + ".gz"))
+    timing = find("query_timing_*.csv")
+    samples = find("query_samples_*.csv")
+    if not timing: raise SystemExit(f"no query_timing_*.csv[.gz] in {run_dir}")
+    rows = list(csv.DictReader(opencsv(timing[0])))
+    srows = list(csv.DictReader(opencsv(samples[0]))) if samples else []
     for r in rows:
         for k in ("elapsed_sec", "rapl_pkg_j", "pkg_temp_start_c", "idle_before_s", "preheat_s",
                   "cooldown_wait_s", "throttle_core_delta", "throttle_pkg_delta"):

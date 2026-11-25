@@ -1,0 +1,6 @@
+===== detach.sh start 2026-10-16T16:20:14Z  pid 2523875
+===== command: make warm-stepup DB_NAME=stackoverflow_1gb DIR=queries/stackoverflow/SQLStorm BATCH_SIZES=1 16 WARMUP=2 RUNS=1 REPEATS=5 STATEMENT_TIMEOUT=15 WARMUP_FAIL_SKIP=1 THERMAL_EQUALISE=1 T_LO=40 T_HI=60 FIX_CLOCK=1 CLOCK_MAX_KHZ=2500000 RUNID=so_uniform_1_16_r5_20261016T162014Z SUDO_PASSWORD=a
+===== suspend inhibited: yes
+make: *** wait: No child processes.  Stop.
+make: *** Waiting for unfinished jobs....
+make: *** wait: No child processes.  Stop.

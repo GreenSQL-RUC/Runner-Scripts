@@ -59,6 +59,10 @@
 #      RAPL_BACKEND
 #                  auto (default: the MSRs, else powercap), msr or powercap;
 #                  the run's RAPL description says which was used
+#      SIZE_ORDER, SIZE_SEED, IDLE_AFTER_S
+#                  passed to make warm-stepup (defaults fixed, none, 0: the
+#                  protocol as before); a session that changes them is no
+#                  longer like-for-like with the earlier ones, so name it so
 #      RAPL_OPTIONAL=1
 #                  run on a machine without RAPL (a VM such as WSL2): timing
 #                  only, energy columns blank (with CLOCK_KHZ=none there; the
@@ -170,19 +174,22 @@ make --no-print-directory warm-stepup SUDO_PASSWORD="$PW" \
     "BATCH_SIZES=1 16" WARMUP=2 RUNS=1 STATEMENT_TIMEOUT=15 WARMUP_FAIL_SKIP=1 \
     THERMAL_EQUALISE=1 T_LO="$T_LO" T_HI="$T_HI" FIX_CLOCK="$FIX" CLOCK_MAX_KHZ="$CLOCK_ARG" \
     IDLE_BASELINE_S=5 LOGS_DIR=logs/compare RUNID="$RUNID" RAPL_OPTIONAL="${RAPL_OPTIONAL:-}" \
-    RAPL_BACKEND="${RAPL_BACKEND:-}"
+    RAPL_BACKEND="${RAPL_BACKEND:-}" SIZE_ORDER="${SIZE_ORDER:-fixed}" SIZE_SEED="${SIZE_SEED:-}" \
+    IDLE_AFTER_S="${IDLE_AFTER_S:-0}"
 rc=$?
 resume_upgrades
 
 # --- 5. check the run against the protocol -------------------------------------
 echo "==> checking $RUN_DIR"
 python3 - "$RUN_DIR" "$DB" "$CLOCK_KHZ" "$PG_MINOR" "$T_LO" "$T_HI" <<'EOF'
-import csv, os, sys
+import csv, gzip, os, sys
 d, db, khz, pg, t_lo, t_hi = sys.argv[1:]
 t_lo, t_hi = float(t_lo), float(t_hi)
 bad = []
-info = list(csv.DictReader(open(os.path.join(d, f"query_runinfo_{db}.csv"))))
-rows = list(csv.DictReader(open(os.path.join(d, f"query_timing_{db}.csv"))))
+def opencsv(p):                                    # the run gzips its CSVs when it finishes
+    return gzip.open(p + ".gz", "rt", newline="") if os.path.exists(p + ".gz") else open(p, newline="")
+info = list(csv.DictReader(opencsv(os.path.join(d, f"query_runinfo_{db}.csv"))))
+rows = list(csv.DictReader(opencsv(os.path.join(d, f"query_timing_{db}.csv"))))
 checks = (("scaling_max_khz", khz), ("governor", "performance"), ("pg_version", pg))
 if khz == "none":                                  # firmware clock: report, do not demand
     checks = (("scaling_max_khz", None), ("governor", None), ("pg_version", pg))

@@ -28,10 +28,12 @@
  *                            overhead, rusage, RAPL joules, thermal/clock state
  *   query_samples_<db>.csv   one row per COPY: planning/execution ms, plan
  *                            shape, buffers, relations
- *   query_idle_<db>.csv      IDLE_BASELINE_S > 0 only: one row per query, the
- *                            power drawn with nothing running just before its
- *                            measured batches (subtract idle W x elapsed_sec
- *                            for net energy)
+ *   query_idle_<db>.csv      IDLE_BASELINE_S / IDLE_AFTER_S > 0 only: one row
+ *                            per query and window, the power drawn with nothing
+ *                            running just before its measured batches
+ *                            (position=before; subtract idle W x elapsed_sec
+ *                            for net energy) or just after its last batch
+ *                            (position=after: the cool-down tail)
  *   query_runinfo_<db>.csv   one row per invocation: the machine (host, CPU,
  *                            packages, microcode, BIOS, frequency driver,
  *                            governor, turbo, kernel, RAPL backend), so rows
@@ -45,7 +47,7 @@
  *   WARMUP BATCH_SIZES RUNS RUN_ID SKIP_CATALOG
  *   THERMAL_EQUALISE T_LO T_HI PREHEAT_MAX_S COOLDOWN_MAX_S PREHEAT_S
  *   BATCH_CAP_SLOW SLOW_COPY_SEC PREV_END_EPOCH SIGLESS_ADDR SIGLESS_CHANNEL ROOT
- *   IDLE_BASELINE_S WARMUP_FAIL_SKIP
+ *   IDLE_BASELINE_S IDLE_AFTER_S WARMUP_FAIL_SKIP
  */
 
 #include <stdio.h>
@@ -737,7 +739,10 @@ static void write_copy_profile(FILE *out, const run_profile *pr) {
  * (run/power_logger.py). The idle CSV carries the same two columns.
  * rapl_psys_j = the platform (psys) energy over the batch, blank where the
  * machine has no psys zone; it often counts in whole joules, so short batches
- * carry +-1 J. The idle CSV has idle_psys_w.
+ * carry +-1 J. The idle CSV has idle_psys_w. size_pos = the batch size's
+ * position (1-based) in this query's BATCH_SIZES as given, which the step-up
+ * driver may permute per entry (SIZE_ORDER); blank on warm-ups. The idle CSV's
+ * position is before (IDLE_BASELINE_S) or after (IDLE_AFTER_S).
  */
 #define HDR_LOG \
     "timestamp_utc,run_id,pg_version,query,phase,batch_index,batchnum,runs,warmup," \
@@ -746,7 +751,7 @@ static void write_copy_profile(FILE *out, const run_profile *pr) {
     "rapl_pkg_j,rapl_core_j,rapl_gpu_j,rapl_dram_j," \
     "pkg_temp_start_c,pkg_temp_end_c,pkg_temp_mean_c,pkg_temp_max_c,core_temp_max_c," \
     "mhz_mean,throttle_core_delta,throttle_pkg_delta,idle_before_s,preheat_s," \
-    "cooldown_wait_s,pkg_watts_mean,start_epoch,end_epoch,rapl_psys_j\n"
+    "cooldown_wait_s,pkg_watts_mean,start_epoch,end_epoch,rapl_psys_j,size_pos\n"
 
 #define HDR_SAMPLES \
     "timestamp_utc,run_id,pg_version,query,phase,batch_index,copy_index,batchnum,runs," \
@@ -756,7 +761,7 @@ static void write_copy_profile(FILE *out, const run_profile *pr) {
     "workers_launched,relations," \
     "shared_hit_blks,shared_read_blks," \
     "shared_dirtied_blks,shared_written_blks," \
-    "temp_read_blks,temp_written_blks,failed,pkg_temp_start_c,mhz_mean\n"
+    "temp_read_blks,temp_written_blks,failed,pkg_temp_start_c,mhz_mean,size_pos\n"
 
 #define HDR_CATALOG \
     "timestamp_utc,run_id,pg_version,database,schema,relname," \
@@ -765,7 +770,7 @@ static void write_copy_profile(FILE *out, const run_profile *pr) {
 #define HDR_IDLE \
     "timestamp_utc,run_id,pg_version,query,idle_s," \
     "idle_pkg_w,idle_core_w,idle_gpu_w,idle_dram_w,pkg_temp_mean_c,mhz_mean," \
-    "start_epoch,end_epoch,idle_psys_w\n"
+    "start_epoch,end_epoch,idle_psys_w,position\n"
 
 #define HDR_RUNINFO \
     "timestamp_utc,run_id,pg_version,host,cpu_model,packages,microcode," \
@@ -1002,7 +1007,7 @@ typedef struct {
 
 static batch_result run_one_batch(runner_state *st, const char *cmd, const char *out_tmp,
                                   int copies, const char *query_id, const char *phase,
-                                  int batch_index, int runs, int warmup) {
+                                  int batch_index, int runs, int warmup, int size_pos) {
     batch_result br; memset(&br, 0, sizeof(br));
     run_profile meta; profile_reset(&meta);
 
@@ -1055,6 +1060,8 @@ static batch_result run_one_batch(runner_state *st, const char *cmd, const char 
     fmt_num(idle_before, 3, b_idle, sizeof(b_idle));
     fmt_num((present[0] && br.elapsed > 0) ? e[0] / br.elapsed : NAN, 3, b_watts, sizeof(b_watts));
     char b_psys[24]; fmt_num(rapl_psys_delta(psys0, psys1), 3, b_psys, sizeof(b_psys));
+    char b_pos[16] = "";                    /* blank on warm-ups */
+    if (size_pos > 0) snprintf(b_pos, sizeof(b_pos), "%d", size_pos);
     char b_thr_core[24] = "", b_thr_pkg[24] = "";
     if (thr_core0 >= 0 && thr_core1 >= 0) snprintf(b_thr_core, sizeof(b_thr_core), "%ld", thr_core1 - thr_core0);
     if (thr_pkg0 >= 0 && thr_pkg1 >= 0)   snprintf(b_thr_pkg, sizeof(b_thr_pkg), "%ld", thr_pkg1 - thr_pkg0);
@@ -1067,9 +1074,9 @@ static batch_result run_one_batch(runner_state *st, const char *cmd, const char 
     else                fprintf(st->log, ",,");
     fprintf(st->log, "%.6f,%.6f,%ld,%d,", meta.user_cpu_sec, meta.sys_cpu_sec, meta.max_rss_kb, br.failed);
     write_energy_columns(st->log, e, present);
-    fprintf(st->log, ",%s,%s,%s,%s,%s,%s,%s,%s,%s,%.1f,%.1f,%s,%.3f,%.3f,%s\n",
+    fprintf(st->log, ",%s,%s,%s,%s,%s,%s,%s,%s,%s,%.1f,%.1f,%s,%.3f,%.3f,%s,%s\n",
             b_start, b_end, b_mean, b_max, b_core, b_mhz, b_thr_core, b_thr_pkg, b_idle,
-            st->preheat_s, st->cooldown_s, b_watts, start_ep, end_ep, b_psys);
+            st->preheat_s, st->cooldown_s, b_watts, start_ep, end_ep, b_psys, b_pos);
     fflush(st->log);
     st->preheat_s = st->cooldown_s = 0;    /* only the query's first batch carries them */
 
@@ -1092,7 +1099,7 @@ static batch_result run_one_batch(runner_state *st, const char *cmd, const char 
         fprintf(st->samples, "%s,%s,%s,%s,%s,%d,%d,%d,%d,",
                 ts, st->run_id, st->pg_version, query_id, phase, batch_index, c + 1, copies, runs);
         write_copy_profile(st->samples, br.ncopies > 0 ? &st->profiles[c] : &empty);
-        fprintf(st->samples, "%d,%s,%s\n", br.failed, b_start, b_mhz);
+        fprintf(st->samples, "%d,%s,%s,%s\n", br.failed, b_start, b_mhz, b_pos);
     }
     fflush(st->samples);
     return br;
@@ -1102,8 +1109,10 @@ static batch_result run_one_batch(runner_state *st, const char *cmd, const char 
  * taken after the warm-ups and just before the measured batches, so it is the
  * state those batches start from. A server package idles at tens of watts and
  * that draw is billed for every second a batch runs; net energy is
- * rapl_*_j - idle_*_w x elapsed_sec. The sampler runs as it does for a batch. */
-static void measure_idle(FILE *out, const runner_state *st, const char *query_id, double secs) {
+ * rapl_*_j - idle_*_w x elapsed_sec. The sampler runs as it does for a batch.
+ * after=1 (IDLE_AFTER_S > 0): the same window just after the query's last
+ * batch, i.e. the cool-down tail the batches leave behind. */
+static void measure_idle(FILE *out, const runner_state *st, const char *query_id, double secs, int after) {
     double a[RAPL_MAX_ZONES], b[RAPL_MAX_ZONES], e[4];
     int present[4];
     sampler_t sm; sampler_start(&sm);
@@ -1127,19 +1136,20 @@ static void measure_idle(FILE *out, const runner_state *st, const char *query_id
     fmt_num(sm.n ? sm.pkg_sum / sm.n : NAN, 2, b_mean, sizeof(b_mean));
     fmt_num(sm.mhz_n ? sm.mhz_sum / sm.mhz_n : NAN, 0, b_mhz, sizeof(b_mhz));
     char w_psys[24]; fmt_num(el > 0 ? rapl_psys_delta(psys0, psys1) / el : NAN, 3, w_psys, sizeof(w_psys));
-    fprintf(out, "%s,%s,%s,%s,%.3f,%s,%s,%s,%s,%s,%s,%.3f,%.3f,%s\n", ts, st->run_id, st->pg_version,
-            query_id, el, w[0], w[1], w[2], w[3], b_mean, b_mhz, start_ep, end_ep, w_psys);
+    fprintf(out, "%s,%s,%s,%s,%.3f,%s,%s,%s,%s,%s,%s,%.3f,%.3f,%s,%s\n", ts, st->run_id, st->pg_version,
+            query_id, el, w[0], w[1], w[2], w[3], b_mean, b_mhz, start_ep, end_ep, w_psys,
+            after ? "after" : "before");
     fflush(out);
     if (st->percore) {                     /* the idle window, joules per core */
         double pc[RAPL_MAX_ZONES];
         rapl_percore_delta(a, b, pc);
-        fprintf(st->percore, "%s,%s,%s,%s,idle,,,%.6f,%.3f,%.3f",
-                ts, st->run_id, st->pg_version, query_id, el, start_ep, end_ep);
+        fprintf(st->percore, "%s,%s,%s,%s,%s,,,%.6f,%.3f,%.3f",
+                ts, st->run_id, st->pg_version, query_id, after ? "idle_after" : "idle", el, start_ep, end_ep);
         for (int c = 0; c < st->ncores; c++) fprintf(st->percore, ",%.6f", pc[c]);
         fprintf(st->percore, "\n");
         fflush(st->percore);
     }
-    printf("  idle baseline: %.1fs, package %s W%s%s%s%s%s%s\n", el, w[0],
+    printf("  idle %s: %.1fs, package %s W%s%s%s%s%s%s\n", after ? "after" : "baseline", el, w[0],
            present[3] ? ", dram " : "", present[3] ? w[3] : "", present[3] ? " W" : "",
            *w_psys ? ", psys " : "", w_psys, *w_psys ? " W" : "");
     fflush(stdout);
@@ -1213,6 +1223,8 @@ int main(void) {
      * too, each costing up to STATEMENT_TIMEOUT. */
     int warmup_fail_skip = env_flag("WARMUP_FAIL_SKIP");
     if (!(idle_s > 0)) idle_s = 0;
+    double idle_after_s = env_double("IDLE_AFTER_S", 0);
+    if (!(idle_after_s > 0)) idle_after_s = 0;
     const char *sigless_addr = env_or("SIGLESS_ADDR", "");
     const char *sigless_chan = env_or("SIGLESS_CHANNEL", "CH1");
     const char *pg_port      = env_or("PGPORT", "");
@@ -1248,6 +1260,8 @@ int main(void) {
     if (warmup_fail_skip) printf("  WARMUP_FAIL_SKIP  = on (a failed warm-up skips the query's measured batches)\n");
     if (idle_s > 0) printf("  IDLE_BASELINE_S   = %.1f s before each query's measured batches\n", idle_s);
     else            printf("  IDLE_BASELINE_S   = off\n");
+    if (idle_after_s > 0) printf("  IDLE_AFTER_S      = %.1f s after each query's last batch\n", idle_after_s);
+    else                  printf("  IDLE_AFTER_S      = off\n");
     printf("  SIGLESS_ADDR      = %s\n", *sigless_addr ? sigless_addr : "(disabled)");
     fflush(stdout);
 
@@ -1296,7 +1310,7 @@ int main(void) {
     if (!skip_catalog)
         write_catalog_snapshot(catalog_file, env_prefix, db_user, db_name, pg_version, run_id);
     write_runinfo(runinfo_file, run_id, pg_version);
-    FILE *idle_out = idle_s > 0 ? open_csv_append(idle_file, HDR_IDLE) : NULL;
+    FILE *idle_out = (idle_s > 0 || idle_after_s > 0) ? open_csv_append(idle_file, HDR_IDLE) : NULL;
 
     /* Per-core energy, only where the CPU has per-core counters (AMD Zen): one
      * row per batch (warm-ups too) and per idle baseline, one column per
@@ -1355,7 +1369,7 @@ int main(void) {
 
         if (warmup > 0 && build_batch_file(query_id, batch_tmp, 1) == 0) {
             for (int w = 1; w <= warmup; w++) {
-                batch_result br = run_one_batch(&st, cmd, out_tmp, 1, query_id, "warmup", w, runs, warmup);
+                batch_result br = run_one_batch(&st, cmd, out_tmp, 1, query_id, "warmup", w, runs, warmup, 0);
                 if (br.failed) { failures++; warm_failed = 1; }
                 last_warm_elapsed = br.elapsed;
                 printf("  warmup %d/%d: %.6f sec%s\n", w, warmup, br.elapsed, w == 1 ? " (cache prime)" : "");
@@ -1372,7 +1386,7 @@ int main(void) {
             printf("  warm 1-copy run %.2fs > %.2fs: capping batch size at %d\n", last_warm_elapsed, slow_copy_sec, cap);
         }
 
-        if (idle_out && !skip_measured) measure_idle(idle_out, &st, query_id, idle_s);
+        if (idle_out && idle_s > 0 && !skip_measured) measure_idle(idle_out, &st, query_id, idle_s, 0);
 
         for (int si = 0; si < n_sizes && !skip_measured; si++) {
             int bs = sizes[si];
@@ -1383,7 +1397,7 @@ int main(void) {
                 continue;
             }
             for (int r = 1; r <= runs; r++) {
-                batch_result br = run_one_batch(&st, cmd, out_tmp, bs, query_id, "measured", r, runs, warmup);
+                batch_result br = run_one_batch(&st, cmd, out_tmp, bs, query_id, "measured", r, runs, warmup, si + 1);
                 if (br.failed) failures++;
                 printf("  N=%-3d batch %d/%d: %.6f sec, %d cop%s", bs, r, runs, br.elapsed,
                        br.ncopies, br.ncopies == 1 ? "y" : "ies");
@@ -1392,6 +1406,10 @@ int main(void) {
                 fflush(stdout);
             }
         }
+
+        /* After the last batch, warm-up-only queries included: what the
+         * query leaves behind (the cool-down tail). */
+        if (idle_out && idle_after_s > 0) measure_idle(idle_out, &st, query_id, idle_after_s, 1);
 
         snprintf(marker, sizeof(marker), "end,%s", query_id);
         sigless_post(sigless_addr, sigless_chan, marker);
@@ -1414,7 +1432,7 @@ int main(void) {
     printf("\nDone. Batch rows appended to %s\n", log_file);
     printf("Per-copy samples appended to %s\n", sample_file);
     if (!skip_catalog) printf("Relation sizes appended to %s\n", catalog_file);
-    if (idle_out) printf("Idle baselines appended to %s\n", idle_file);
+    if (idle_out) printf("Idle windows appended to %s\n", idle_file);
     if (st.percore) printf("Per-core energy (%d cores) appended to %s\n", st.ncores, percore_file);
     printf("Machine identity appended to %s\n", runinfo_file);
     printf("Last batch ended at epoch %.3f (PREV_END_EPOCH for the next invocation)\n", st.prev_end_epoch);
